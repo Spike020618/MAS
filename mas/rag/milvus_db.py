@@ -197,6 +197,10 @@ class MilvusDatabase:
             相似任务列表
         """
         try:
+            # 确保集合已加载
+            if not self.collection.is_empty:
+                self.collection.load()
+            
             search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
 
             results = self.collection.search(
