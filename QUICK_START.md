@@ -1,219 +1,445 @@
-# 快速参考 — MAS 多节点语义共识
+# 🚀 RAG系统快速开始指南
 
-## 🎯 一句话描述
+## 📌 概述
 
-N 个独立节点各自生成 AEIC 决策记录 → 共识引擎计算全量两两语义相似度矩阵 → Stackelberg 博弈驱动参数收敛
-
----
-
-## 📐 三个核心公式
-
-```
-① 共识能量    E = (1/2) Σ w_ij (θ_i - θ_j)²       → 目标 E→0
-② Leader目标  min_θ [-(ΣU_i) + λ·E]                → λ 权衡激励与一致性
-③ 分布式学习  θ_i^{t+1} = θ_i^t + η∇U_i - γΣw_ij(θ_i-θ_j)
-```
+这是RAG系统的快速开始指南。使用 `quick_start.sh` 脚本可以轻松运行演示、示例和查看文档。
 
 ---
 
-## 🚀 最小可运行示例
+## ⚡ 30秒快速开始
 
-```python
-from mas.consensus.consensus import ConsensusEngine
-from mas.data import load_or_generate
-
-# 加载/生成多节点数据集（有缓存自动读缓存）
-dataset = load_or_generate()
-node_recs_list = dataset.get_node_records()
-# → [[node_0, node_1, node_2], [...], ...]  每项为 AEIC 字典
-
-# 多节点全量共识评估
-engine = ConsensusEngine(similarity_method="bm25")
-result = engine.evaluate_consensus(node_recs_list[0])
-print(result["avg_similarity"])  # 全网平均相似度
-print(result["pairwise"])        # 所有节点对的相似度
-print(result["decision"])        # ESS_Consensus / Audit_Required / Reject
-```
-
----
-
-## 📊 相似度方法速查
-
-| 方法 | 速度 | 精度 | 何时用 |
-|------|------|------|--------|
-| `char_jaccard` | ⚡⚡⚡ | ☆ | 仅作 baseline |
-| `word_tfidf` | ⚡⚡ | ★★★ | 大规模离线 |
-| `bm25` | ⚡⚡ | ★★★★ | **默认推荐** |
-| `sentence_bert` | ⚡ | ★★★★★ | 百炼 API 已配置时 |
-| `llm_judge` | 🐢 | ★★★★★ | 最高精度，有 API 开销 |
-
-```python
-engine = ConsensusEngine(similarity_method="bm25")          # 默认
-engine = ConsensusEngine(similarity_method="sentence_bert",  # 百炼 Embedding
-                         api_key="...", api_base="...")
-```
-
----
-
-## 🏃 实验命令速查
+### 步骤1: 给脚本执行权限
 
 ```bash
-python start.py                    # 全部实验
-python start.py --exp 1            # 收敛性验证
-python start.py --exp 2            # 语义方法对比
-python start.py --exp 3            # 基线对比
-python start.py --exp all --plot   # 全部 + 生成论文图表
-python start.py --regen            # 强制重新生成数据
-python start.py --nodes 4          # 每轮 4 个节点（默认3）
-python start.py --rounds 20        # 迭代20轮（默认15）
+cd /Users/spike/code/MAS
+chmod +x quick_start.sh
 ```
 
----
-
-## 🗂️ 数据集操作
-
-```python
-from mas.data import load_or_generate, TASK_SCENARIOS
-
-# 标准加载（有缓存秒读，无缓存调 DeepSeek 生成）
-ds = load_or_generate()
-
-# 调节参数
-ds = load_or_generate(n_nodes=4, n_per_scenario=2, force_regenerate=True)
-
-# 只取某领域
-finance_only = [s for s in TASK_SCENARIOS if s.domain == "finance"]
-ds = load_or_generate(scenarios=finance_only)
-
-# 常用接口
-ds.get_node_records()   # [[node_0, node_1, ...], ...]  ← 传给共识引擎
-ds.ground_truths()      # [0.87, 0.42, 0.15, ...]
-ds.labels()             # ["high", "medium", "low", ...]
-ds.summary()            # 统计摘要字典
-ds.to_dataframe()       # pandas DataFrame（含所有节点字段）
-```
-
----
-
-## 🌐 分布式节点启动
+### 步骤2: 运行演示（最重要！）
 
 ```bash
-# 注册中心（先启动）
-python mas/registry_center.py --port 9000
+./quick_start.sh demo 5
+```
 
-# 各节点（分别在不同终端）
-python mas/agent_node.py --port 8001 --model deepseek --role solver   --registry http://127.0.0.1:9000
-python mas/agent_node.py --port 8002 --model qwen    --role reviewer  --registry http://127.0.0.1:9000
-python mas/agent_node.py --port 8003 --model deepseek --role solver   --registry http://127.0.0.1:9000
+**预期结果**: 看到三种算法的性能对比（耗时1-2分钟）
 
-# 查看网络状态
-curl http://127.0.0.1:9000/stats
-curl http://127.0.0.1:9000/discover
+```
+贪心基线:  成功率 50-60%
+RAG检索:   成功率 70-80%
+RAG+学习:  成功率 80-90% ⭐ 最优
 ```
 
 ---
 
-## 🧩 核心类速查
+## 📋 完整命令参考
 
-### ConsensusEngine
-```python
-engine.evaluate_consensus(node_records)   # 主接口：N节点全量评估 → 相似度矩阵+决策
-engine.evaluate_pair(rec_i, rec_j)        # 两节点对比（兼容用）
-engine.update_theta(utility)              # 分布式学习更新 θ
-```
-
-### StackelbergConsensusGame
-```python
-game.run_game_rounds(bids, total_workload, num_rounds)  # 多轮迭代（验证收敛）
-game.execute_stackelberg_game(bids, total_workload)      # 单轮执行
-game.optimize_allocation(bids, workload)                 # 纯优化，无迭代
-```
-
-### GeneratedDataset
-```python
-ds.get_node_records()     # 节点记录列表（共识引擎入参格式）
-ds.all_rounds             # ConsensusRound 对象列表
-ds.by_domain("finance")   # 按领域筛选
-ds.by_label("high")       # 按相似度等级筛选
-ds.save(path)             # 保存缓存
-GeneratedDataset.load(path)  # 从缓存加载
-```
-
----
-
-## 📁 结果文件说明
-
-| 文件 | 内容 |
-|------|------|
-| `results/generated_dataset.json` | DeepSeek 生成的多节点 AEIC 数据缓存 |
-| `results/exp1_convergence.csv` | 各 λ 值下的能量/参数变化曲线 |
-| `results/exp2_semantic_comparison.csv` | 各相似度方法的 MAE/Acc/ESS/AvgU |
-| `results/exp3_baseline_comparison.csv` | 四种分配方案的社会福利对比 |
-| `results/figures/fig1_convergence.png` | 收敛曲线图 |
-| `results/figures/fig2_semantic_comparison.png` | 方法对比柱状图 |
-| `results/figures/fig3_baseline_comparison.png` | 基线对比箱线图 |
-
----
-
-## ⚙️ config.py 关键字段
-
-```python
-API_KEY            # 百炼 Embedding key
-API_BASE           # https://dashscope.aliyuncs.com/compatible-mode/v1
-API_MODEL          # text-embedding-v4
-DEEPSEEK_API_KEY   # DeepSeek key（数据生成）
-DEEPSEEK_MODEL     # deepseek-chat
-LLM_MODEL          # deepseek-chat（llm_judge 方法）
-```
-
----
-
-## 🧪 evalscope 评测
+### 查看帮助
 
 ```bash
-pip install evalscope
-
-# 一键导出数据 + 运行两个评测任务
-python mas/eval/run_eval.py
-
-# 只跑分类准确率（MCQ，不需要 judge）
-python mas/eval/run_eval.py --task mcq
-
-# 只跑 QA 分析质量（LLM judge 打分）
-python mas/eval/run_eval.py --task qa
-
-# 换成其他模型来测试（evalscope service 模式）
-python mas/eval/run_eval.py \
-  --model qwen2.5-72b-instruct \
-  --api-url https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
-
-# 只测少量样本（调试）
-python mas/eval/run_eval.py --limit 5
+./quick_start.sh help
 ```
 
-也可以直接从 Python 调用：
+### 检查安装
 
-```python
-from mas.data import load_or_generate
-
-ds = load_or_generate()
-paths = ds.export_evalscope()   # 导出到 evalscope_data/
-# 然后调用 run_eval.py 或自己配 TaskConfig
+```bash
+./quick_start.sh check
 ```
 
-| 任务 | 格式 | 指标 | 说明 |
-|------|------|------|------|
-| `consensus_mcq` | general_mcq | AverageAccuracy | 三分类（high/medium/low） |
-| `consensus_qa` | general_qa | LLM judge 1-5分 | 准确性/专业性/完整性 |
+验证所有RAG模块是否正确安装。
 
 ---
 
-## 💡 常见问题
+## 🎯 演示脚本
 
-| 问题 | 解决 |
-|------|------|
-| 首次运行很慢 | 正在调 DeepSeek 生成数据，生成后缓存到 `results/generated_dataset.json` |
-| 想换更多节点 | `--nodes 4` 或 `load_or_generate(n_nodes=4, force_regenerate=True)` |
-| sentence_bert 不工作 | 检查 `config.py` 中的 `API_KEY` 是否填写 |
-| 想加自定义场景 | 在 `mas/data/generator.py` 的 `TASK_SCENARIOS` 列表末尾追加 `TaskScenario(...)` |
-| 清除缓存重新生成 | `python start.py --regen` 或删除 `results/generated_dataset.json` |
+### 运行完整对比实验（推荐！）
+
+```bash
+./quick_start.sh demo 5
+```
+
+这是最重要的演示，展示了权重学习的优势。
+
+### 运行各个步骤的演示
+
+```bash
+# 第1步：基础存储演示
+./quick_start.sh demo 1
+
+# 第2步：工作流演示
+./quick_start.sh demo 2
+
+# 第3步：多Agent通信演示
+./quick_start.sh demo 3
+
+# 第4步：权重学习演示
+./quick_start.sh demo 4
+
+# 第5步：完整对比实验演示
+./quick_start.sh demo 5
+```
+
+---
+
+## 💻 集成示例
+
+### 运行集成示例
+
+```bash
+# 示例1: 简单任务分配
+./quick_start.sh example 1
+
+# 示例2: 任务分配 + 自动权重学习
+./quick_start.sh example 2
+
+# 示例3: 完整对比实验
+./quick_start.sh example 3
+
+# 示例4: 多Agent协调
+./quick_start.sh example 4
+```
+
+### 示例说明
+
+**示例1**: 最简单的使用方式
+- 初始化RAG系统
+- 注册Agent
+- 分配一个任务
+- 查看结果
+
+**示例2**: 关键示例！展示自动学习
+- 执行5个任务
+- 每个任务后自动进行权重学习
+- 观察权重如何逐步优化
+- 查看性能逐步改进
+
+**示例3**: 完整实验
+- 生成合成数据集
+- 运行三种算法
+- 分析和对比结果
+- 生成性能报告
+
+**示例4**: 多Agent场景
+- 多Agent间通信
+- 广播-收集通信模式
+- 跨Agent任务分配
+
+---
+
+## 📚 文档查看
+
+### 查看文档列表
+
+```bash
+./quick_start.sh docs
+```
+
+### 查看具体文档
+
+```bash
+# 快速参考（推荐！）
+./quick_start.sh docs quick
+
+# 最终完整指南
+./quick_start.sh docs final
+
+# 详细使用指南
+./quick_start.sh docs usage
+
+# 项目架构总览
+./quick_start.sh docs overview
+
+# 各步骤指南
+./quick_start.sh docs step1  # 基础存储
+./quick_start.sh docs step2  # 工作流
+./quick_start.sh docs step3  # 通信
+./quick_start.sh docs step4  # 学习
+./quick_start.sh docs step5  # 对比实验
+
+# 完成总结
+./quick_start.sh docs completion1  # 第1步总结
+./quick_start.sh docs completion2  # 第2步总结
+# ... 以此类推
+```
+
+---
+
+## 🎓 推荐学习流程
+
+### 初级用户（20分钟）
+
+```bash
+# 1. 检查安装
+./quick_start.sh check
+
+# 2. 运行完整演示
+./quick_start.sh demo 5
+
+# 3. 查看快速参考
+./quick_start.sh docs quick
+```
+
+### 中级用户（1小时）
+
+```bash
+# 1. 运行所有演示
+./quick_start.sh demo 1
+./quick_start.sh demo 2
+./quick_start.sh demo 3
+./quick_start.sh demo 4
+./quick_start.sh demo 5
+
+# 2. 查看详细指南
+./quick_start.sh docs usage
+
+# 3. 运行集成示例
+./quick_start.sh example 1
+./quick_start.sh example 2
+```
+
+### 高级用户（2-3小时）
+
+```bash
+# 1. 查看完整文档
+./quick_start.sh docs final
+./quick_start.sh docs overview
+
+# 2. 阅读所有步骤指南
+for i in {1..5}; do
+    ./quick_start.sh docs step$i
+done
+
+# 3. 运行所有示例
+./quick_start.sh example 1
+./quick_start.sh example 2
+./quick_start.sh example 3
+./quick_start.sh example 4
+
+# 4. 修改示例代码进行自己的实验
+# 编辑 rag_integration_example.py
+```
+
+---
+
+## 📊 预期输出示例
+
+### demo 5 的输出示例
+
+```
+================================================================================
+第5步演示：对比实验 - 三种算法的性能对比
+================================================================================
+
+[步骤1] 初始化实验环境...
+✓ 实验环境初始化完成
+
+[步骤2] 运行对比实验...
+
+【算法1：贪心基线】
+  已完成: 10/30
+
+【算法2：RAG检索】
+  已完成: 10/30
+
+【算法3：RAG+权重学习】
+  已完成: 10/30
+
+[步骤3] 分析结果...
+✓ 实验完成
+
+【关键发现】
+成功率最高: rag_learning (87.00%)
+平均分数最高: rag_learning (0.8645)
+分配速度最快: greedy (0.12ms)
+最优分配率: rag_learning (92.00%)
+稳定性最好: rag_learning (0.9512)
+
+🏆 总体赢家: rag_learning
+
+================================================================================
+第5步演示完成！
+================================================================================
+```
+
+---
+
+## 🔧 故障排除
+
+### 问题1: Permission denied
+
+```bash
+chmod +x quick_start.sh
+```
+
+### 问题2: Python module not found
+
+```bash
+./quick_start.sh check
+```
+
+检查是否所有模块都正确安装。
+
+### 问题3: 脚本无法找到文件
+
+确保你在正确的目录：
+
+```bash
+cd /Users/spike/code/MAS
+```
+
+### 问题4: 文档查看器不可用
+
+脚本默认使用 `less`。如果没有 `less`，可以直接编辑脚本改用 `cat` 或 `more`。
+
+---
+
+## 💡 高级用法
+
+### 批量运行所有演示
+
+```bash
+for i in {1..5}; do
+    echo "========== Running Demo $i =========="
+    ./quick_start.sh demo $i
+    echo ""
+done
+```
+
+### 批量运行所有示例
+
+```bash
+for i in {1..4}; do
+    echo "========== Running Example $i =========="
+    ./quick_start.sh example $i
+    echo ""
+done
+```
+
+### 集成到你的脚本
+
+```bash
+#!/bin/bash
+
+# 在你的脚本中调用RAG系统
+cd /Users/spike/code/MAS
+
+# 运行演示
+./quick_start.sh demo 5
+
+# 运行示例
+./quick_start.sh example 2
+```
+
+---
+
+## 📚 关键文件位置
+
+```
+/Users/spike/code/MAS/
+
+quick_start.sh              # 快速启动脚本（本文件）
+quick_start.md              # 快速开始指南（本文件）
+rag_integration_example.py  # 集成示例代码
+
+mas/rag/                    # RAG系统Python模块
+├── demo_step1.py          # 第1步演示
+├── demo_step2.py          # 第2步演示
+├── demo_step3.py          # 第3步演示
+├── demo_step4.py          # 第4步演示
+└── demo_step5.py          # 第5步演示
+
+文档文件:
+QUICK_REFERENCE.md         # 快速参考
+HOW_TO_USE_FINAL.md        # 最终完整指南
+RAG_STEP[1-5]_GUIDE.md     # 各步骤指南
+STEP[1-5]_COMPLETION.md    # 完成总结
+```
+
+---
+
+## ✅ 验证检查清单
+
+- [ ] 已运行 `chmod +x quick_start.sh`
+- [ ] 已运行 `./quick_start.sh check` 并通过
+- [ ] 已运行 `./quick_start.sh demo 5` 看到演示
+- [ ] 已查看 `./quick_start.sh docs quick`
+- [ ] 理解了三种算法的性能差异
+- [ ] 知道为什么权重学习能提高性能
+- [ ] 已运行至少一个示例 (`./quick_start.sh example 2`)
+
+如果全部打勾，恭喜！你已经掌握了RAG系统的基本使用。
+
+---
+
+## 🎯 下一步
+
+### 快速开始后
+
+1. **运行演示** (5分钟)
+   ```bash
+   ./quick_start.sh demo 5
+   ```
+
+2. **查看快速参考** (5分钟)
+   ```bash
+   ./quick_start.sh docs quick
+   ```
+
+3. **运行示例2** (10分钟)
+   ```bash
+   ./quick_start.sh example 2
+   ```
+
+4. **阅读完整指南** (30分钟)
+   ```bash
+   ./quick_start.sh docs final
+   ```
+
+5. **集成到自己的项目** (1小时)
+   - 复制 `rag_integration_example.py` 中的代码
+   - 修改为你自己的任务和Agent
+
+---
+
+## 🚀 快速集成到Python代码
+
+```python
+import sys
+sys.path.insert(0, '/Users/spike/code/MAS')
+
+from mas.rag import (
+    LocalRAGDatabase,
+    WeightLearningIntegration
+)
+import asyncio
+
+async def main():
+    # 初始化系统
+    rag_db = LocalRAGDatabase(storage_path="./rag_storage")
+    await rag_db.initialize()
+    
+    # ... 更多代码 ...
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+---
+
+## 📞 需要帮助？
+
+1. **快速参考**: `./quick_start.sh docs quick`
+2. **完整指南**: `./quick_start.sh docs final`
+3. **查看示例**: `./quick_start.sh example 1`
+4. **阅读文档**: `./quick_start.sh docs [step1-5]`
+
+---
+
+## 🎉 祝你使用愉快！
+
+现在你已经拥有了RAG系统的完整快速启动指南。
+
+**开始吧！** 🚀
+
+```bash
+./quick_start.sh demo 5
+```

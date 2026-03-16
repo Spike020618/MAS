@@ -1,0 +1,46 @@
+{
+  "1": {
+    "agent_id": 1,
+    "name": "Agent_01",
+    "task_types": [
+      "review",
+      "development"
+    ],
+    "success_rate": 0.6962602614291917,
+    "is_online": true,
+    "registered_at": "2026-03-15T11:50:05.391273"
+  },
+  "2": {
+    "agent_id": 2,
+    "name": "Agent_02",
+    "task_types": [
+      "planning",
+      "development"
+    ],
+    "success_rate": 0.6358733116600276,
+    "is_online": true,
+    "registered_at": "2026-03-15T11:50:05.391289"
+  },
+  "3": {
+    "agent_id": 3,
+    "name": "Agent_03",
+    "task_types": [
+      "testing",
+      "review"
+    ],
+    "success_rate": 0.6104290268033246,
+    "is_online": true,
+    "registered_at": "2026-03-15T11:50:05.391300"
+  },
+  "4": {
+    "agent_id": 4,
+    "name": "Agent_04",
+    "task_types": [
+      "planning",
+      "development"
+    ],
+    "success_rate": 0.810706555167493,
+    "is_online": true,
+    "registered_at": "2026-03-15T11:50:05.391311"
+  }
+}

@@ -13,7 +13,11 @@
 import asyncio
 import logging
 import sys
+import os
 from datetime import datetime
+
+# 添加项目路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 # 配置日志
 logging.basicConfig(
@@ -22,8 +26,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-from local_rag_database import LocalRAGDatabase
-from rag_workflow import RAGWorkflow
+from mas.rag.local_rag_database import LocalRAGDatabase
+from mas.rag.rag_workflow import RAGWorkflow
 
 
 async def demo():
