@@ -1,0 +1,301 @@
+# ════════════════════════════════════════════════════════════════════════════
+# Python
+# ════════════════════════════════════════════════════════════════════════════
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ════════════════════════════════════════════════════════════════════════════
+# IDE & Editor
+# ════════════════════════════════════════════════════════════════════════════
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt][a-z]
+Session.vim
+.netrwhist
+
+# Emacs
+*~
+\#*#
+.\#*
+
+# Atom
+.atom/
+
+# ════════════════════════════════════════════════════════════════════════════
+# Operating System
+# ════════════════════════════════════════════════════════════════════════════
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Windows
+Thumbs.db
+ehthumbs.db
+*.lnk
+$RECYCLE.BIN/
+
+# Linux
+.directory
+
+# ════════════════════════════════════════════════════════════════════════════
+# Project Specific
+# ════════════════════════════════════════════════════════════════════════════
+
+# Milvus & Docker
+volumes/
+milvus_data/
+.minio/
+
+# RAG Storage
+rag_storage/
+rag_storage_milvus/
+rag_storage_step*/
+
+# Results & Logs
+results/
+logs/
+*.log
+*.out
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.bak
+*~
+
+# Data files (keep examples, ignore generated)
+data/generated/
+data/cache/
+
+# Experiment outputs
+experiments/output/
+results/
+*.pkl
+*.pickle
+*.npy
+*.csv
+
+# Model files (if any)
+models/
+checkpoints/
+weights/
+
+# ════════════════════════════════════════════════════════════════════════════
+# Environment & Configuration
+# ════════════════════════════════════════════════════════════════════════════
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.example (if generated)
+
+# Configuration
+config.local.py
+settings.local.py
+
+# ════════════════════════════════════════════════════════════════════════════
+# Dependencies
+# ════════════════════════════════════════════════════════════════════════════
+
+# pip
+requirements-dev.txt (if generated locally)
+
+# conda
+conda-env.yml (if generated locally)
+
+# ════════════════════════════════════════════════════════════════════════════
+# Documentation
+# ════════════════════════════════════════════════════════════════════════════
+
+# Sphinx
+docs/_build/
+docs/.buildinfo
+
+# Generated docs
+site/
+
+# ════════════════════════════════════════════════════════════════════════════
+# Version Control & Git
+# ════════════════════════════════════════════════════════════════════════════
+
+# Git
+.git/
+.gitignore_local
+
+# Patches
+*.patch
+*.diff
+
+# ════════════════════════════════════════════════════════════════════════════
+# System & Build Files
+# ════════════════════════════════════════════════════════════════════════════
+
+# Build
+build/
+dist/
+*.o
+*.a
+*.dylib
+
+# Misc
+.DS_Store
+Thumbs.db
+*.swp
+.vagrant
+.vagrant.d/
+
+# ════════════════════════════════════════════════════════════════════════════
+# Keep Important Files
+# ════════════════════════════════════════════════════════════════════════════
+
+# Do NOT ignore these important files
+!.gitkeep
+!.github/
+!mas/
+!requirements.txt
+!docker-compose-milvus.yml
+!QUICK_START.md
+!README.md
