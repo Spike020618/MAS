@@ -64,7 +64,7 @@ class StackelbergConsensusGame:
     ):
         self.leader_port = leader_port
         self.num_agents = num_agents
-        self.lambda_c = lambda_c
+        self.lambda_c = lambda_c  # 共识权重
         self.eta = eta
         self.gamma = gamma
         self.epsilon = epsilon
@@ -82,6 +82,9 @@ class StackelbergConsensusGame:
         # 激励参数 θ_i（初始化在 [0.5, 1.0]）
         rng = np.random.default_rng(seed=0)
         self.leader_params = rng.uniform(0.5, 1.0, num_agents)
+
+        # 序贯决策状态
+        self.decision_stage = "leader_commitment"  # leader_commitment -> follower_response -> leader_update
 
     # ══════════════════════════════════════════════════
     # 公式1：共识能量
@@ -243,6 +246,227 @@ class StackelbergConsensusGame:
 
         self.leader_params = np.clip(new, 0.0, 1.0)
         return self.leader_params.copy()
+
+    # ══════════════════════════════════════════════════
+    # 真正的序贯Stackelberg决策
+    # ══════════════════════════════════════════════════
+
+    def leader_commitment(self, task_context: Dict = None) -> np.ndarray:
+        """
+        第一阶段：Leader承诺激励参数
+        Leader观察任务特征，宣布θ_i策略
+        """
+        if task_context is None:
+            task_context = {}
+
+        # 基于任务特征调整参数
+        complexity = task_context.get('complexity', 0.5)
+        urgency = task_context.get('urgency', 0.5)
+
+        # 复杂任务鼓励创新（高θ），紧急任务鼓励保守（低θ）
+        base_adjustment = (1 - complexity) * 0.3 + (1 - urgency) * 0.2
+
+        # 应用调整
+        adjusted_params = self.leader_params + base_adjustment
+
+        # 确保在合理范围内
+        self.leader_params = np.clip(adjusted_params, 0.1, 0.9)
+
+        self.decision_stage = "follower_response"
+
+        if self.verbose:
+            print(f"📢 Leader承诺参数: {self.leader_params}")
+
+        return self.leader_params.copy()
+
+    def follower_best_response(self, bids: List[AgentBid], task_context: Dict = None) -> Dict[str, Any]:
+        """
+        第二阶段：Follower最优响应
+        每个Follower观察Leader的θ_i，计算最优策略
+        """
+        if self.decision_stage != "follower_response":
+            raise ValueError("必须先完成leader_commitment阶段")
+
+        responses = {}
+        total_allocation = {}
+
+        for i, bid in enumerate(bids):
+            theta_i = self.leader_params[i]
+
+            # Follower的最优响应：根据θ_i调整行为
+            # θ_i影响质量承诺和成本策略
+            adjusted_quality = min(1.0, bid.quality_promise * theta_i)
+            adjusted_cost = bid.cost_per_task * (2.0 - theta_i)  # 高θ降低成本期望
+
+            # 计算最优容量分配
+            optimal_capacity = min(bid.capacity, 1.0)  # 假设总任务量为1
+
+            responses[bid.agent_id] = {
+                "adjusted_quality": adjusted_quality,
+                "adjusted_cost": adjusted_cost,
+                "optimal_capacity": optimal_capacity,
+                "theta_influence": theta_i
+            }
+
+            total_allocation[bid.agent_id] = optimal_capacity
+
+        # 归一化分配（确保总和为1）
+        total_capacity = sum(total_allocation.values())
+        if total_capacity > 0:
+            for agent_id in total_allocation:
+                total_allocation[agent_id] /= total_capacity
+
+        self.decision_stage = "leader_update"
+
+        result = {
+            "responses": responses,
+            "allocation": total_allocation,
+            "total_quality": sum(r["adjusted_quality"] * r["optimal_capacity"] for r in responses.values()),
+            "total_cost": sum(r["adjusted_cost"] * r["optimal_capacity"] for r in responses.values())
+        }
+
+        if self.verbose:
+            print(f"🔄 Followers响应完成，总质量: {result['total_quality']:.3f}")
+
+        return result
+
+    def leader_optimization_update(self, follower_responses: Dict, consensus_feedback: Dict = None) -> np.ndarray:
+        """
+        第三阶段：Leader基于Follower响应优化参数
+        这是真正的Stackelberg均衡求解
+        """
+        if self.decision_stage != "leader_update":
+            raise ValueError("必须先完成follower_response阶段")
+
+        # 计算当前配置的Leader效用
+        current_utility = follower_responses.get("total_quality", 0) * 100 - follower_responses.get("total_cost", 0)
+
+        # 减去共识能量惩罚（真正的Stackelberg目标）
+        consensus_energy = self.consensus_energy(self.leader_params)
+        leader_utility = current_utility - self.lambda_c * consensus_energy
+
+        # 基于梯度更新参数（序贯学习）
+        utility_gradient = self._compute_leader_utility_gradient(follower_responses)
+
+        # 应用共识约束
+        consensus_gradient = np.array([self.consensus_gradient(i, self.leader_params) for i in range(self.num_agents)])
+
+        # Stackelberg更新规则
+        delta_theta = self.eta * utility_gradient - self.gamma * consensus_gradient
+
+        # 更新参数
+        new_params = self.leader_params + delta_theta
+        self.leader_params = np.clip(new_params, 0.1, 0.9)
+
+        # 记录历史
+        self.history.append({
+            "stage": "leader_update",
+            "params": self.leader_params.copy(),
+            "utility": leader_utility,
+            "consensus_energy": consensus_energy,
+            "gradient": delta_theta
+        })
+
+        self.decision_stage = "leader_commitment"  # 为下一轮重置
+
+        if self.verbose:
+            print(f"🔧 Leader更新参数: {self.leader_params}, 效用: {leader_utility:.2f}")
+
+        return self.leader_params.copy()
+
+    def _compute_leader_utility_gradient(self, follower_responses: Dict) -> np.ndarray:
+        """
+        计算Leader效用关于θ的梯度
+        使用数值微分，因为效用函数复杂
+        """
+        gradients = np.zeros(self.num_agents)
+        eps = self.epsilon
+
+        for i in range(self.num_agents):
+            # 前向差分
+            theta_plus = self.leader_params.copy()
+            theta_minus = self.leader_params.copy()
+
+            theta_plus[i] = min(0.9, theta_plus[i] + eps)
+            theta_minus[i] = max(0.1, theta_minus[i] - eps)
+
+            # 计算效用差分
+            u_plus = self._evaluate_config_utility(theta_plus, follower_responses)
+            u_minus = self._evaluate_config_utility(theta_minus, follower_responses)
+
+            gradients[i] = (u_plus - u_minus) / (2 * eps)
+
+        return gradients
+
+    def _evaluate_config_utility(self, theta_config: np.ndarray, follower_responses: Dict) -> float:
+        """
+        评估给定θ配置下的Leader效用
+        这是一个简化的评估函数
+        """
+        # 模拟Follower在新θ下的响应
+        simulated_quality = 0
+        simulated_cost = 0
+
+        for i, response in enumerate(follower_responses.get("responses", {}).values()):
+            if i < len(theta_config):
+                theta_i = theta_config[i]
+                # 质量随θ增加而增加，成本随θ增加而减少
+                quality_factor = min(1.0, response.get("adjusted_quality", 0.5) * theta_i)
+                cost_factor = response.get("adjusted_cost", 10) * (2.0 - theta_i)
+
+                simulated_quality += quality_factor * response.get("optimal_capacity", 0.3)
+                simulated_cost += cost_factor * response.get("optimal_capacity", 0.3)
+
+        utility = simulated_quality * 100 - simulated_cost
+
+        # 减去共识能量惩罚
+        energy = self.consensus_energy(theta_config)
+        return utility - self.lambda_c * energy
+
+    def run_sequential_stackelberg(self, bids: List[AgentBid], task_context: Dict = None, max_iterations: int = 5) -> Dict:
+        """
+        运行完整的序贯Stackelberg过程
+        返回最终的均衡结果
+        """
+        results = []
+
+        for iteration in range(max_iterations):
+            if self.verbose:
+                print(f"\n=== 序贯Stackelberg 第 {iteration + 1} 轮 ===")
+
+            # 阶段1: Leader承诺
+            leader_params = self.leader_commitment(task_context)
+
+            # 阶段2: Follower响应
+            follower_responses = self.follower_best_response(bids, task_context)
+
+            # 阶段3: Leader更新
+            updated_params = self.leader_optimization_update(follower_responses)
+
+            # 记录结果
+            iteration_result = {
+                "iteration": iteration + 1,
+                "leader_params": leader_params,
+                "follower_responses": follower_responses,
+                "updated_params": updated_params,
+                "leader_utility": follower_responses.get("total_quality", 0) * 100 - follower_responses.get("total_cost", 0),
+                "consensus_energy": self.consensus_energy(updated_params)
+            }
+            results.append(iteration_result)
+
+            # 收敛检查
+            if iteration > 0:
+                param_change = np.linalg.norm(updated_params - results[-2]["leader_params"])
+                if param_change < 1e-4:
+                    if self.verbose:
+                        print(f"✅ 收敛于第 {iteration + 1} 轮")
+                    break
+
+        return {
+            "final_params": self.leader_params.copy(),
+            "iterations": results,
+            "converged": len(results) < max_iterations or np.linalg.norm(results[-1]["updated_params"] - results[-2]["leader_params"]) < 1e-4
+        }
 
     # ══════════════════════════════════════════════════
     # 主入口：多轮迭代
