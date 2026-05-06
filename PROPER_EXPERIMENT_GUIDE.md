@@ -30,6 +30,11 @@ cd /Users/spike/code/MAS
 python experiments/proper_experiment_runner.py
 ```
 
+> 注意：`test_debate_experiment.py` 只是一个合成验证脚本，用于检查Stackelberg流程是否通顺。
+> 它不使用公开benchmark数据，因此结果只能作为代码功能检查，不应当作为最终实验结论。
+
+### 方式2：Python脚本调用
+
 这会自动：
 1. ✓ 使用真实的 ConsensusEngine
 2. ✓ 生成 21 个测试任务
