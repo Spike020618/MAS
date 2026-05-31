@@ -1,513 +1,580 @@
 \documentclass[12pt,a4paper,UTF8]{ctexart}
-\usepackage[margin=1.25in]{geometry}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{mathtools}
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
-\usepackage{graphicx}
-\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{algorithm,algpseudocode}
+\usepackage{graphicx,subcaption,float}
+\usepackage{booktabs,multirow}
 \usepackage{hyperref}
 \usepackage{natbib}
-\usepackage{tikz}
-\usepackage{subcaption}
-\usepackage{float}
+\usepackage{xcolor}
 
-% 代码样式
-\lstset{
-    language=Python,
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{blue},
-    commentstyle=\color{gray},
-    stringstyle=\color{red},
-    breaklines=true,
-    breakatwhitespace=true,
-    tabsize=4,
-    frame=single,
-    captionpos=b
-}
+\newtheorem{definition}{定义}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\newtheorem{proposition}{命题}[section]
+\newtheorem{corollary}{推论}[section]
 
 \title{\textbf{博弈驱动的去中心化语义共识机制研究}}
-\author{马天成}
-\date{\today}
-
-\renewcommand{\abstractname}{摘要}
-\renewcommand{\contentsname}{目录}
-\renewcommand{\refname}{参考文献}
-\renewcommand{\thesection}{\arabic{section}}
-\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+\author{马天成 \\ 指导教师：XXX教授}
+\date{}
 
 \begin{document}
-
 \maketitle
 
 \begin{abstract}
+多智能体系统中的语义共识问题——即多个自主推理体如何就同一问题形成可靠的集体判断——是当前大语言模型协作领域的核心挑战。现有方法或依赖均等投票（ChatEval）、或陷入从众失效（无引导辩论）、或依赖中心化评估者（AgentVerse），均无法在信息不对称与对抗性场景下保证共识质量。
 
-多智能体系统中的语义共识是当前人工智能领域的重要课题。现有多智能体协作方法往往依赖中心化协调器或采用固定的权重配置，难以应对大规模、异构、去中心化的智能体网络。本文提出一种融合演化博弈论、自适应权重学习与验证器反馈的多智能体语义共识框架。
+本文提出 AEIC-Stackelberg 框架：以四层语义分解协议（Assumption-Evidence-Inference-Conclusion）实现推理链的结构化表示与跨层一致性验证，以 Stackelberg 博弈驱动激励相容的去中心化收敛。核心机制包括：(1) AEIC 跨层一致性检测——通过推理层（I）与结论层（C）的方向性匹配识别被操纵或从众的智能体；(2) 基于 softmax-logits 的自适应权重学习——使证据层在共识评估中获得数据驱动的最优贡献；(3) Stackelberg 信任加权投票——将跨层信任分数与博弈均衡参数耦合形成最终决策权重。
 
-核心贡献包括：
-\begin{enumerate}
-    \item 基于 logits-softmax 参数化的自适应 SIM 公式，能够根据不同任务特性动态调整 AEIC（假设-证据-推理-结论）四层权重，摆脱固定权重的局限；
-    \item 在演化博弈框架下的收敛性理论分析，利用 Robbins-Monro 定理证明系统中的权重序列随机收敛，并给出收敛速度的阶估计；
-    \item 设计了两阶段对比算法（固定权重基线 vs 自适应权重学习），在语义共识场景中验证了自适应方案相比基线提升 25-35\% 的语义一致性；
-    \item 将自适应权重学习扩展应用于多智能体任务分配 RAG 系统，设计了两套任务分配算法，预期完成度提升 15-20\%。
-\end{enumerate}
+在 StrategyQA 数据集上的实验表明，本方法在对抗性场景（多数智能体被误导）下准确率达 48.8\%，分别超出 ChatEval（0\%）、AgentVerse（0\%）和无引导辩论（23.3\%），且在标准场景下保持 100\% 准确率。所有改进均通过配对 $t$ 检验验证统计显著性（$p < 0.05$）。
 
-通过大规模仿真实验验证了所提框架的有效性。实验结果表明，在验证器反馈与动态信誉机制的约束下，系统能有效收敛至高质量推理策略，同时在去中心化条件下保持可扩展性。
-
-\textbf{关键词}：多智能体系统，语义共识，自适应权重，演化博弈论，验证机制
-
+\noindent\textbf{关键词：} 多智能体共识；语义分层；Stackelberg 博弈；去中心化协作；对抗鲁棒性
 \end{abstract}
 
+\tableofcontents
+\newpage
+
+%=============================================================
 \section{引言}
+%=============================================================
 
-\subsection{研究背景与动机}
+\subsection{问题背景}
 
-大规模预训练语言模型（LLM）的快速发展使得基于 LLM 的多智能体协作框架成为推动复杂任务自动化的关键基础设施。在现实多智能体系统中，多个自主智能体需要对同一问题形成一致的语义理解。然而，当前的多智能体协作方法面临三个根本性的挑战：
+大语言模型（LLM）驱动的多智能体系统已成为解决复杂推理任务的主流范式。当多个智能体就同一问题独立推理后，系统需要一种\textbf{共识机制}将 $N$ 个可能相互矛盾的推理结果整合为单一可靠的集体判断。
 
+这一问题的难度来源于三个现实约束：
 \begin{enumerate}
-    \item \textbf{缺乏语义层面的共识机制}：传统分布式一致性算法（如 Raft、PBFT）假设状态是离散的、确定的，而自然语言推理链是高维、连续、模糊的符号对象，两者不能直接对应。现有工作通常只比较表面符号相似度，无法有效处理语义等价但表述不同的推理结果。
-
-    \item \textbf{依赖中心化协调}：大多数多智能体 LLM 框架仍依赖单一的 Orchestrator 进行任务拆解与结果整合，这种中心化架构难以应对大规模、异构的分布式智能体网络，且存在单点故障风险。
-
-    \item \textbf{缺乏长期行为约束}：在开放系统中，智能体可能出于局部最优或能力限制采取投机行为（如提交低质量推理），而现有机制缺乏激励兼容的约束机制来确保长期诚实合作。
+    \item \textbf{语义模糊性}：自然语言推理链是高维连续对象，"语义一致但表述不同"与"表述相似但语义矛盾"的区分需要深层理解；
+    \item \textbf{去中心化}：在隐私保护或大规模部署场景下，不存在全局可信的中央仲裁者；
+    \item \textbf{对抗性}：部分智能体可能产出低质量推理（模型幻觉）或受多数意见影响而放弃正确答案（从众效应）。
 \end{enumerate}
 
-\subsection{核心研究问题}
+\subsection{现有方法的局限}
 
-本文的核心研究问题是：\textit{在缺乏强中心协调的前提下，如何构建一种由语义一致性度量、验证器反馈与演化博弈动力学共同驱动的去中心化语义共识机制，使自然语言推理链在高维语义空间内实现稳定、可信且可计算的收敛？}
+现有多智能体共识方法可归纳为三类范式，各有根本性缺陷：
 
-具体而言，我们需要回答以下子问题：
+\textbf{均等投票}（以 ChatEval~\cite{chan2023chateval} 为代表）：所有智能体权重相同，通过多数票决定。当多数智能体错误时，正确的少数意见被无条件丢弃。
 
-\begin{enumerate}
-    \item 如何将语义一致性从定性描述转化为可计算的、可微的定量指标？
-    \item 在固定权重方案（权重恒定 $w=[0.2, 0.3, 0.2, 0.3]$）基础上，能否设计出自适应权重学习机制，使系统根据任务特性自动调整各层权重？
-    \item 自适应权重序列是否收敛？在什么条件下收敛？收敛速度如何？
-    \item 自适应方案相比固定权重方案在实际应用中能带来多大的性能提升？
-\end{enumerate}
+\textbf{无引导辩论}（以 Bertalani\v{c} \& Fortuna~\cite{bertalanic2026cost} 的实证研究为代表）：同质智能体进行多轮讨论后投票。该研究揭示三种失败模式——从众一致性（sycophantic conformity，73\% 采纳多数答案）、上下文脆弱性（正确推理被同伴观点干扰）、共识坍缩（正确答案在投票中被丢弃，oracle gap 达 32\%）。
 
-\subsection{主要贡献}
+\textbf{中心化评估}（以 AgentVerse~\cite{chen2023agentverse} 为代表）：中央评估者根据质量评分选择最佳智能体的结论。单点依赖使系统在评估者被误导时完全失效。
 
-本文的主要贡献总结如下：
+\subsection{本文贡献}
+
+本文提出 AEIC-Stackelberg 框架，核心贡献如下：
 
 \begin{enumerate}
-    \item \textbf{自适应权重学习框架}：设计了基于 logits-softmax 参数化的自适应 SIM 公式，打破了传统固定权重的局限，使系统能够根据任务反馈动态调整 AEIC 四层的加权比例。
+    \item \textbf{AEIC 语义分解协议}：将推理链解耦为四个正交语义层（A-E-I-C），支持精确的冲突归因和跨层一致性验证（第~\ref{sec:aeic}~节）；
 
-    \item \textbf{收敛性理论分析}：在 Robbins-Monro 随机逼近框架下，给出了权重序列的收敛性定理和收敛速度估计，为系统提供了理论保证。
+    \item \textbf{跨层信任评估机制}：通过推理层与结论层的方向性匹配检测被操纵的智能体，结合证据共识度和置信度校准形成复合信任分数（第~\ref{sec:trust}~节）；
 
-    \item \textbf{对比算法设计与实验}：设计并实现了两套对比算法（固定权重 Baseline vs 自适应权重 Proposed），在语义共识场景的大规模仿真实验中验证了自适应方案的优越性（提升 25-35\%）。
+    \item \textbf{Stackelberg 博弈收敛}：设计 Leader-Follower 激励结构，证明共识能量的指数衰减和参数序列的收敛性（第~\ref{sec:stackelberg}~节）；
 
-    \item \textbf{任务分配应用}：将自适应权重学习扩展到多智能体任务分配 RAG 系统，提出了两套任务分配算法，预期完成度提升 15-20\%。
+    \item \textbf{自适应权重学习}：基于 softmax-logits 参数化实现各语义层贡献权重的数据驱动优化（第~\ref{sec:adaptive}~节）；
+
+    \item \textbf{去中心化网络协议}：实现基于 WebSocket 的 P2P 共识网络，验证分布式收敛性（第~\ref{sec:network}~节）。
 \end{enumerate}
 
+%=============================================================
 \section{相关工作}
+%=============================================================
 
-\subsection{多智能体协作与通信拓扑}
+\subsection{多智能体辩论}
 
-多智能体协作是分布式人工智能的核心研究领域。Talebirad 等\cite{talebirad2023multi}从角色、属性配置和行为能力三个维度刻画了 LLM Agent 的特性，表明通过"分工—协作—专业化"能显著提升复杂任务处理的效率。Tran 等\cite{tran2025multi}进一步构建了多智能体协作机制的系统化分类框架，涵盖参与者类型、协作关系、组织结构、决策策略和协调协议等多个维度。
+ChatEval~\cite{chan2023chateval} 通过多智能体辩论提升文本质量评估的可靠性，采用均等权重多数投票。Du 等~\cite{du2023improving} 提出让 LLM 相互辩论以提升事实准确性。这些方法的共同局限是缺乏结构化推理分解——智能体在整体文本层面讨论，无法定位具体的分歧来源。
 
-近年来，多智能体辩论（MAD）框架展示出显著潜力。ChatEval\cite{chan2023chateval}通过多智能体辩论提升生成质量评估的可靠性，而稀疏通信拓扑的 MAD 框架证明可以在降低通信成本的同时保持推理性能。然而，大规模评估表明许多 MAD 方案并不能在稳定性和性价比上长期优于单 Agent 基线，这提示我们需要更加深入的理论分析和机制设计。
+\subsection{多智能体辩论的失败模式}
 
-\subsection{推理增强与链式思考}
+Bertalani\v{c} \& Fortuna~\cite{bertalanic2026cost} 的系统实证研究（10 个同质智能体，3 轮辩论）揭示了无引导辩论的根本缺陷：在 7-8B 参数规模的模型上，多智能体辩论的表现\textit{始终不如}独立自修正。其识别的三种失败模式（从众一致性、上下文脆弱性、共识坍缩）为本文的设计提供了明确的对标：AEIC 分层直接对抗"无结构化的从众"，Stackelberg 激励直接对抗"缺乏保持独立意见的动机"。
 
-Chain-of-Thought（CoT）已成为改善 LLM 推理能力的标准技术。Alignment Fine-Tuning\cite{wang2023making}通过对多条候选推理链进行对齐训练，显著缓解了"模型给错误推理链更高评分"的问题。Graph-of-Thought\cite{yao2023beyond}代表了从链到图的结构化方向，使推理过程能够更好地表达多路径和非线性关系。
+\subsection{中心化多智能体编排}
 
-这些工作共同表明，推理增强的趋势是从简单 CoT 提示逐步走向"训练范式 + 结构化表示 + 多模态扩展"的综合方案。
+AgentVerse~\cite{chen2023agentverse} 提出四阶段框架（专家招募→协作决策→行动执行→评估），在 GPT-4 上取得优于单体的效果，但在 GPT-3.5 上 Group 表现有时\textit{劣于} Solo——错误反馈反而干扰正确推理。这与本文的发现一致：中心化评估者在对抗场景下容易被过度自信的错误智能体误导。
 
-\subsection{语义一致性与验证机制}
+\subsection{博弈论与共识}
 
-语义一致性度量\cite{raj2023semantic}用于刻画模型在语义等价但表面形式不同的输入下输出结果的一致性，证明语义层度量较传统词面一致性更能反映模型的真实稳定性。在推理验证方向，将 CoT 转化为可执行/可验证的"自然语言 + 程序式"表示\cite{ling2023deductive}、提出 Chain-of-Verification 流程\cite{dhuliawala2023chain}，标志着"为推理链本身设计验证器"的研究开始形成系统化路线。
+演化博弈论~\cite{han2022emergent}为多智能体行为建模提供了理论框架。语义知识共识~\cite{gu2024semantic}通过改进命名游戏使异构智能体达成语义一致。本文将 Stackelberg 博弈与语义共识耦合，通过激励设计驱动收敛而非依赖演化选择压力。
 
-\subsection{演化博弈论与多智能体系统}
+%=============================================================
+\section{AEIC 语义分解协议}\label{sec:aeic}
+%=============================================================
 
-演化博弈论为理解多智能体系统中的群体行为与长期合作稳定性提供了重要理论工具\cite{han2022emergent}。复制动态方程、最佳响应动态等方法能够在不依赖中央协调的条件下，通过个体利益最大化驱动全局策略的收敛。
+\subsection{协议定义}
 
-基于改进命名游戏的多智能体语义知识共识机制\cite{gu2024semantic}使异构知识条件下的智能体能够在不共享完整知识库的前提下逐步达成语义一致。语义驱动的 leader-following 一致性框架\cite{yang2024semantic}在网络时延和语义压缩误差条件下实现指数收敛。
-
-\subsection{现存空白与本文定位}
-
-现有研究在以下方面存在明显空白：
-
-\begin{enumerate}
-    \item 多智能体 LLM 框架多依赖中心化 Orchestrator，即便采用分布式通信也通常默认存在某种"中央评判者"。
-
-    \item 关于"多智能体之间如何在语义空间达成可计算的一致性"的工作不足，特别是缺乏对权重动态调整的理论分析。
-
-    \item 现有语义共识与演化博弈研究多在抽象 MAS 或控制系统层面展开，缺乏与 LLM 推理链、验证器反馈的深度耦合，以及在实际应用系统中的验证。
-\end{enumerate}
-
-本文的定位是：将自适应权重学习与演化博弈论相结合，在 LLM 驱动的多智能体系统中实现去中心化的语义共识，并通过理论分析和实验验证其有效性。
-
-\section{系统模型与理论基础}
-
-\subsection{AEIC 四层推理链表示}
-
-在多智能体协作中，智能体之间交换的核心对象是推理链（Reasoning Trace）。我们采用 AEIC（Assumptions-Evidence-Inference-Conclusion）四层结构来表示推理链：
-
+\begin{definition}[AEIC 语义通信协议]
+将智能体 $i$ 的推理链 $R_i$ 解耦为四个语义维度的结构化元组：
 \begin{equation}
-R = \langle A, E, I, C \rangle
+R_i = \langle A_i,\; E_i,\; I_i,\; C_i \rangle
 \end{equation}
-
 其中：
 \begin{itemize}
-    \item \textbf{A (Assumptions)}：做出决策所基于的前提假设
-    \item \textbf{E (Evidence)}：支撑决策的具体证据
-    \item \textbf{I (Inference)}：从证据推导到结论的推理过程
-    \item \textbf{C (Conclusion)}：最终的决策或结论
+    \item $A_i$（Assumption）：推理的前提假设与问题框架；
+    \item $E_i$（Evidence）：支撑推理的具体证据集合，$E_i = \{e_i^1, e_i^2, \ldots, e_i^{m_i}\}$；
+    \item $I_i$（Inference）：从证据到结论的推理过程描述；
+    \item $C_i$（Conclusion）：最终判断或决策。
 \end{itemize}
+\end{definition}
 
-\subsection{语义相似度计算}
+\subsection{分层相似度}
 
-给定两个智能体 $i$ 和 $j$ 的推理链 $R_i$ 和 $R_j$，我们定义各层的相似度为：
-
+给定两个智能体 $i, j$ 的推理记录，定义各层相似度：
 \begin{equation}
-\text{sim}_X(R_i, R_j) = \text{SIM}(\text{component}_X(R_i), \text{component}_X(R_j)), \quad X \in \{A,E,I,C\}
+\text{sim}_X(R_i, R_j) = \text{CosSim}\bigl(\phi(X_i),\; \phi(X_j)\bigr), \quad X \in \{A, E, I, C\}
+\end{equation}
+其中 $\phi(\cdot)$ 为 Sentence-Transformer 编码函数。对证据层，附加引用重叠度：
+\begin{equation}
+\text{sim}_E(R_i, R_j) = 0.6 \cdot \text{CosSim}(\phi(E_i), \phi(E_j)) + 0.4 \cdot \frac{|E_i \cap E_j|}{|E_i \cup E_j|}
 \end{equation}
 
-其中 $\text{SIM}$ 可以是多种相似度算法之一（BM25、Sentence-BERT 等）。特别地，对于证据层 E，我们计算的不仅是内容相似度，还包括证据引用的重叠程度。
+加权总相似度为：
+\begin{equation}\label{eq:sim_aeic}
+\text{SIM}_{\text{AEIC}}(R_i, R_j) = \sum_{X \in \{A,E,I,C\}} w_X \cdot \text{sim}_X(R_i, R_j)
+\end{equation}
+其中权重 $\mathbf{w} = [w_A, w_E, w_I, w_C]^\top$ 满足 $\sum_X w_X = 1$，$w_X > 0$。
 
-\section{自适应权重学习机制}
+\subsection{冲突归因}
 
-\subsection{固定权重方案（Baseline）}
-
-传统的 AEIC 四层加权相似度为：
-
+AEIC 的核心价值在于精确定位分歧来源：
 \begin{equation}
-\text{SIM}_{\text{fixed}}(R_i, R_j) = w_A^{\text{fixed}} \cdot \text{sim}_A + w_E^{\text{fixed}} \cdot \text{sim}_E + w_I^{\text{fixed}} \cdot \text{sim}_I + w_C^{\text{fixed}} \cdot \text{sim}_C
+\text{ConflictAttr}(i, j) = \arg\min_{X \in \{A,E,I,C\}} \text{sim}_X(R_i, R_j)
 \end{equation}
 
-其中权重为 $w_A^{\text{fixed}} = 0.2, w_E^{\text{fixed}} = 0.3, w_I^{\text{fixed}} = 0.2, w_C^{\text{fixed}} = 0.3$，满足 $\sum w_X^{\text{fixed}} = 1$。
+这使得共识过程可实施"靶向纠偏"——仅针对最薄弱的语义层进行讨论，而非全量打回。
 
-这个配置的局限性在于：所有任务都使用相同的权重，无法根据任务特性进行调整。例如，在医学诊断场景中，证据（E）和推理（I）的权重应该较高；而在法律案件判决中，结论（C）和推理（I）的权重应该更重。
+\subsection{AEIC 相比端到端的优势}
 
-\subsection{自适应权重学习方案（Proposed）}
-
-我们提出基于 logits-softmax 的参数化权重方案。定义可学习参数向量 $v = [v_A, v_E, v_I, v_C]^T \in \mathbb{R}^4$，权重通过 softmax 函数计算：
-
+端到端（E2E）方法将整个推理链拼接后计算单一相似度标量：
 \begin{equation}
-w_X = \frac{e^{v_X}}{\sum_{Y \in \{A,E,I,C\}} e^{v_Y}}, \quad X \in \{A,E,I,C\}
+\text{SIM}_{\text{E2E}}(R_i, R_j) = \text{CosSim}\bigl(\phi(\text{concat}(R_i)),\; \phi(\text{concat}(R_j))\bigr)
 \end{equation}
 
-这样定义的权重自动满足非负性和归一化约束：
+E2E 的缺陷：(1) 无法定位冲突源；(2) 长文本中局部差异被稀释；(3) 无法实施差异化激励。实验~\ref{sec:exp1} 定量验证了 AEIC 在冲突定位上的优势。
 
-\begin{equation}
-w_A + w_E + w_I + w_C = 1, \quad w_X \geq 0, \quad \forall X
+%=============================================================
+\section{自适应权重学习}\label{sec:adaptive}
+%=============================================================
+
+\subsection{Softmax-Logits 参数化}
+
+定义可学习参数 $\mathbf{v} = [v_A, v_E, v_I, v_C]^\top \in \mathbb{R}^4$，通过 softmax 映射为权重：
+\begin{equation}\label{eq:softmax}
+w_X = \frac{\exp(v_X)}{\sum_{Y \in \{A,E,I,C\}} \exp(v_Y)}
 \end{equation}
 
-修改后的 SIM 公式为：
+该参数化自动满足非负性和归一化约束，且在梯度优化中无需投影步。
 
-\begin{equation}
-\text{SIM}_{\text{adaptive}}(R_i, R_j) = \sum_{X \in \{A,E,I,C\}} w_X \cdot \text{sim}_X
-\end{equation}
+\subsection{效用驱动的权重更新}
 
-\subsection{权重更新规则}
-
-定义游戏中的效用函数为：
-
+定义单轮效用：
 \begin{equation}
 U(t) = \overline{\text{sim}}(t) \cdot R - C
 \end{equation}
+其中 $\overline{\text{sim}}(t) = \frac{1}{\binom{N}{2}} \sum_{i<j} \text{SIM}_{\text{AEIC}}(R_i, R_j)$ 为全网平均相似度，$R$ 为奖励系数，$C$ 为固定成本。
 
-其中 $\overline{\text{sim}}(t)$ 是第 $t$ 轮中所有节点对的平均相似度，$R$ 是奖励系数，$C$ 是固定成本。
-
-权重的 logits 参数采用梯度上升更新：
-
-\begin{equation}
-v_X^{(t+1)} = v_X^{(t)} + \eta \cdot g_X^{(t)}
+logits 更新规则：
+\begin{equation}\label{eq:weight_update}
+v_X^{(t+1)} = v_X^{(t)} + \eta \cdot \frac{d_X^{(t)}}{\sum_Y d_Y^{(t)}} \cdot \max\!\left(\frac{U(t)}{R},\; 0.01\right)
 \end{equation}
+其中 $d_X^{(t)}$ 为第 $X$ 层的平均相似度（维度贡献度），$\eta$ 为学习率。
 
-其中梯度定义为：
+\textbf{更新直觉}：高相似度的维度获得更大的权重提升（自强化），低相似度的维度被抑制——系统自动学习"哪些层对共识贡献最大"。
 
+\subsection{收敛性分析}
+
+\begin{theorem}[权重序列收敛]\label{thm:convergence}
+设学习率 $\eta(t)$ 满足 Robbins-Monro 条件：
 \begin{equation}
-g_X^{(t)} = \max\left(\frac{U(t)}{R}, 0.01\right) \cdot w_X^{(t)}
+\sum_{t=0}^\infty \eta(t) = \infty, \qquad \sum_{t=0}^\infty \eta^2(t) < \infty
 \end{equation}
-
-系数 $\eta \in (0, 0.1]$ 是学习率，$\max(\cdot, 0.01)$ 确保梯度信号的非零性，避免权重学习停滞。
-
-\textbf{直观理解}：当平均相似度（从而效用）较高时，强化当前权重配置；当效用较低时，减弱偏离初始权重的方向。权重大的层获得更强的学习信号，形成自强化反馈环。
-
-\section{收敛性理论分析}
-
-\subsection{收敛性定理}
-
-\begin{theorem}[权重序列的随机收敛性]
-设权重序列 $\{w^{(t)}\}_{t=0}^{\infty}$ 按上述更新规则（式 14）生成，若满足以下条件：
-\begin{enumerate}
-    \item 验证器反馈准确率 $> 70\%$
-    \item 学习率 $\eta(t)$ 满足 Robbins-Monro 条件：$\sum_{t=0}^{\infty} \eta(t) = \infty$ 且 $\sum_{t=0}^{\infty} \eta^2(t) < \infty$
-    \item 效用函数 $U(t)$ 的变差有界
-\end{enumerate}
-则权重序列 $\{w^{(t)}\}$ 以概率 1 收敛到某个稳定分布 $w^*$。
+且效用 $U(t)$ 的条件方差有界，则权重序列 $\{w^{(t)}\}$ 几乎处处收敛至稳定点 $w^*$。
 \end{theorem}
 
-\textbf{证明思路（概述）}：
-
-定义 Lyapunov 函数：
+\begin{proof}[证明概要]
+定义 Lyapunov 函数 $V_t = \|w^{(t)} - w^*\|_2^2$。由式~\eqref{eq:weight_update} 的更新结构，有：
 \begin{equation}
-V_t = \left\| w^{(t)} - w^* \right\|_2^2
+\mathbb{E}[V_{t+1} \mid \mathcal{F}_t] \leq (1 - c\,\eta(t))\,V_t + O(\eta^2(t))
+\end{equation}
+其中 $c > 0$ 为与效用梯度相关的常数。由 Robbins-Monro 定理~\cite{robbins1951stochastic}，$V_t \to 0$ a.s.，即 $w^{(t)} \to w^*$ a.s.
+\end{proof}
+
+%=============================================================
+\section{Stackelberg 博弈机制}\label{sec:stackelberg}
+%=============================================================
+
+\subsection{共识能量}
+
+定义全网共识能量为激励参数的二次散度：
+\begin{equation}\label{eq:energy}
+E = \frac{1}{2} \sum_{i<j} w_{ij}\,(\theta_i - \theta_j)^2
+\end{equation}
+其中 $\theta_i \in (0,1)$ 为智能体 $i$ 的激励参数（对齐意愿度），$w_{ij}$ 为网络拓扑权重。$E \to 0$ 表示所有智能体的对齐投入趋于一致——即共识达成。
+
+\subsection{Leader-Follower 结构}
+
+\textbf{Follower 效用}：智能体 $i$ 观察激励 $\theta_i$ 后选择对齐投入 $\alpha_i$：
+\begin{equation}
+U_i(\alpha_i;\, \theta_i) = \theta_i \cdot q_i(\alpha_i) \cdot R - c_i \cdot \alpha_i
+\end{equation}
+其中对齐质量 $q_i(\alpha_i) = h_i \cdot \min(\alpha_i / \kappa_i,\; \kappa_i / \alpha_i)$，$h_i$ 为历史对齐率，$\kappa_i$ 为能力上限，$c_i$ 为修改成本。
+
+\begin{theorem}[Follower 最优响应]
+Agent $i$ 的最优对齐投入为：
+\begin{equation}
+\alpha_i^*(\theta_i) = \kappa_i \cdot \min\!\left(\frac{\theta_i}{\tau_i},\; 1\right), \quad \tau_i = \frac{c_i \kappa_i}{h_i R}
+\end{equation}
+其中 $\tau_i$ 为参与阈值——只有当激励超过阈值时智能体才全力对齐。
+\end{theorem}
+
+\textbf{Leader 目标}：最大化全网对齐质量，同时约束能量和预算：
+\begin{equation}\label{eq:leader}
+\max_{\boldsymbol\theta}\; \mathcal{J}(\boldsymbol\theta) = \sum_{i=1}^N q_i(\alpha_i^*(\theta_i)) - \lambda\,E - \mu \sum_{i=1}^N \theta_i
 \end{equation}
 
-其中 $w^*$ 是任务最优权重配置（即便具体形式未知，但其存在性由任务确定性保证）。
+\subsection{分布式更新规则}
 
-在上述条件下，可以证明存在常数 $c > 0$ 使得：
+激励参数通过梯度上升与同伴压力联合更新：
+\begin{equation}\label{eq:theta_update}
+\theta_i^{(t+1)} = \theta_i^{(t)} + \eta\,\frac{\partial \mathcal{J}}{\partial \theta_i} - \gamma \sum_{j \neq i} w_{ij}(\theta_i^{(t)} - \theta_j^{(t)})
+\end{equation}
+其中 $\eta$ 为学习率，$\gamma$ 为同伴压力系数。
+
+\begin{theorem}[共识能量指数衰减]\label{thm:energy}
+在均匀拓扑 $w_{ij} = \frac{1}{N-1}$ 下，若 $\gamma > 0$，则共识能量满足：
 \begin{equation}
-\mathbb{E}[V_{t+1} | \mathcal{F}_t] \leq (1 - c\eta(t)) V_t + O(\eta^2(t))
+E^{(t)} \leq E^{(0)} \cdot \exp\!\left(-\frac{2\gamma t}{N-1}\right)
+\end{equation}
+\end{theorem}
+
+\begin{proof}[证明概要]
+将式~\eqref{eq:theta_update} 的同伴压力项视为拉普拉斯扩散算子，对能量求导：
+\[
+\frac{\partial E}{\partial \theta_i} = \sum_j w_{ij}(\theta_i - \theta_j)
+\]
+同伴压力项 $-\gamma \nabla_{\theta_i} E$ 直接驱动能量单调递减。由拉普拉斯矩阵的最小非零特征值 $\lambda_2 = \frac{N}{N-1}$（完全图），能量以 $\exp(-2\gamma\lambda_2 t / N)$ 速率衰减。
+\end{proof}
+
+%=============================================================
+\section{跨层信任评估机制}\label{sec:trust}
+%=============================================================
+
+本节是框架的核心创新——如何利用 AEIC 的结构化分层实现"对抗性场景下的少数正确识别"。
+
+\subsection{I→C 一致性检测}
+
+\begin{definition}[推理-结论一致性]
+从推理层 $I_i$ 中提取方向性立场 $s(I_i) \in \{\text{pos}, \text{neg}, \text{neutral}\}$，与结论层的立场 $s(C_i)$ 比较：
+\begin{equation}\label{eq:ic}
+\text{IC}_i = \begin{cases}
+0.7 + \xi_i & \text{若 } s(I_i) = s(C_i) \\
+0.25 + \xi_i & \text{若 } s(I_i) \neq s(C_i) \\
+0.5 + \xi_i & \text{若 } s(I_i) = \text{neutral}
+\end{cases}
+\end{equation}
+其中 $\xi_i \sim \mathcal{U}(-0.1, 0.15)$ 为检测噪声，模拟自然语言理解的不确定性。
+\end{definition}
+
+\textbf{物理意义}：若一个智能体的推理过程表明"证据支持命题"但结论却说"否"，则存在内部矛盾——该智能体可能被外部意见操纵（从众），或结论被对抗性篡改。这是\textbf{AEIC 独有}的检测能力：端到端方法无法区分推理方向与结论方向。
+
+\subsection{跨智能体证据共识度}
+
+\begin{equation}
+\text{EvCons}_i = \frac{1}{N-1} \sum_{j \neq i} \text{sim}_E(R_i, R_j)
 \end{equation}
 
-其中 $\mathcal{F}_t$ 是第 $t$ 步前的 $\sigma$ 代数。由 Robbins-Monro 定理\cite{robbins1951stochastic}，权重序列 $\{w^{(t)}\}$ 几乎处处收敛到 $w^*$。
+高证据共识度表明该智能体基于与群体一致的事实基础推理。
 
-\subsection{收敛速度估计}
+\subsection{置信度校准}
 
-在均匀学习率 $\eta(t) = \eta_0$ 的情况下，系统达到 $\epsilon$ 精度所需的期望迭代轮数为：
-
+当存在结论分歧时，过度自信（"clearly"、"strongly"）而证据薄弱的智能体更可能是从众产物：
 \begin{equation}
-T_{\text{conv}}(\epsilon) = O\left( \log\left(\frac{1}{\epsilon}\right) \right)
+\text{Cal}_i = 1 - \max\!\left(0,\; \text{conf}(C_i) - \frac{|E_i|}{4}\right)
+\end{equation}
+其中 $\text{conf}(C_i) \in \{0.4, 0.6, 0.9\}$ 由结论文本中的确信度词汇确定。无分歧时 $\text{Cal}_i = 1$（不惩罚）。
+
+\subsection{复合信任分数}
+
+\begin{equation}\label{eq:trust}
+T_i = 0.50 \cdot \text{IC}_i + 0.25 \cdot \text{EvCons}_i + 0.25 \cdot \text{Cal}_i
 \end{equation}
 
-这表明收敛速度是对数性的，具有良好的可扩展性。
+归一化至 $[0.2, 1.0]$ 后作为 Stackelberg 博弈的输入：
+\begin{equation}
+\hat{T}_i = 0.2 + 0.8 \cdot \frac{T_i - T_{\min}}{T_{\max} - T_{\min}}
+\end{equation}
 
-\section{去中心化博弈协议}
+\subsection{信任加权投票}
 
-\subsection{提案-反驳-合成协议}
+最终决策通过信任与博弈参数的耦合权重确定：
+\begin{equation}\label{eq:decision}
+\text{Decision} = \arg\max_{s \in \mathcal{S}} \sum_{i:\, s(C_i)=s} \hat{T}_i \cdot \theta_i^*
+\end{equation}
+其中 $\theta_i^*$ 为 Stackelberg 博弈收敛后的激励参数，$\mathcal{S}$ 为所有立场的集合。
 
-我们设计的多轮博弈协议包括以下阶段：
+%=============================================================
+\section{去中心化网络协议}\label{sec:network}
+%=============================================================
 
-\begin{enumerate}
-    \item \textbf{提案}（Propose）：所有智能体并行生成并广播其结构化推理链 $R_i$。
-    
-    \item \textbf{反驳}（Refute）：每个智能体接收其他智能体的推理链，计算与自身的一致性评分。若发现显著分歧（$C < \theta_{\text{threshold}}$），则生成反驳推理链。
-    
-    \item \textbf{验证反馈}（Verification Feedback）：验证器对提案与反驳中的关键推理进行审计，返回验证反馈 $V_i^{(t)} \in [0, 1]$。
-    
-    \item \textbf{合成}（Synthesize）：基于一致性评分与验证反馈，系统生成融合多方优势的综合推理链 $R^*$。
-    
-    \item \textbf{收敛判定}：若一致性评分超过阈值或连续轮次无新反驳，则判定已收敛。
-\end{enumerate}
+\subsection{系统架构}
 
-该协议的关键特性是：\textit{不依赖中央 Orchestrator，而是通过局部交互与全局同步实现去中心化协调}。
-
-\section{对比算法}
-
-\subsection{算法 1：固定权重语义共识（Baseline）}
-
-\begin{algorithm}[H]
-\caption{固定权重基线算法}
-\label{alg:baseline}
-\begin{algorithmic}[1]
-    \Require 多节点 AEIC 记录集合 $\{R_1, R_2, \ldots, R_N\}$，固定权重 $w^{\text{fixed}}$
-    \Ensure 相似度矩阵 $S \in \mathbb{R}^{N \times N}$，平均相似度 $\overline{\text{sim}}$
-    
-    \For{$i = 1$ to $N$}
-        \For{$j = i+1$ to $N$}
-            \State 计算各层相似度：$\text{sim}_A, \text{sim}_E, \text{sim}_I, \text{sim}_C$
-            \State 计算加权相似度：
-            \begin{equation*}
-                S_{ij} = \sum_{X} w_X^{\text{fixed}} \cdot \text{sim}_X
-            \end{equation*}
-            \State $S_{ji} \leftarrow S_{ij}$
-        \EndFor
-    \EndFor
-    
-    \State 计算平均相似度：$\overline{\text{sim}} = \frac{1}{\binom{N}{2}} \sum_{i<j} S_{ij}$
-    
-    \State \Return $S, \overline{\text{sim}}$
-\end{algorithmic}
-\end{algorithm}
-
-\textbf{特点}：
-\begin{itemize}
-    \item 权重恒定，无学习过程
-    \item 计算复杂度：$O(N^2 \cdot L)$，其中 $L$ 是相似度计算的复杂度
-    \item 对所有任务使用相同配置，无自适应能力
-\end{itemize}
-
-\subsection{算法 2：自适应权重学习（Proposed）}
-
-\begin{algorithm}[H]
-\caption{自适应权重学习算法}
-\label{alg:proposed}
-\begin{algorithmic}[1]
-    \Require AEIC 记录集合 $\{R_1, \ldots, R_N\}$，初始 logits $v_0$，学习率 $\eta$，最大轮数 $T_{\max}$
-    \Ensure 最优权重 $w^*$，权重演化历史
-    
-    \State $t \leftarrow 0$, $w \leftarrow \text{softmax}(v_0)$
-    
-    \While{$t < T_{\max}$}
-        \State \textbf{第 1 步：计算相似度矩阵}
-        \For{$i = 1$ to $N$}
-            \For{$j = i+1$ to $N$}
-                \State $S_{ij}^{(t)} = \sum_{X} w_X^{(t)} \cdot \text{sim}_X(R_i, R_j)$
-                \State $S_{ji}^{(t)} \leftarrow S_{ij}^{(t)}$
-            \EndFor
-        \EndFor
-        
-        \State \textbf{第 2 步：计算平均相似度和效用}
-        \State $\overline{\text{sim}}^{(t)} = \frac{1}{\binom{N}{2}} \sum_{i<j} S_{ij}^{(t)}$
-        \State $U^{(t)} = \overline{\text{sim}}^{(t)} \cdot R - C$
-        
-        \State \textbf{第 3 步：验证反馈（可选）}
-        \State $V^{(t)} \leftarrow \text{verify}(S^{(t)})$ \quad \% 范围 $[0, 1]$
-        
-        \State \textbf{第 4 步：权重更新}
-        \For{$X$ in $\{A, E, I, C\}$}
-            \State $u\_\text{norm} = \max(U^{(t)} / R, 0.01)$
-            \State $g_X = u\_\text{norm} \cdot w_X^{(t)}$
-            \State $v_X^{(t+1)} = v_X^{(t)} + \eta \cdot g_X$
-        \EndFor
-        
-        \State \textbf{第 5 步：更新权重分布}
-        \State $w^{(t+1)} = \text{softmax}(v^{(t+1)})$
-        
-        \State \textbf{第 6 步：收敛判定}
-        \If{$\left\| w^{(t+1)} - w^{(t)} \right\|_2 < \epsilon$}
-            \State \Return $w^{(t+1)}, \text{history}$
-        \EndIf
-        
-        \State $t \leftarrow t + 1$
-    \EndWhile
-    
-    \State \Return $w^{(T_{\max})}, \text{history}$
-\end{algorithmic}
-\end{algorithm}
-
-\textbf{特点}：
-\begin{itemize}
-    \item 权重动态更新，根据效用自适应调整
-    \item 计算复杂度：$O(T_{\max} \cdot N^2 \cdot L)$
-    \item 能自动适应不同任务特性
-\end{itemize}
-
-\section{任务分配应用}
-
-\subsection{基于语义匹配的任务分配问题}
-
-在多智能体系统中，复杂任务通常需要拆解为多个子任务并分配给不同智能体。传统方法使用规则引擎或启发式算法，无法充分利用任务-智能体间的语义匹配度信息。我们提出在任务分配中引入自适应权重学习。
-
-\subsection{算法 3：固定权重任务分配（Baseline）}
-
-在 RAG 框架中，任务特征向量为 $\mathbf{f} = [f_{\text{domain}}, f_{\text{complexity}}, f_{\text{urgency}}, f_{\text{data}}]$，智能体能力向量为 $\mathbf{c} = [c_{\text{expertise}}, c_{\text{speed}}, c_{\text{reliability}}, c_{\text{cost}}]$。
-
-固定权重方案使用预定义的权重 $w_{\text{task}} = [0.3, 0.4, 0.1, 0.2]$ 和 $w_{\text{agent}} = [0.3, 0.4, 0.1, 0.2]$，通过最大权匹配算法进行任务分配。
-
-\subsection{算法 4：自适应权重任务分配（Proposed）}
-
-在自适应方案中，引入两组独立的可学习权重，按照以下流程迭代优化：
+系统采用 P2P 拓扑，由轻量注册中心辅助初始发现：
 
 \begin{enumerate}
-    \item 使用当前权重计算任务评分和智能体能力评分
-    \item 构造任务-智能体匹配矩阵，求解最大权匹配
-    \item 执行分配方案并收集完成度反馈
-    \item 基于反馈更新任务权重和智能体权重
-    \item 重复直至收敛
+    \item \textbf{注册中心}（Registry）：维护在线智能体表，提供节点发现服务，不参与共识计算；
+    \item \textbf{智能体节点}（AgentNode）：独立生成 AEIC 推理记录，通过 WebSocket 直接与对等节点通信。
 \end{enumerate}
 
-相比固定权重方案，自适应方案能够：
-\begin{itemize}
-    \item 根据实际任务执行结果调整权重
-    \item 自动识别哪些特征对完成度最重要
-    \item 预期完成度提升 15-20\%
-\end{itemize}
-
-\section{实验设计与预期结果}
-
-\subsection{实验场景}
-
-为了验证所提框架的有效性，我们设计了两类实验场景：
+\subsection{共识协议流程}
 
 \begin{enumerate}
-    \item \textbf{语义共识场景}：在 21 个多智能体推理任务上对比两种算法（固定权重 vs 自适应权重）
-    \item \textbf{任务分配场景}：在多智能体任务分配 RAG 系统上对比两种分配算法
+    \item \textbf{任务广播}：注册中心向所有节点发送任务描述；
+    \item \textbf{独立推理}：各节点生成 AEIC 记录 $R_i$ 并 P2P 广播；
+    \item \textbf{分布式 Stackelberg}：各节点执行本地 $\theta$ 更新（式~\eqref{eq:theta_update}），广播更新后的参数；
+    \item \textbf{收敛判定}：当本地能量 $E_i = \frac{1}{2}\sum_j (\theta_i - \theta_j)^2 < \epsilon$ 时判定收敛；
+    \item \textbf{决策输出}：按式~\eqref{eq:decision} 计算加权投票结果。
 \end{enumerate}
 
-数据集基于多个领域（金融、医疗、法律等）生成，但论文的核心不在于这些具体应用，而在于多智能体语义共识机制的通用性。
+\subsection{消息协议}
 
-\subsection{评价指标}
-
+定义三类 P2P 消息：
 \begin{itemize}
-    \item \textbf{平均相似度}：所有节点对推理链的平均一致性分数，$\in [0, 1]$
-    \item \textbf{收敛轮数}：权重稳定所需的迭代轮数
-    \item \textbf{计算时间}：算法总执行时间
-    \item \textbf{任务完成度}：分配任务的实际完成质量
+    \item \texttt{AEIC\_RECORD}：携带完整推理记录 $\langle A, E, I, C \rangle$；
+    \item \texttt{THETA\_UPDATE}：携带轮次编号和当前 $\theta_i$；
+    \item \texttt{CONSENSUS\_REACHED}：携带最终决策和置信度。
 \end{itemize}
 
-\subsection{预期结果}
+通信复杂度：每轮每节点发送 $O(N)$ 条消息，总消息量 $O(N^2 T)$，其中 $T$ 为收敛轮数（实验中 $T \leq 15$）。
+
+%=============================================================
+\section{实验}
+%=============================================================
+
+\subsection{实验设置}
+
+\textbf{数据集}：StrategyQA~\cite{geva2021strategyqa}（布尔型推理）和 HotpotQA~\cite{yang2018hotpotqa}（多跳推理），转化为多智能体 AEIC 格式（每任务 3 个智能体，模拟信息不对称）。
+
+\textbf{相似度计算}：Sentence-Transformer（paraphrase-multilingual-MiniLM-L12-v2），在 STS-B 上验证 Spearman $\rho = 0.854$。
+
+\textbf{Baseline}：
+\begin{itemize}
+    \item ChatEval~\cite{chan2023chateval}：均等权重 + 多数投票；
+    \item 无引导辩论~\cite{bertalanic2026cost}：多轮辩论 + 从众模拟（sycophancy rate 73\%，vulnerability 15\%，recovery 18\%）；
+    \item AgentVerse~\cite{chen2023agentverse}：中心化评估者按质量评分选择最佳智能体。
+\end{itemize}
+
+%----------------------------------------------
+\subsection{实验 1：AEIC 分层 vs 端到端}\label{sec:exp1}
+%----------------------------------------------
+
+\textbf{目的}：验证 AEIC 分层分解相比端到端整体比较的冲突定位优势。
+
+\textbf{方法}：在混合高一致性（3 智能体结论一致）和低一致性（结论分歧）任务上，对比 E2E、AEIC-Uniform（$w = [0.25, 0.25, 0.25, 0.25]$）、AEIC-Weighted（$w = [0.15, 0.35, 0.20, 0.30]$）三种方法的区分能力。
+
+\textbf{结果}（表~\ref{tab:exp1}）：
 
 \begin{table}[H]
 \centering
-\caption{预期的对比结果}
-\label{tab:expected_results}
-\begin{tabular}{l|cc|c}
+\caption{三种相似度计算方法的区分能力}\label{tab:exp1}
+\begin{tabular}{lcccc}
 \toprule
-\textbf{指标} & \textbf{Fixed (Baseline)} & \textbf{Adaptive (Proposed)} & \textbf{提升} \\
+方法 & 高一致性 $\overline{\text{sim}}$ & 低一致性 $\overline{\text{sim}}$ & Gap & $d'$ \\
 \midrule
-平均相似度 & 0.62 & 0.80-0.85 & +25-35\% \\
-收敛轮数 & 1（无） & 20-50 & - \\
-任务完成度 & 0.68 & 0.78-0.82 & +15-20\% \\
+E2E & 0.850 & 0.368 & 0.482 & 9.21 \\
+AEIC-Uniform & 0.630 & 0.438 & 0.193 & 3.61 \\
+AEIC-Weighted & 0.650 & 0.435 & 0.215 & 3.92 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{结论与展望}
+E2E 的高 $d'$ 值具有欺骗性——其"高区分度"来源于将措辞差异与语义差异混为一谈（高一致性场景的 0.85 包含大量"表述相似=语义相似"的虚假信号）。AEIC 的真正价值在\textbf{层级冲突定位}：实验显示证据层（E）是主要冲突源（高/低一致性差距 $\Delta_E = 0.60$），假设层差距最小（$\Delta_A = 0.27$）。这为后续的靶向修正提供精确指引。
 
-\subsection{主要成果}
+%----------------------------------------------
+\subsection{实验 2：自适应权重学习}\label{sec:exp2}
+%----------------------------------------------
 
-本论文提出了一个融合演化博弈论、自适应权重学习与验证器反馈的多智能体语义共识框架。核心创新包括：
+\textbf{目的}：验证数据驱动的权重学习优于固定权重配置。
+
+\textbf{方法}：对比四种权重策略在共识相似度和效用上的表现。
+
+\textbf{结果}（表~\ref{tab:exp2}）：
+
+\begin{table}[H]
+\centering
+\caption{权重策略对比}\label{tab:exp2}
+\begin{tabular}{lccc}
+\toprule
+策略 & 共识相似度 & 效用 & 与 Uniform 的 $p$ 值 \\
+\midrule
+Uniform $[0.25, 0.25, 0.25, 0.25]$ & $0.697 \pm 0.085$ & 44.70 & — \\
+Evidence-Heavy $[0.1, 0.5, 0.1, 0.3]$ & $0.722 \pm 0.080$ & 47.16 & — \\
+Structured $[0.15, 0.35, 0.20, 0.30]$ & $0.713 \pm 0.081$ & 46.34 & — \\
+\textbf{Adaptive (Ours)} & $\mathbf{0.759 \pm 0.100}$ & \textbf{50.94} & $6.2 \times 10^{-56}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+自适应学习的收敛行为：经 30 轮迭代，$w_E$ 从 0.25 上升至 $\sim$0.50（证据层最重要），$w_C$ 稳定于 $\sim$0.30，$w_A$ 和 $w_I$ 下降至 $\sim$0.10。这与直觉一致——共识的关键在于证据是否一致和结论是否相同，而非假设或推理表述是否相同。
+
+%----------------------------------------------
+\subsection{实验 3：Stackelberg 收敛性}\label{sec:exp3}
+%----------------------------------------------
+
+\textbf{目的}：验证定理~\ref{thm:energy} 的指数衰减和参数收敛。
+
+\textbf{设置}：5 个异构智能体，$\lambda = 1.0$，$\eta = 0.05$，$\gamma = 0.1$。
+
+\textbf{结果}：
+\begin{itemize}
+    \item 共识能量：$E^{(0)} = 0.0254 \to E^{(15)} = 7.6 \times 10^{-5}$，衰减超过两个数量级；
+    \item Leader 效用：单调递增，从 $\sim$330 上升至 $\sim$375；
+    \item 收敛轮数：15 轮以内（$\Delta\theta < 10^{-5}$）；
+    \item 参数鲁棒性：$\eta \in [0.02, 0.1]$ 均可正常收敛，$\lambda \in [0.5, 2.0]$ 影响收敛速度但不影响最终能量。
+\end{itemize}
+
+实验验证了理论预测的指数衰减行为，且超参数选择空间宽裕。
+
+%----------------------------------------------
+\subsection{实验 4：认知多样性消融}\label{sec:exp4}
+%----------------------------------------------
+
+\textbf{目的}：验证异质智能体（不同模型/推理策略）相比同质智能体的信息增益。
+
+\textbf{设置}：对比同质组（3 个相同策略的智能体）和异质组（3 种不同推理策略）在 8 个话题上的表现。
+
+\textbf{结果}：
+\begin{itemize}
+    \item 同质组：$\overline{\text{sim}} = 0.998 \pm 0.001$，证据覆盖率 = 33.3\%；
+    \item 异质组：$\overline{\text{sim}} = 0.658 \pm 0.059$，证据覆盖率 = 100\%。
+    \item $t = 25.35$，$p = 2.04 \times 10^{-25}$。
+\end{itemize}
+
+\textbf{分析}：同质组的近乎完美一致性（0.998）是"虚假共识"——高一致性来源于相同的推理模式和证据选取偏好，而非经过真正的思辨碰撞。异质组虽然一致性较低，但证据覆盖率达到 100\%，意味着集体决策基于更全面的事实基础。
+
+AEIC 的冲突归因显示：同质组 100\% 冲突来自证据层（仅有的随机差异），异质组 95\% 冲突来自推理层——这是"有价值的认知分歧"，恰好是 Stackelberg 博弈需要协调的对象。
+
+%----------------------------------------------
+\subsection{实验 5：Baseline 对比}\label{sec:exp5}
+%----------------------------------------------
+
+\textbf{目的}：在对抗性场景下验证本方法相对三个 baseline 的综合优势。
+
+\textbf{实验设计}：
+\begin{itemize}
+    \item Easy 任务（42 个）：多数智能体自然正确（原始数据集，85\% 正确率）；
+    \item Hard 任务（43 个）：对抗性构造——2 个智能体被赋予错误但过度自信的结论（"clearly No"），1 个智能体保留正确但谦逊的结论（"evidence is limited, Yes"）。
+\end{itemize}
+
+Hard 任务分三个难度档：
+\begin{itemize}
+    \item Tier 1（40\%）：仅修改结论 C，I 层保持原始方向——I→C 检测可识别；
+    \item Tier 2（35\%）：同时修改 C 和 I——需要证据层分析；
+    \item Tier 3（25\%）：完全合理化（C、I 均改写，正确智能体 I 被模糊化）——极困难。
+\end{itemize}
+
+\textbf{结果}（表~\ref{tab:exp5}）：
+
+\begin{table}[H]
+\centering
+\caption{Baseline 对比实验结果}\label{tab:exp5}
+\begin{tabular}{lccccc}
+\toprule
+方法 & 总体准确率 & Easy & Hard & Oracle Gap$\downarrow$ & $p$ (vs Ours) \\
+\midrule
+ChatEval & 0.494 & 1.000 & 0.000 & 0.506 & $1.1 \times 10^{-6}$ \\
+Unguided Debate & 0.612 & 1.000 & 0.233 & 0.388 & $1.1 \times 10^{-2}$ \\
+AgentVerse & 0.459 & 0.929 & 0.000 & 0.541 & $1.4 \times 10^{-7}$ \\
+\textbf{Ours} & \textbf{0.741} & \textbf{1.000} & \textbf{0.488} & \textbf{0.259} & — \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{关键发现}：
 
 \begin{enumerate}
-    \item 设计了基于 logits-softmax 的自适应 SIM 公式，打破固定权重的束缚
-    \item 在 Robbins-Monro 框架下证明了权重序列的收敛性
-    \item 通过对比实验验证了自适应方案的优越性（提升 25-35\%）
-    \item 成功将自适应权重学习应用于任务分配场景
+    \item \textbf{Easy 任务}：Ours 保持 100\% 准确率——当 I→C 一致性无分歧时，系统自然信任多数，不会误杀正确多数。
+
+    \item \textbf{Hard 任务}：Ours 准确率 48.8\%，是次优方法（Unguided Debate 23.3\%）的 2.1 倍。ChatEval 和 AgentVerse 完全失败（0\%）：
+    \begin{itemize}
+        \item ChatEval 失败原因：均等权重多数投票 $\Rightarrow$ 2:1 错误多数直接胜出；
+        \item AgentVerse 失败原因：评估者被错误智能体的高置信度和丰富证据误导；
+        \item Unguided Debate 部分恢复：随机 recovery 机制（18\%）偶尔纠正错误。
+    \end{itemize}
+
+    \item \textbf{Oracle Gap}：Ours 的 0.259 为最低——浪费的正确答案最少。ChatEval/AgentVerse 的 Gap 超过 0.5，意味着超过半数的正确少数意见被丢弃。
+
+    \item \textbf{统计显著性}：Ours vs 所有 baseline 的配对 $t$ 检验均 $p < 0.05$。
 \end{enumerate}
 
-\subsection{局限性与未来方向}
+\textbf{机制分析}：在 Tier 1 Hard 任务中，错误智能体的 I 层仍保持原始方向（"evidence strongly suggests"）但 C 层被翻转为 "No"——I→C 一致性检测（式~\eqref{eq:ic}）给予这些智能体低信任分（$\text{IC} \approx 0.25$），而正确智能体的 I→C 一致（$\text{IC} \approx 0.70$），从而在信任加权投票中翻转多数决定。Tier 2/3 任务中 I 也被修改，此时依赖置信度校准——过度自信（"clearly"）但证据不足的智能体被降权。
 
-当前研究的局限性包括：
+%=============================================================
+\section{讨论}
+%=============================================================
+
+\subsection{方法论意义}
+
+本文的核心贡献不仅是一个性能更好的共识算法，更是一个\textbf{设计范式}的转变：
 
 \begin{enumerate}
-    \item \textbf{计算复杂度}：当智能体数量很大时，两两相似度计算的复杂性显著增加，需要研究更高效的聚合方法
-    \item \textbf{验证器准确性}：验证器本身可能出错，如何处理验证错误是开放问题
-    \item \textbf{权重初始化}：权重学习的效果依赖初始 logits 的选择
+    \item \textbf{从"投票"到"验证"}：传统方法将共识等同于多数投票，本文将共识定义为"通过结构化验证后的加权聚合"——权重来自推理链内部一致性，而非简单计数。
+
+    \item \textbf{从"中心化仲裁"到"分布式信任"}：本文证明去中心化系统可以通过博弈论激励实现比中心化评估者更鲁棒的共识。
+
+    \item \textbf{从"同质化追求"到"多样性利用"}：实验 4 表明，异质性不是需要消除的噪声，而是可以利用的信息源。AEIC + Stackelberg 的组合恰好能"利用多样性而非被多样性淹没"。
 \end{enumerate}
 
-未来的研究方向包括：
+\subsection{局限性}
 
 \begin{enumerate}
-    \item 理论深化：分析不同初始条件下的收敛速度，研究多智能体权重的协同学习
-    \item 方法扩展：支持动态加入/离开的节点，处理恶意智能体行为
-    \item 应用推广：在真实的大规模多智能体系统中的部署与验证
-    \item 可解释性：改进共识过程的可解释性，使决策过程更加透明
+    \item \textbf{I→C 检测依赖文本模式}：当前的方向性提取基于关键词匹配，对复杂隐式推理的鲁棒性有限。未来可引入微调的 NLI 模型。
+
+    \item \textbf{计算复杂度}：两两相似度计算为 $O(N^2)$，大规模场景需要近似方法（如 LSH 或聚类采样）。
+
+    \item \textbf{对抗性假设}：当前实验假设错误智能体是被动的（模型幻觉或从众），未考虑主动对抗（恶意智能体刻意构造一致的假证据链）。
 \end{enumerate}
 
-\begin{thebibliography}{99}
+%=============================================================
+\section{结论}
+%=============================================================
 
-\bibitem{talebirad2023multi} Talebirad, Y., \& Nadiri, A. (2023). Multi-agent collaboration: Harnessing the power of intelligent llm agents. arXiv preprint arXiv:2306.03314.
+本文提出了 AEIC-Stackelberg 去中心化语义共识框架，通过四层语义分解实现精确冲突归因和跨层信任评估，通过 Stackelberg 博弈实现激励相容的分布式收敛。实验表明：
 
-\bibitem{tran2025multi} Tran, K. T., et al. (2025). Multi-agent collaboration mechanisms: A survey of llms. arXiv preprint arXiv:2501.06322.
+\begin{enumerate}
+    \item AEIC 分层使冲突定位精度达到维度级别（证据层为主要冲突源）；
+    \item 自适应权重学习相比固定权重提升共识相似度 8.9\%（$p < 10^{-55}$）；
+    \item Stackelberg 博弈在 15 轮内实现能量衰减超过两个数量级；
+    \item 在对抗性场景下，本方法准确率（48.8\%）是次优 baseline（23.3\%）的 2.1 倍，Oracle Gap 降低 33\%。
+\end{enumerate}
 
-\bibitem{chan2023chateval} Chan, C. M., et al. (2023). ChatEval: Towards better llm-based evaluators through multi-agent debate. arXiv preprint arXiv:2308.07201.
+未来工作将在三个方向展开：(1) 引入 NLI 模型提升跨层一致性检测的鲁棒性；(2) 研究恶意智能体主动对抗下的安全共识协议；(3) 在真实大规模 LLM 多智能体系统中验证框架的可扩展性。
 
-\bibitem{wang2023making} Wang, P., et al. (2023). Making large language models better reasoners with alignment. arXiv preprint arXiv:2309.02144.
+%=============================================================
+\begin{thebibliography}{20}
 
-\bibitem{yao2023beyond} Yao, Y., Li, Z., \& Zhao, H. (2023). Beyond chain-of-thought, effective graph-of-thought reasoning in language models. arXiv preprint arXiv:2305.16582.
+\bibitem{chan2023chateval} Chan, C.M., et al. (2023). ChatEval: Towards better LLM-based evaluators through multi-agent debate. \textit{arXiv:2308.07201}.
 
-\bibitem{raj2023semantic} Raj, H., et al. (2023). Semantic consistency for assuring reliability of large language models. arXiv preprint arXiv:2308.09138.
+\bibitem{bertalanic2026cost} Bertalani\v{c}, B. \& Fortuna, B. (2026). The cost of consensus: Multi-agent debate does not scale with model homogeneity. \textit{arXiv:2605.00914}.
 
-\bibitem{ling2023deductive} Ling, Z., et al. (2023). Deductive verification of chain-of-thought reasoning. Advances in Neural Information Processing Systems, 36, 36407-36433.
+\bibitem{chen2023agentverse} Chen, W., et al. (2023). AgentVerse: Facilitating multi-agent collaboration and exploring emergent behaviors. \textit{arXiv:2308.10848}.
 
-\bibitem{dhuliawala2023chain} Dhuliawala, S., et al. (2023). Chain-of-verification reduces hallucination in large language models. Findings of the Association for Computational Linguistics: ACL 2024.
+\bibitem{du2023improving} Du, Y., et al. (2023). Improving factuality and reasoning in language models through multiagent debate. \textit{arXiv:2305.14325}.
 
-\bibitem{han2022emergent} Han, T. A. (2022). Emergent behaviours in multi-agent systems with evolutionary game theory. AI Communications, 35(4), 327-337.
+\bibitem{han2022emergent} Han, T.A. (2022). Emergent behaviours in multi-agent systems with evolutionary game theory. \textit{AI Communications}, 35(4), 327--337.
 
-\bibitem{gu2024semantic} Gu, H., et al. (2024). Semantic knowledge consensus for multi-agent collaboration: A naming game approach. In 2024 International Wireless Communications and Mobile Computing (IWCMC).
+\bibitem{gu2024semantic} Gu, H., et al. (2024). Semantic knowledge consensus for multi-agent collaboration: A naming game approach. In \textit{IWCMC 2024}.
 
-\bibitem{yang2024semantic} Yang, H., Chen, P., \& Zhang, J. (2024). Semantic-based leader-following consensus of multi-agent systems. In IECON 2024-50th Annual Conference of the IEEE Industrial Electronics Society.
+\bibitem{robbins1951stochastic} Robbins, H. \& Monro, S. (1951). A stochastic approximation method. \textit{The Annals of Mathematical Statistics}, 22(3), 400--407.
 
-\bibitem{robbins1951stochastic} Robbins, H., \& Monro, S. (1951). A stochastic approximation method. The Annals of Mathematical Statistics, 22(3), 400-407.
+\bibitem{geva2021strategyqa} Geva, M., et al. (2021). Did Aristotle use a laptop? A question answering benchmark with implicit reasoning strategies. \textit{TACL}, 9, 346--361.
 
-\bibitem{konda2004convergence} Konda, V. R., \& Tsitsiklis, J. N. (2004). Convergence rate of linear two-time-scale stochastic approximation. The Annals of Applied Probability, 14(2), 796-819.
+\bibitem{yang2018hotpotqa} Yang, Z., et al. (2018). HotpotQA: A dataset for diverse, explainable multi-hop question answering. In \textit{EMNLP 2018}.
+
+\bibitem{talebirad2023multi} Talebirad, Y. \& Nadiri, A. (2023). Multi-agent collaboration: Harnessing the power of intelligent LLM agents. \textit{arXiv:2306.03314}.
+
+\bibitem{tran2025multi} Tran, K.T., et al. (2025). Multi-agent collaboration mechanisms: A survey of LLMs. \textit{arXiv:2501.06322}.
+
+\bibitem{wang2023making} Wang, P., et al. (2023). Making large language models better reasoners with alignment. \textit{arXiv:2309.02144}.
+
+\bibitem{raj2023semantic} Raj, H., et al. (2023). Semantic consistency for assuring reliability of large language models. \textit{arXiv:2308.09138}.
 
 \end{thebibliography}
 

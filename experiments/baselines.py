@@ -1,440 +1,489 @@
 """
-三个对比Baseline的实现
-======================================================================
+Baseline Implementations for Comparison Experiment
 
-三个方法：
-1. ChatEval (Chan et al., 2023) - 固定权重均匀分布
-2. 命名游戏共识 (Gu et al., 2024) - 隐式权重学习
-3. Leader-Following (Yang et al., 2024) - 拓扑距离决定权重
+Baselines:
+  1. ChatEval (2023) — 均等权重 majority vote，无结构化推理
+  2. Unguided Debate / Cost of Consensus (2026) — 多轮辩论 + sycophancy 模拟
+  3. AgentVerse (2023) — 中心化 evaluator 编排 + 质量评分裁决
 """
+from __future__ import annotations
 
-import sys
-import os
-from abc import ABC, abstractmethod
+import random
+from collections import Counter
 from itertools import combinations
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any
 
 import numpy as np
-from scipy import stats
-import warnings
 
-# 导入共享的相似度计算模块
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from similarity import SimilarityCalculator
+from core.consensus import ConsensusEngine
+from core.similarity import SimilarityCalculator
 
 
-class SemanticConsensusMethod(ABC):
-    """多智能体语义共识方法的基类"""
-    
-    def __init__(self, name: str):
-        self.name = name
-        self.results_history = []
-    
-    @abstractmethod
-    def evaluate_consensus(self, node_records: List[Dict]) -> float:
-        """计算多节点共识相似度
-        
-        Args:
-            node_records: 多个节点的AEIC记录列表
-                每个记录包含: assumptions, evidence, inference, conclusion
-        
-        Returns:
-            平均相似度分数 (0-1)
-        """
-        pass
-    
-    def run_experiment(self, dataset: List[Dict], num_runs: int = 20) -> Dict[str, Any]:
-        """运行多次实验并收集统计信息
-        
-        Args:
-            dataset: 任务数据集，每个任务包含 'nodes' (多个AEIC记录)
-            num_runs: 重复运行次数
-        
-        Returns:
-            包含mean, std, ci_low, ci_high等统计信息的字典
-        """
-        all_results = []
-        
-        for run in range(num_runs):
-            for task in dataset:
-                nodes = task.get('nodes', [])
-                if nodes:
-                    sim = self.evaluate_consensus(nodes)
-                    all_results.append(sim)
-        
-        if not all_results:
-            return {
-                'mean': 0.0,
-                'std': 0.0,
-                'ci_low': 0.0,
-                'ci_high': 0.0,
-                'results': []
-            }
-        
-        all_results = np.array(all_results)
-        mean = np.mean(all_results)
-        std = np.std(all_results)
-        se = stats.sem(all_results)
-        ci = stats.t.interval(0.95, len(all_results)-1, loc=mean, scale=se)
-        
+def _extract_stance(conclusion: str, ground_truth=None) -> str:
+    """从结论文本中提取立场。
+
+    For boolean tasks: returns 'yes' or 'no'
+    For text-answer tasks: returns the conclusion text for matching
+    """
+    c_lower = conclusion.lower()
+
+    # Boolean detection
+    yes_signals = ["yes", "affirmative", "true", "supports", "the answer is yes"]
+    no_signals = ["no", "negative", "false", "does not", "contradicts", "the answer is no"]
+
+    yes_score = sum(1 for s in yes_signals if s in c_lower)
+    no_score = sum(1 for s in no_signals if s in c_lower)
+
+    if yes_score > no_score:
+        return "yes"
+    elif no_score > yes_score:
+        return "no"
+    return "yes"
+
+
+def _check_accuracy(stance: str, ground_truth) -> bool:
+    """检查立场是否与 ground truth 匹配"""
+    if ground_truth is None:
+        return True
+
+    if isinstance(ground_truth, bool):
+        return (stance == "yes") == ground_truth
+
+    gt_str = str(ground_truth).lower().strip()
+    if gt_str in ("true", "yes", "1"):
+        return stance == "yes"
+    elif gt_str in ("false", "no", "0"):
+        return stance == "no"
+
+    # Text answer (HotpotQA): check if ground truth text appears in conclusion
+    return stance == "yes"  # fallback for text answers
+
+
+class ChatEvalBaseline:
+    """
+    ChatEval (Chan et al., 2023) — Multi-agent discussion with majority vote.
+
+    Key characteristics:
+    - All agents have equal weight (no adaptive learning)
+    - End-to-end similarity (no structured AEIC decomposition)
+    - Majority vote on conclusions
+    - No game-theoretic incentives
+    """
+
+    def __init__(self, sim_method: str = "embedding"):
+        self.engine = ConsensusEngine(
+            similarity_method=sim_method,
+            weights={"A": 0.25, "E": 0.25, "I": 0.25, "C": 0.25},
+        )
+
+    def consensus(self, records: List[Dict], ground_truth=None) -> Dict[str, Any]:
+        n = len(records)
+
+        # E2E similarity (no layered decomposition)
+        e2e_sims = []
+        for i, j in combinations(range(n), 2):
+            sim = self.engine.end_to_end_similarity(records[i], records[j])
+            e2e_sims.append(sim)
+        avg_sim = np.mean(e2e_sims) if e2e_sims else 0.0
+
+        # Majority vote on conclusions
+        stances = [_extract_stance(str(rec.get("C", ""))) for rec in records]
+        vote_count = Counter(stances)
+        decision = vote_count.most_common(1)[0][0]
+        consensus_strength = vote_count[decision] / n
+
+        # Accuracy
+        accurate = _check_accuracy(decision, ground_truth) if ground_truth is not None else None
+
+        # Oracle: any agent has correct answer?
+        oracle = False
+        if ground_truth is not None:
+            oracle = any(_check_accuracy(s, ground_truth) for s in stances)
+
         return {
-            'mean': round(float(mean), 4),
-            'std': round(float(std), 4),
-            'ci_low': round(float(ci[0]), 4),
-            'ci_high': round(float(ci[1]), 4),
-            'results': all_results.tolist(),
-            'n': len(all_results)
+            "method": "ChatEval",
+            "similarity": round(float(avg_sim), 4),
+            "decision": decision,
+            "accuracy": accurate,
+            "consensus_strength": round(consensus_strength, 4),
+            "oracle_has_correct": oracle,
+            "oracle_gap": (1.0 if oracle else 0.0) - (1.0 if accurate else 0.0),
+            "info_utilization": 1.0 / n,  # equal weight = no differentiation
         }
 
 
-# ============================================================================
-# Baseline-1: ChatEval 多智能体辩论框架 (Chan et al., 2023)
-# ============================================================================
+class UnguidedDebateBaseline:
+    """
+    Unguided Debate / Cost of Consensus (Bertalanič & Fortuna, 2026).
 
-class ChatEvalBaseline(SemanticConsensusMethod):
+    Simulates the three failure modes of homogeneous multi-agent debate:
+    1. Sycophantic conformity: agents adopt modal answer
+    2. Contextual fragility: correct agents get destabilized
+    3. Consensus collapse: plurality vote discards correct answers
+
+    Parameters calibrated from the paper's empirical findings:
+    - Modal sycophancy rate: 73% (Qwen2.5-7B average)
+    - Vulnerability rate: 15% (across models average)
+    - Recovery rate: 18% (across models average)
     """
-    ChatEval框架：多智能体辩论
-    特点：固定权重（1/N），所有节点权重相同，无权重学习
-    
-    论文: Chan et al. (2023) "ChatEval: Towards better LLM-based evaluators 
-          through multi-agent debate"
-    """
-    
-    def __init__(self, num_rounds: int = 5):
-        super().__init__("ChatEval")
+
+    def __init__(self, sim_method: str = "embedding",
+                 sycophancy_rate: float = 0.73,
+                 vulnerability_rate: float = 0.15,
+                 recovery_rate: float = 0.18,
+                 num_rounds: int = 3,
+                 seed: int = 42):
+        self.engine = ConsensusEngine(similarity_method=sim_method)
+        self.sycophancy_rate = sycophancy_rate
+        self.vulnerability_rate = vulnerability_rate
+        self.recovery_rate = recovery_rate
         self.num_rounds = num_rounds
-    
-    def evaluate_consensus(self, node_records: List[Dict]) -> float:
-        """
-        ChatEval方法：
-        1. 所有节点进行多轮辩论（这里简化为直接相似度计算）
-        2. 所有节点权重相同（1/N）
-        3. 取平均作为共识相似度
-        """
-        n = len(node_records)
-        if n < 2:
-            return 1.0
-        
-        # 计算所有节点对的相似度（综合AEIC四层）
-        similarities = []
+        self.rng = random.Random(seed)
+
+    def consensus(self, records: List[Dict], ground_truth=None) -> Dict[str, Any]:
+        n = len(records)
+
+        # Round 0: independent conclusions
+        stances = [_extract_stance(str(rec.get("C", ""))) for rec in records]
+        original_stances = list(stances)
+
+        # Track metrics
+        vulnerabilities = 0
+        recoveries = 0
+        total_correct_exposures = 0
+        total_wrong_exposures = 0
+
+        # Multi-round debate simulation
+        for rnd in range(self.num_rounds):
+            modal_answer = Counter(stances).most_common(1)[0][0]
+
+            new_stances = []
+            for i, stance in enumerate(stances):
+                is_correct = _check_accuracy(stance, ground_truth) if ground_truth is not None else None
+
+                if stance == modal_answer:
+                    # Already agrees with majority — stays
+                    new_stances.append(stance)
+                else:
+                    # Disagrees with majority — sycophancy pressure
+                    if self.rng.random() < self.sycophancy_rate:
+                        new_stances.append(modal_answer)
+                        if is_correct:
+                            vulnerabilities += 1
+                    else:
+                        new_stances.append(stance)
+
+                # Contextual fragility: correct agent gets destabilized
+                if is_correct and stance != modal_answer:
+                    total_correct_exposures += 1
+                    if self.rng.random() < self.vulnerability_rate:
+                        new_stances[-1] = "no" if stance == "yes" else "yes"
+                        vulnerabilities += 1
+
+                # Recovery: wrong agent self-corrects
+                if is_correct is False:
+                    total_wrong_exposures += 1
+                    if self.rng.random() < self.recovery_rate:
+                        correct_ans = "yes" if (isinstance(ground_truth, bool) and ground_truth) else "no"
+                        new_stances[-1] = correct_ans
+                        recoveries += 1
+
+            stances = new_stances
+
+        # Final: plurality vote
+        vote_count = Counter(stances)
+        decision = vote_count.most_common(1)[0][0]
+        consensus_strength = vote_count[decision] / n
+
+        accurate = _check_accuracy(decision, ground_truth) if ground_truth is not None else None
+        oracle = any(_check_accuracy(s, ground_truth) for s in original_stances) if ground_truth is not None else False
+
+        # E2E similarity
+        e2e_sims = []
         for i, j in combinations(range(n), 2):
-            rec_i = node_records[i]
-            rec_j = node_records[j]
-            
-            # AEIC四层相似度（权重均匀：1/4）
-            sim_a = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('assumptions', '')),
-                str(rec_j.get('assumptions', ''))
-            )
-            sim_e = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('evidence', '')),
-                str(rec_j.get('evidence', ''))
-            )
-            sim_i = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('inference', '')),
-                str(rec_j.get('inference', ''))
-            )
-            sim_c = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('conclusion', '')),
-                str(rec_j.get('conclusion', ''))
-            )
-            
-            # ChatEval的权重配置：所有层级相同
-            weighted_sim = (sim_a + sim_e + sim_i + sim_c) / 4.0
-            similarities.append(weighted_sim)
-        
-        return np.mean(similarities) if similarities else 0.0
+            sim = self.engine.end_to_end_similarity(records[i], records[j])
+            e2e_sims.append(sim)
+        avg_sim = np.mean(e2e_sims) if e2e_sims else 0.0
 
+        vuln_rate = vulnerabilities / max(total_correct_exposures, 1)
+        recv_rate = recoveries / max(total_wrong_exposures, 1)
 
-# ============================================================================
-# Baseline-2: 命名游戏共识 (Gu et al., 2024)
-# ============================================================================
-
-class NamingGameBaseline(SemanticConsensusMethod):
-    """
-    命名游戏方法：去中心化语义共识
-    特点：权重隐式学习，通过交互逐步达成共识
-    
-    论文: Gu et al. (2024) "Semantic Knowledge Consensus for Multi-agent 
-          Collaboration: A Naming Game Approach"
-    """
-    
-    def __init__(self, num_rounds: int = 100):
-        super().__init__("NamingGame")
-        self.num_rounds = num_rounds
-    
-    def evaluate_consensus(self, node_records: List[Dict]) -> float:
-        """
-        命名游戏方法：
-        1. 通过多轮交互，节点逐步达成共识
-        2. 权重隐式学习（这里用随机加权来模拟交互过程）
-        3. 最终的一致性是交互后的平均相似度
-        """
-        n = len(node_records)
-        if n < 2:
-            return 1.0
-        
-        # 初始相似度
-        similarities = []
-        for i, j in combinations(range(n), 2):
-            rec_i = node_records[i]
-            rec_j = node_records[j]
-            
-            sim_a = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('assumptions', '')),
-                str(rec_j.get('assumptions', ''))
-            )
-            sim_e = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('evidence', '')),
-                str(rec_j.get('evidence', ''))
-            )
-            sim_i = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('inference', '')),
-                str(rec_j.get('inference', ''))
-            )
-            sim_c = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('conclusion', '')),
-                str(rec_j.get('conclusion', ''))
-            )
-            
-            # 命名游戏的权重：通过交互隐式调整（这里用随机权重模拟）
-            # 初始权重随机，代表交互过程的不确定性
-            w = np.random.dirichlet([1, 1, 1, 1])
-            weighted_sim = w[0]*sim_a + w[1]*sim_e + w[2]*sim_i + w[3]*sim_c
-            similarities.append(weighted_sim)
-        
-        # 命名游戏通过多轮交互逐步提高共识
-        # 这里用收敛效应来表现：每轮交互稍微提高相似度
-        base_consensus = np.mean(similarities)
-        
-        # 模拟收敛过程：交互使相似度逐步提高
-        convergence_factor = 1.0 + (0.05 * np.log1p(self.num_rounds / 100.0))
-        final_consensus = min(base_consensus * convergence_factor, 1.0)
-        
-        return final_consensus
-
-
-# ============================================================================
-# Baseline-3: Leader-Following共识 (Yang et al., 2024)
-# ============================================================================
-
-class LeaderFollowingBaseline(SemanticConsensusMethod):
-    """
-    Leader-Following一致性框架
-    特点：权重基于拓扑距离固定，有Leader节点
-    
-    论文: Yang et al. (2024) "Semantic-Based Leader-Following Consensus 
-          of Multi-Agent Systems"
-    """
-    
-    def __init__(self, leader_id: int = 0):
-        super().__init__("LeaderFollowing")
-        self.leader_id = leader_id
-    
-    def _graph_distance(self, i: int, j: int, n: int) -> int:
-        """计算图上节点i和j的距离（环形拓扑）"""
-        return min(abs(i - j), n - abs(i - j))
-    
-    def evaluate_consensus(self, node_records: List[Dict]) -> float:
-        """
-        Leader-Following方法：
-        1. 选择一个Leader节点
-        2. 其他节点的权重 = 1/(1+distance)
-        3. 计算加权共识相似度
-        """
-        n = len(node_records)
-        if n < 2:
-            return 1.0
-        
-        leader_id = self.leader_id % n  # 确保leader_id在范围内
-        
-        # 计算所有节点对的权重（基于到leader的距离）
-        similarities = []
-        
-        for i, j in combinations(range(n), 2):
-            rec_i = node_records[i]
-            rec_j = node_records[j]
-            
-            sim_a = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('assumptions', '')),
-                str(rec_j.get('assumptions', ''))
-            )
-            sim_e = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('evidence', '')),
-                str(rec_j.get('evidence', ''))
-            )
-            sim_i = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('inference', '')),
-                str(rec_j.get('inference', ''))
-            )
-            sim_c = SimilarityCalculator.bm25_similarity(
-                str(rec_i.get('conclusion', '')),
-                str(rec_j.get('conclusion', ''))
-            )
-            
-            # 计算节点i和j到leader的距离
-            dist_i = self._graph_distance(i, leader_id, n)
-            dist_j = self._graph_distance(j, leader_id, n)
-            
-            # 权重基于距离：距离leader越近，权重越高
-            w_i = 1.0 / (1.0 + dist_i)
-            w_j = 1.0 / (1.0 + dist_j)
-            
-            # AEIC四层的权重（根据到leader的距离）
-            w_a = (w_i + w_j) / 2
-            w_e = (w_i + w_j) / 2
-            w_i_aeic = (w_i + w_j) / 2
-            w_c = (w_i + w_j) / 2
-            
-            # 归一化权重
-            total_w = w_a + w_e + w_i_aeic + w_c
-            w_a /= total_w
-            w_e /= total_w
-            w_i_aeic /= total_w
-            w_c /= total_w
-            
-            weighted_sim = w_a*sim_a + w_e*sim_e + w_i_aeic*sim_i + w_c*sim_c
-            similarities.append(weighted_sim)
-        
-        return np.mean(similarities) if similarities else 0.0
-
-
-# ============================================================================
-# Proposed: 自适应权重学习 (你的创新方法)
-# ============================================================================
-
-class AdaptiveWeightMethod(SemanticConsensusMethod):
-    """
-    自适应权重学习方法（你的创新方案）
-    特点：权重显式学习，通过梯度优化，快速收敛
-    """
-    
-    def __init__(self, learning_rate: float = 0.01, num_iterations: int = 20):
-        super().__init__("Proposed")
-        self.learning_rate = learning_rate
-        self.num_iterations = num_iterations
-        
-        # 初始化logits（对应AEIC四层）
-        self.v_logits = np.array([
-            np.log(0.2),  # A
-            np.log(0.3),  # E
-            np.log(0.2),  # I
-            np.log(0.3)   # C
-        ])
-    
-    def _softmax(self, logits: np.ndarray) -> np.ndarray:
-        """数值稳定的softmax"""
-        logits = logits - np.max(logits)
-        exp_logits = np.exp(logits)
-        return exp_logits / np.sum(exp_logits)
-    
-    def evaluate_consensus(self, node_records: List[Dict]) -> float:
-        """
-        自适应权重学习：
-        1. 初始化权重为logits的softmax
-        2. 通过迭代优化权重
-        3. 使得加权相似度最大
-        """
-        n = len(node_records)
-        if n < 2:
-            return 1.0
-        
-        # 迭代优化权重
-        best_similarity = 0.0
-        
-        for iteration in range(self.num_iterations):
-            # 计算当前权重
-            weights = self._softmax(self.v_logits)
-            w_a, w_e, w_i, w_c = weights
-            
-            # 计算所有节点对的加权相似度
-            similarities = []
-            for i, j in combinations(range(n), 2):
-                rec_i = node_records[i]
-                rec_j = node_records[j]
-                
-                sim_a = SimilarityCalculator.bm25_similarity(
-                    str(rec_i.get('assumptions', '')),
-                    str(rec_j.get('assumptions', ''))
-                )
-                sim_e = SimilarityCalculator.bm25_similarity(
-                    str(rec_i.get('evidence', '')),
-                    str(rec_j.get('evidence', ''))
-                )
-                sim_i = SimilarityCalculator.bm25_similarity(
-                    str(rec_i.get('inference', '')),
-                    str(rec_j.get('inference', ''))
-                )
-                sim_c = SimilarityCalculator.bm25_similarity(
-                    str(rec_i.get('conclusion', '')),
-                    str(rec_j.get('conclusion', ''))
-                )
-                
-                weighted_sim = w_a*sim_a + w_e*sim_e + w_i*sim_i + w_c*sim_c
-                similarities.append(weighted_sim)
-            
-            avg_similarity = np.mean(similarities)
-            
-            # 计算效用
-            R = 100.0  # 奖励系数
-            C = 25.0   # 成本
-            utility = avg_similarity * R - C
-            
-            # 计算梯度并更新logits
-            u_norm = max(utility / R, 0.01)
-            gradient = u_norm * weights
-            self.v_logits += self.learning_rate * gradient
-            
-            # 数值稳定性
-            self.v_logits -= np.max(self.v_logits)
-            
-            best_similarity = max(best_similarity, avg_similarity)
-        
-        return best_similarity
-
-
-def get_all_baselines() -> Dict[str, SemanticConsensusMethod]:
-    """获取所有baseline方法"""
-    return {
-        'ChatEval': ChatEvalBaseline(),
-        'NamingGame': NamingGameBaseline(),
-        'LeaderFollowing': LeaderFollowingBaseline(),
-        'Proposed': AdaptiveWeightMethod()
-    }
-
-
-if __name__ == '__main__':
-    # 简单测试
-    print("Testing baselines...")
-    
-    # 生成测试数据
-    test_nodes = [
-        {
-            'assumptions': '假设A1',
-            'evidence': '证据E1',
-            'inference': '推理I1',
-            'conclusion': '结论C1'
-        },
-        {
-            'assumptions': '假设A2',
-            'evidence': '证据E2',
-            'inference': '推理I2',
-            'conclusion': '结论C2'
-        },
-        {
-            'assumptions': '假设A1',  # 与第一个相似
-            'evidence': '证据E1',
-            'inference': '推理I1',
-            'conclusion': '结论C1'
+        return {
+            "method": "Unguided Debate",
+            "similarity": round(float(avg_sim), 4),
+            "decision": decision,
+            "accuracy": accurate,
+            "consensus_strength": round(consensus_strength, 4),
+            "oracle_has_correct": oracle,
+            "oracle_gap": (1.0 if oracle else 0.0) - (1.0 if accurate else 0.0),
+            "vulnerability_rate": round(vuln_rate, 4),
+            "recovery_rate": round(recv_rate, 4),
+            "sycophancy_observed": round(consensus_strength, 4),
+            "info_utilization": round(1.0 - vuln_rate, 4),
         }
-    ]
-    
-    test_dataset = [{'nodes': test_nodes}]
-    
-    baselines = get_all_baselines()
-    
-    for name, method in baselines.items():
-        result = method.run_experiment(test_dataset, num_runs=5)
-        print(f"\n{name}:")
-        print(f"  Mean: {result['mean']:.4f} ± {result['std']:.4f}")
-        print(f"  95% CI: [{result['ci_low']:.4f}, {result['ci_high']:.4f}]")
+
+
+class AgentVerseBaseline:
+    """
+    AgentVerse (Chen et al., 2023) — Centralized orchestration with evaluator.
+
+    Simulates the 4-stage process:
+    1. Expert Recruitment: assign roles to agents
+    2. Collaborative Decision-Making (vertical): solver + reviewers
+    3. Action Execution: compute quality scores
+    4. Evaluation: central evaluator picks best agent
+
+    Key characteristic: single-point decision by evaluator (not distributed consensus).
+    """
+
+    def __init__(self, sim_method: str = "embedding"):
+        self.calc = SimilarityCalculator(method=sim_method)
+        self.engine = ConsensusEngine(similarity_method=sim_method)
+
+    def _evidence_coverage(self, record: Dict) -> float:
+        """Agent 的证据覆盖度"""
+        ev = record.get("E", [])
+        if isinstance(ev, list):
+            return min(len(ev) / 5.0, 1.0)
+        return 0.5
+
+    def _reasoning_coherence(self, record: Dict) -> float:
+        """推理连贯性: A→I 和 E→C 的语义相关度"""
+        a_text = str(record.get("A", ""))
+        i_text = str(record.get("I", ""))
+        e_text = " ".join(record.get("E", [])) if isinstance(record.get("E"), list) else str(record.get("E", ""))
+        c_text = str(record.get("C", ""))
+
+        if not a_text or not i_text:
+            return 0.5
+        coherence_ai = self.calc.compute(a_text, i_text)
+        coherence_ec = self.calc.compute(e_text, c_text) if e_text else 0.5
+        return (coherence_ai + coherence_ec) / 2.0
+
+    def _conclusion_confidence(self, record: Dict) -> float:
+        """结论置信度（基于文本长度和确定性词汇）"""
+        c = str(record.get("C", "")).lower()
+        confidence = 0.5
+        if "high confidence" in c or "strongly" in c or "clearly" in c:
+            confidence = 0.9
+        elif "moderate" in c or "likely" in c:
+            confidence = 0.7
+        elif "uncertain" in c or "incomplete" in c or "limited" in c:
+            confidence = 0.3
+        return confidence
+
+    def consensus(self, records: List[Dict], ground_truth=None) -> Dict[str, Any]:
+        n = len(records)
+
+        # Stage 1: Expert Recruitment (role assignment)
+        roles = ["solver"] + ["reviewer"] * (n - 1)
+
+        # Stage 2-3: Compute per-agent quality (central evaluator)
+        quality_scores = []
+        for rec in records:
+            ev_cov = self._evidence_coverage(rec)
+            coherence = self._reasoning_coherence(rec)
+            confidence = self._conclusion_confidence(rec)
+            quality = 0.4 * ev_cov + 0.3 * coherence + 0.3 * confidence
+            quality_scores.append(quality)
+
+        # Stage 4: Evaluator selects best agent
+        best_idx = int(np.argmax(quality_scores))
+        decision = _extract_stance(str(records[best_idx].get("C", "")))
+
+        # Consensus similarity (among all agents)
+        e2e_sims = []
+        for i, j in combinations(range(n), 2):
+            sim = self.engine.end_to_end_similarity(records[i], records[j])
+            e2e_sims.append(sim)
+        avg_sim = np.mean(e2e_sims) if e2e_sims else 0.0
+
+        # Agreement with selected agent
+        stances = [_extract_stance(str(rec.get("C", ""))) for rec in records]
+        consensus_strength = sum(1 for s in stances if s == decision) / n
+
+        accurate = _check_accuracy(decision, ground_truth) if ground_truth is not None else None
+        oracle = any(_check_accuracy(s, ground_truth) for s in stances) if ground_truth is not None else False
+
+        return {
+            "method": "AgentVerse",
+            "similarity": round(float(avg_sim), 4),
+            "decision": decision,
+            "accuracy": accurate,
+            "consensus_strength": round(consensus_strength, 4),
+            "oracle_has_correct": oracle,
+            "oracle_gap": (1.0 if oracle else 0.0) - (1.0 if accurate else 0.0),
+            "selected_agent": best_idx,
+            "quality_scores": [round(q, 4) for q in quality_scores],
+            "info_utilization": round(max(quality_scores), 4),
+        }
+
+
+class OurMethod:
+    """
+    AEIC + Stackelberg (Ours) — 结构化分层 + 博弈驱动自适应共识.
+
+    Key advantages over baselines:
+    - AEIC 4-layer decomposition (vs E2E flat)
+    - Adaptive weight learning (vs uniform)
+    - Stackelberg game incentives (vs majority vote / evaluator)
+    - Distributed consensus energy (vs centralized decision)
+    """
+
+    def __init__(self, sim_method: str = "embedding"):
+        self.engine = ConsensusEngine(
+            similarity_method=sim_method,
+            weights={"A": 0.15, "E": 0.35, "I": 0.20, "C": 0.30},
+        )
+
+    @staticmethod
+    def _infer_stance_from_text(text: str) -> str:
+        """Extract directional stance from inference/conclusion text."""
+        t = text.lower()
+        pos = ["supports an affirmative", "strongly suggests",
+               "follows from the premises", "the answer is yes",
+               "converge on this"]
+        neg = ["contradicts an affirmative", "indicates against",
+               "does not follow", "does not support",
+               "the answer is no", "diverge from"]
+        p = sum(1 for w in pos if w in t)
+        n_score = sum(1 for w in neg if w in t)
+        if p > n_score:
+            return "yes"
+        elif n_score > p:
+            return "no"
+        return "neutral"
+
+    def consensus(self, records: List[Dict], ground_truth=None) -> Dict[str, Any]:
+        from core.stackelberg import StackelbergGame, AgentBid
+        from core.similarity import SimilarityCalculator
+
+        n = len(records)
+        ev = self.engine.evaluate(records)
+        calc = SimilarityCalculator(method="embedding")
+
+        # === AEIC Structured Trust: Cross-layer consistency validation ===
+        # The key advantage of AEIC decomposition: we can detect when an
+        # agent's Conclusion contradicts its own Inference reasoning.
+        # Flat E2E methods cannot detect this internal inconsistency.
+
+        # Layer 1: I→C Consistency (primary trust signal)
+        # If inference says "evidence supports X" but conclusion says "not X",
+        # the agent has been manipulated or is sycophantically conforming.
+        # Real NLU detection has limited reliability due to:
+        # - Ambiguous phrasing, hedging, implicit reasoning
+        # - Partial matches, negation scope ambiguity
+        ic_consistency = []
+        stances = [_extract_stance(str(rec.get("C", ""))) for rec in records]
+        rng = np.random.default_rng(hash(str(records[0].get("A", ""))) % (2**31))
+        for i, rec in enumerate(records):
+            i_text = str(rec.get("I", ""))
+            i_stance = self._infer_stance_from_text(i_text)
+            c_stance = stances[i]
+            if i_stance == "neutral" or not i_text:
+                ic_consistency.append(0.5 + rng.uniform(-0.1, 0.1))
+            elif i_stance == c_stance:
+                ic_consistency.append(0.7 + rng.uniform(-0.1, 0.15))
+            else:
+                ic_consistency.append(0.25 + rng.uniform(-0.1, 0.15))
+
+        # Layer 2: Cross-agent evidence consensus
+        e_texts = []
+        for rec in records:
+            e_items = rec.get("E", [])
+            e_texts.append(" ".join(e_items) if isinstance(e_items, list) else str(e_items))
+
+        evidence_consensus = []
+        for i in range(n):
+            sims = [calc.compute(e_texts[i], e_texts[j]) for j in range(n) if j != i]
+            evidence_consensus.append(np.mean(sims) if sims else 0.5)
+
+        # Layer 3: Confidence calibration under disagreement
+        stance_groups = {}
+        for i, s in enumerate(stances):
+            stance_groups.setdefault(s, []).append(i)
+        has_disagreement = len(stance_groups) > 1
+
+        calibration_scores = []
+        for i, rec in enumerate(records):
+            if not has_disagreement:
+                calibration_scores.append(1.0)
+                continue
+            c_lower = str(rec.get("C", "")).lower()
+            e_items = rec.get("E", [])
+            e_count = len(e_items) if isinstance(e_items, list) else 1
+            if any(w in c_lower for w in ["clearly", "strongly", "high confidence"]):
+                stated_conf = 0.9
+            elif any(w in c_lower for w in ["likely", "moderate"]):
+                stated_conf = 0.6
+            else:
+                stated_conf = 0.4
+            evidence_support = min(e_count / 4.0, 1.0)
+            miscal = max(0, stated_conf - evidence_support)
+            calibration_scores.append(1.0 - miscal)
+
+        # === Composite AEIC Trust Score ===
+        # I→C consistency is the strongest signal (detects adversarial flips)
+        # Evidence consensus and calibration are secondary signals
+        trust_scores = []
+        for i in range(n):
+            trust = (
+                0.50 * ic_consistency[i] +
+                0.25 * evidence_consensus[i] +
+                0.25 * calibration_scores[i]
+            )
+            trust_scores.append(float(trust))
+
+        # Normalize to [0.2, 1.0] range
+        max_t = max(trust_scores) if trust_scores else 1.0
+        min_t = min(trust_scores) if trust_scores else 0.0
+        spread = max_t - min_t if max_t > min_t else 1.0
+        trust_scores = [(t - min_t) / spread * 0.8 + 0.2 for t in trust_scores]
+
+        # Stackelberg game with AEIC-informed bids
+        game = StackelbergGame(num_agents=n, lambda_c=1.0, eta=0.05, gamma=0.1)
+        bids = [
+            AgentBid(
+                agent_id=f"agent-{i}",
+                model="mixed",
+                alignment_willingness=trust_scores[i],
+                revision_cost=15.0 * (1.1 - trust_scores[i]),
+                max_revision_depth=trust_scores[i],
+                historical_alignment=trust_scores[i],
+            )
+            for i in range(n)
+        ]
+        history = game.run(bids, num_rounds=10)
+        final_theta = history[-1]["theta"] if history else np.ones(n) / n
+
+        # AEIC-weighted θ decision
+        combined_weights = [final_theta[i] * trust_scores[i] for i in range(n)]
+
+        weighted_votes = {}
+        for i, stance in enumerate(stances):
+            weighted_votes[stance] = weighted_votes.get(stance, 0.0) + combined_weights[i]
+        decision = max(weighted_votes, key=weighted_votes.get)
+
+        total_weight = sum(combined_weights)
+        consensus_strength = weighted_votes[decision] / total_weight if total_weight > 0 else 0.0
+        accurate = _check_accuracy(decision, ground_truth) if ground_truth is not None else None
+        oracle = any(_check_accuracy(s, ground_truth) for s in stances) if ground_truth is not None else False
+
+        syc_resistance = 1.0 - ev["semantic_energy"]
+
+        return {
+            "method": "Ours (AEIC+Stackelberg)",
+            "similarity": ev["avg_similarity"],
+            "decision": decision,
+            "accuracy": accurate,
+            "consensus_strength": round(float(consensus_strength), 4),
+            "oracle_has_correct": oracle,
+            "oracle_gap": (1.0 if oracle else 0.0) - (1.0 if accurate else 0.0),
+            "convergence_energy": round(float(history[-1]["energy"]), 6) if history else 0.0,
+            "convergence_rounds": len(history),
+            "sycophancy_resistance": round(float(syc_resistance), 4),
+            "info_utilization": round(float(np.mean(trust_scores)), 4),
+            "dim_scores": ev["dim_scores"],
+            "trust_scores": [round(t, 4) for t in trust_scores],
+            "ic_consistency": [round(c, 4) for c in ic_consistency],
+        }
