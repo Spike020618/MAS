@@ -15,8 +15,8 @@ parser.add_argument("--sim", default="embedding", choices=["embedding", "bm25", 
 args = parser.parse_args()
 
 print("╔══════════════════════════════════════════════════════════╗")
-print("║  Game-Driven Decentralized Semantic Consensus           ║")
-print("║  Experiment Suite — IEEE Publication Quality            ║")
+print("║  AEIC-Stackelberg Decentralized Semantic Consensus      ║")
+print("║  Experiment Suite (7 Experiments)                       ║")
 print("╚══════════════════════════════════════════════════════════╝")
 print(f"  Similarity method: {args.sim}")
 print()
@@ -32,21 +32,29 @@ from experiments.exp2_adaptive_weights import run as run_exp2
 from experiments.exp3_stackelberg import run as run_exp3
 from experiments.exp4_cognitive_diversity import run as run_exp4
 from experiments.exp5_baseline_comparison import run as run_exp5
+from experiments.exp6_trust_ablation import run as run_exp6
+from experiments.exp7_scalability import run as run_exp7
 
-print("[1/5] Experiment 1: AEIC Layered vs End-to-End")
+print("[1/7] Experiment 1: AEIC Layered vs End-to-End")
 run_exp1(sim_method=args.sim)
 
-print("\n[2/5] Experiment 2: Adaptive Weight Learning")
+print("\n[2/7] Experiment 2: Adaptive Weight Learning")
 run_exp2(sim_method=args.sim)
 
-print("\n[3/5] Experiment 3: Stackelberg Convergence")
+print("\n[3/7] Experiment 3: Stackelberg Convergence")
 run_exp3()
 
-print("\n[4/5] Experiment 4: Cognitive Diversity Ablation")
+print("\n[4/7] Experiment 4: Cognitive Diversity Ablation")
 run_exp4(sim_method=args.sim)
 
-print("\n[5/5] Experiment 5: Baseline Comparison")
+print("\n[5/7] Experiment 5: Baseline Comparison")
 run_exp5(sim_method=args.sim)
+
+print("\n[6/7] Experiment 6: Trust Component Ablation")
+run_exp6(sim_method=args.sim)
+
+print("\n[7/7] Experiment 7: Scalability Analysis")
+run_exp7()
 
 print("\n" + "=" * 60)
 print("All experiments complete. Figures saved to figures/")

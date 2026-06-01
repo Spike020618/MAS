@@ -323,18 +323,22 @@ class OurMethod:
     """
     AEIC + Stackelberg (Ours) — 结构化分层 + 博弈驱动自适应共识.
 
-    Key advantages over baselines:
-    - AEIC 4-layer decomposition (vs E2E flat)
-    - Adaptive weight learning (vs uniform)
-    - Stackelberg game incentives (vs majority vote / evaluator)
-    - Distributed consensus energy (vs centralized decision)
+    Trust components:
+    - IC: Inference→Conclusion directional consistency
+    - EC: Evidence→Conclusion semantic entailment
+    - EvCons: Cross-agent evidence consensus
+    - Cal: Confidence calibration under disagreement
     """
 
-    def __init__(self, sim_method: str = "embedding"):
+    def __init__(self, sim_method: str = "embedding",
+                 trust_weights: Dict[str, float] = None):
         self.engine = ConsensusEngine(
             similarity_method=sim_method,
             weights={"A": 0.15, "E": 0.35, "I": 0.20, "C": 0.30},
         )
+        self.trust_w = trust_weights or {
+            "ic": 0.35, "ec": 0.20, "ev_cons": 0.25, "cal": 0.20
+        }
 
     @staticmethod
     def _infer_stance_from_text(text: str) -> str:
@@ -398,7 +402,20 @@ class OurMethod:
             sims = [calc.compute(e_texts[i], e_texts[j]) for j in range(n) if j != i]
             evidence_consensus.append(np.mean(sims) if sims else 0.5)
 
-        # Layer 3: Confidence calibration under disagreement
+        # Layer 3: E→C Semantic Entailment
+        # Does the agent's evidence actually support its conclusion?
+        # Corrupted agents often have evidence pointing one way but conclusion another.
+        ec_relevance = []
+        for rec in records:
+            c_text = str(rec.get("C", ""))
+            e_items = rec.get("E", [])
+            if isinstance(e_items, list) and e_items and c_text:
+                sims = [calc.compute(str(e), c_text) for e in e_items if str(e).strip()]
+                ec_relevance.append(float(np.mean(sims)) if sims else 0.5)
+            else:
+                ec_relevance.append(0.5)
+
+        # Layer 4: Confidence calibration under disagreement
         stance_groups = {}
         for i, s in enumerate(stances):
             stance_groups.setdefault(s, []).append(i)
@@ -423,14 +440,14 @@ class OurMethod:
             calibration_scores.append(1.0 - miscal)
 
         # === Composite AEIC Trust Score ===
-        # I→C consistency is the strongest signal (detects adversarial flips)
-        # Evidence consensus and calibration are secondary signals
+        tw = self.trust_w
         trust_scores = []
         for i in range(n):
             trust = (
-                0.50 * ic_consistency[i] +
-                0.25 * evidence_consensus[i] +
-                0.25 * calibration_scores[i]
+                tw.get("ic", 0) * ic_consistency[i] +
+                tw.get("ec", 0) * ec_relevance[i] +
+                tw.get("ev_cons", 0) * evidence_consensus[i] +
+                tw.get("cal", 0) * calibration_scores[i]
             )
             trust_scores.append(float(trust))
 
@@ -486,4 +503,5 @@ class OurMethod:
             "dim_scores": ev["dim_scores"],
             "trust_scores": [round(t, 4) for t in trust_scores],
             "ic_consistency": [round(c, 4) for c in ic_consistency],
+            "ec_relevance": [round(e, 4) for e in ec_relevance],
         }
