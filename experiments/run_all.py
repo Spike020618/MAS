@@ -16,7 +16,7 @@ args = parser.parse_args()
 
 print("╔══════════════════════════════════════════════════════════╗")
 print("║  AEIC-Stackelberg Decentralized Semantic Consensus      ║")
-print("║  Experiment Suite (7 Experiments)                       ║")
+print("║  Experiment Suite (9 Experiments)                       ║")
 print("╚══════════════════════════════════════════════════════════╝")
 print(f"  Similarity method: {args.sim}")
 print()
@@ -34,27 +34,35 @@ from experiments.exp4_cognitive_diversity import run as run_exp4
 from experiments.exp5_baseline_comparison import run as run_exp5
 from experiments.exp6_trust_ablation import run as run_exp6
 from experiments.exp7_scalability import run as run_exp7
+from experiments.exp8_topology import run as run_exp8
+from experiments.exp9_cross_dataset import run as run_exp9
 
-print("[1/7] Experiment 1: AEIC Layered vs End-to-End")
+print("[1/9] Experiment 1: AEIC Layered vs End-to-End")
 run_exp1(sim_method=args.sim)
 
-print("\n[2/7] Experiment 2: Adaptive Weight Learning")
+print("\n[2/9] Experiment 2: Adaptive Weight Learning")
 run_exp2(sim_method=args.sim)
 
-print("\n[3/7] Experiment 3: Stackelberg Convergence")
+print("\n[3/9] Experiment 3: Stackelberg Convergence")
 run_exp3()
 
-print("\n[4/7] Experiment 4: Cognitive Diversity Ablation")
+print("\n[4/9] Experiment 4: Cognitive Diversity Ablation")
 run_exp4(sim_method=args.sim)
 
-print("\n[5/7] Experiment 5: Baseline Comparison")
+print("\n[5/9] Experiment 5: Baseline Comparison")
 run_exp5(sim_method=args.sim)
 
-print("\n[6/7] Experiment 6: Trust Component Ablation")
+print("\n[6/9] Experiment 6: Trust Component Ablation")
 run_exp6(sim_method=args.sim)
 
-print("\n[7/7] Experiment 7: Scalability Analysis")
+print("\n[7/9] Experiment 7: Scalability Analysis")
 run_exp7()
+
+print("\n[8/9] Experiment 8: Network Topology Comparison")
+run_exp8()
+
+print("\n[9/9] Experiment 9: Cross-Dataset Generalization")
+run_exp9(sim_method=args.sim)
 
 print("\n" + "=" * 60)
 print("All experiments complete. Figures saved to figures/")

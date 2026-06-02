@@ -37,6 +37,7 @@ class StackelbergGame:
         eta: float = 0.05,
         gamma: float = 0.1,
         R: float = 100.0,
+        W: np.ndarray = None,
     ):
         self.num_agents = num_agents
         self.lambda_c = lambda_c
@@ -45,10 +46,13 @@ class StackelbergGame:
         self.gamma = gamma
         self.R = R
 
-        # 均匀连接权重矩阵
-        w_val = 1.0 / max(num_agents - 1, 1)
-        self.W = np.full((num_agents, num_agents), w_val)
-        np.fill_diagonal(self.W, 0.0)
+        if W is not None:
+            self.W = W.copy()
+        else:
+            # 默认：均匀连接权重矩阵（完全图）
+            w_val = 1.0 / max(num_agents - 1, 1)
+            self.W = np.full((num_agents, num_agents), w_val)
+            np.fill_diagonal(self.W, 0.0)
 
         # 激励参数 θ
         rng = np.random.default_rng(seed=42)

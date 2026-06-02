@@ -100,14 +100,60 @@ class EmbeddingSimilarity:
         return scores
 
 
+class APIEmbedding:
+    """阿里百炼 text-embedding-v3 API embedding (OpenAI-compatible)."""
+
+    def __init__(self):
+        import requests as _req
+        from core.llm import _load_env
+        _load_env()
+        self._requests = _req
+        self._api_key = os.environ.get("ALI_API_KEY", "")
+        self._base_url = os.environ.get("ALI_BASE_URL",
+                                        "https://dashscope.aliyuncs.com/compatible-mode/v1")
+        self._model = os.environ.get("ALI_EMBED_MODEL", "text-embedding-v2")
+        self._cache = {}
+
+    def _get_embeddings(self, texts: List[str]) -> List[np.ndarray]:
+        """Batch embed via API, with caching."""
+        uncached = [t for t in texts if t not in self._cache]
+        if uncached:
+            url = f"{self._base_url}/embeddings"
+            headers = {"Authorization": f"Bearer {self._api_key}",
+                       "Content-Type": "application/json"}
+            # API limit: max 6 texts per batch for some models
+            batch_size = 6
+            for i in range(0, len(uncached), batch_size):
+                batch = uncached[i:i + batch_size]
+                payload = {"model": self._model, "input": batch}
+                resp = self._requests.post(url, json=payload, headers=headers, timeout=30)
+                resp.raise_for_status()
+                data = resp.json()
+                for j, item in enumerate(data["data"]):
+                    vec = np.array(item["embedding"], dtype=np.float32)
+                    vec = vec / (np.linalg.norm(vec) + 1e-9)
+                    self._cache[batch[j]] = vec
+        return [self._cache[t] for t in texts]
+
+    def similarity(self, t1: str, t2: str) -> float:
+        t1, t2 = str(t1).strip(), str(t2).strip()
+        if not t1 or not t2:
+            return 0.0
+        vecs = self._get_embeddings([t1, t2])
+        return float(np.clip(np.dot(vecs[0], vecs[1]), 0.0, 1.0))
+
+
 class SimilarityCalculator:
     """Unified similarity interface supporting multiple methods."""
 
     def __init__(self, method: str = "embedding"):
         self.method = method
         self._embedding: Optional[EmbeddingSimilarity] = None
+        self._api_embedding: Optional[APIEmbedding] = None
         if method == "embedding" and _ST:
             self._embedding = EmbeddingSimilarity()
+        elif method == "api_embedding":
+            self._api_embedding = APIEmbedding()
 
     def tfidf(self, t1: str, t2: str) -> float:
         toks1, toks2 = tokenize(t1), tokenize(t2)
@@ -148,7 +194,17 @@ class SimilarityCalculator:
                 return self.tfidf(t1, t2)
         return max(0.0, self._embedding.similarity(t1, t2))
 
+    def api_embedding(self, t1: str, t2: str) -> float:
+        if self._api_embedding is None:
+            self._api_embedding = APIEmbedding()
+        return self._api_embedding.similarity(t1, t2)
+
     def compute(self, t1: str, t2: str, method: str = None) -> float:
         m = method or self.method
-        dispatch = {"embedding": self.embedding, "bm25": self.bm25, "tfidf": self.tfidf}
+        dispatch = {
+            "embedding": self.embedding,
+            "api_embedding": self.api_embedding,
+            "bm25": self.bm25,
+            "tfidf": self.tfidf,
+        }
         return dispatch.get(m, self.embedding)(t1, t2)
