@@ -5,7 +5,7 @@ Adaptive Executor — 根据Planner生成的拓扑执行多agent推理
   - DAG (rounds=1): 拓扑排序 → 逐层并行执行
   - Iterative (rounds>1): 多轮迭代，每轮按W可见性传递信息
 
-共识: Option B — 全节点 depth-weighted + IC/EC + Stackelberg
+共识: 纯Stackelberg θ加权投票（委托 trust.evaluate_and_decide）
 """
 from __future__ import annotations
 
@@ -16,14 +16,9 @@ from typing import Dict, List
 import numpy as np
 
 from core.llm import LLMClient, MultiLLMPool, AGENT_PERSONAS
-from core.planner import PlanResult, compute_depth_bonus, topological_layers
+from core.planner import PlanResult, topological_layers
 from core.similarity import SimilarityCalculator
-from core.stackelberg import AgentBid, StackelbergGame
-from core.trust import (
-    compute_ic_consistency,
-    compute_ec_relevance,
-    extract_stance,
-)
+from core.trust import evaluate_and_decide, extract_stance
 
 
 ADAPTIVE_ROLE_CONTEXT = """你的角色: {role}
@@ -73,9 +68,19 @@ class AdaptiveExecutor:
         return self.llm.generate_aeic_with_context(
             question, context, persona_id=persona_id)
 
+    def _pool_id(self, plan_idx: int) -> int:
+        """Map plan index to pool agent ID."""
+        if self._selected is not None:
+            return self._selected[plan_idx]
+        return plan_idx
+
     def execute(self, question: str, plan: PlanResult,
-                use_stackelberg: bool = True) -> Dict:
-        """执行完整流程: 按拓扑执行 → 共识决策。"""
+                use_stackelberg: bool = True,
+                selected_agents: List[int] = None) -> Dict:
+        """执行完整流程: 按拓扑执行 → 共识决策。
+        selected_agents: 可选，plan index → pool agent ID 的映射列表。
+        """
+        self._selected = selected_agents
         if plan.rounds == 1:
             nodes, agent_times = self._execute_dag(question, plan)
         else:
@@ -85,6 +90,7 @@ class AdaptiveExecutor:
         result = self._consensus_decision(nodes, plan, use_stackelberg)
         result["consensus_time_s"] = round(_time.time() - _tc0, 4)
         result["nodes"] = nodes
+        result["selected_agents"] = selected_agents
         result["agent_times"] = agent_times
         result["plan_reasoning"] = plan.reasoning
         result["execution_order"] = plan.execution_order
@@ -101,27 +107,36 @@ class AdaptiveExecutor:
         for layer in plan.execution_order:
             if len(layer) == 1:
                 i = layer[0]
+                pool_id = self._pool_id(i)
                 ctx = self._build_dag_context(i, question, plan, nodes)
-                persona_id = i % len(AGENT_PERSONAS)
+                persona_id = pool_id % len(AGENT_PERSONAS)
                 t0 = _time.time()
-                if ctx:
-                    nodes[i] = self._generate_aeic_ctx(
-                        question, ctx, persona_id=persona_id, agent_id=i)
-                else:
-                    nodes[i] = self._generate_aeic(
-                        question, persona_id=persona_id, agent_id=i)
+                try:
+                    if ctx:
+                        nodes[i] = self._generate_aeic_ctx(
+                            question, ctx, persona_id=persona_id, agent_id=pool_id)
+                    else:
+                        nodes[i] = self._generate_aeic(
+                            question, persona_id=persona_id, agent_id=pool_id)
+                except Exception:
+                    nodes[i] = None
                 agent_times[i] = _time.time() - t0
             else:
-                def _call(idx, _q=question, _plan=plan, _nodes=nodes):
+                def _call(idx, _q=question, _plan=plan, _nodes=nodes,
+                          _pool_id_fn=self._pool_id):
+                    pid_pool = _pool_id_fn(idx)
                     ctx = self._build_dag_context(idx, _q, _plan, _nodes)
-                    pid = idx % len(AGENT_PERSONAS)
+                    pid = pid_pool % len(AGENT_PERSONAS)
                     t0 = _time.time()
-                    if ctx:
-                        aeic = self._generate_aeic_ctx(
-                            _q, ctx, persona_id=pid, agent_id=idx)
-                    else:
-                        aeic = self._generate_aeic(
-                            _q, persona_id=pid, agent_id=idx)
+                    try:
+                        if ctx:
+                            aeic = self._generate_aeic_ctx(
+                                _q, ctx, persona_id=pid, agent_id=pid_pool)
+                        else:
+                            aeic = self._generate_aeic(
+                                _q, persona_id=pid, agent_id=pid_pool)
+                    except Exception:
+                        aeic = None
                     return idx, aeic, _time.time() - t0
 
                 with ThreadPoolExecutor(max_workers=len(layer)) as pool:
@@ -144,14 +159,18 @@ class AdaptiveExecutor:
         nodes = [None] * n
         round_times = [0.0] * n
 
-        def _call_r1(i):
-            pid = i % len(AGENT_PERSONAS)
+        def _call_r1(i, _pool_id_fn=self._pool_id):
+            pool_id = _pool_id_fn(i)
+            pid = pool_id % len(AGENT_PERSONAS)
             role = plan.roles[i] if i < len(plan.roles) else f"分析师{i}"
             ctx = ADAPTIVE_ROLE_CONTEXT.format(
                 role=role, upstream_section="", question=question)
             t0 = _time.time()
-            aeic = self._generate_aeic_ctx(
-                question, ctx, persona_id=pid, agent_id=i)
+            try:
+                aeic = self._generate_aeic_ctx(
+                    question, ctx, persona_id=pid, agent_id=pool_id)
+            except Exception:
+                aeic = None
             return i, aeic, _time.time() - t0
 
         with ThreadPoolExecutor(max_workers=n) as pool:
@@ -168,8 +187,10 @@ class AdaptiveExecutor:
             new_nodes = [None] * n
             rt = [0.0] * n
 
-            def _call_iter(i, _prev=prev_nodes, _t=t, _W=W):
-                pid = i % len(AGENT_PERSONAS)
+            def _call_iter(i, _prev=prev_nodes, _t=t, _W=W,
+                           _pool_id_fn=self._pool_id):
+                pool_id = _pool_id_fn(i)
+                pid = pool_id % len(AGENT_PERSONAS)
                 role = plan.roles[i] if i < len(plan.roles) else f"分析师{i}"
                 visible = []
                 for j in range(n):
@@ -184,7 +205,7 @@ class AdaptiveExecutor:
                     my_prev=my_prev, question=question)
                 t0 = _time.time()
                 aeic = self._generate_aeic_ctx(
-                    question, ctx, persona_id=pid, agent_id=i)
+                    question, ctx, persona_id=pid, agent_id=pool_id)
                 return i, aeic, _time.time() - t0
 
             with ThreadPoolExecutor(max_workers=n) as pool:
@@ -242,89 +263,15 @@ class AdaptiveExecutor:
 
     def _consensus_decision(self, nodes: List[Dict], plan: PlanResult,
                             use_stackelberg: bool) -> Dict:
-        """Option B: 全节点 depth-weighted + IC/EC + Stackelberg。"""
+        """纯Stackelberg共识 — 委托给统一入口 evaluate_and_decide。"""
         valid_nodes = [nd for nd in nodes if nd is not None]
-        n = len(valid_nodes)
-        if n == 0:
+        if not valid_nodes:
             return {"decision": "neutral", "mechanism": "empty",
-                    "trust": [], "ic": [], "ec": []}
+                    "trust": [], "ic": [], "ec": [], "stances": []}
 
         node_indices = [i for i, nd in enumerate(nodes) if nd is not None]
-        W = plan.W
+        W_sub = plan.W[np.ix_(node_indices, node_indices)]
 
-        ic = [compute_ic_consistency(nd.get("I", ""), nd.get("C", ""),
-                                     self.sim_calc)
-              for nd in valid_nodes]
-        ec = [compute_ec_relevance(nd.get("E", []), nd.get("C", ""),
-                                   self.sim_calc)
-              for nd in valid_nodes]
-
-        full_bonus = compute_depth_bonus(W)
-        depth_bonus = [full_bonus[i] for i in node_indices]
-
-        theta = [0.5] * n
-        W_sub = W[np.ix_(node_indices, node_indices)]
-        w_has_edges = W_sub.any()
-        if use_stackelberg and n >= 2 and w_has_edges:
-            stances_for_agree = [extract_stance(nd.get("C", "")) for nd in valid_nodes]
-            agreement = []
-            for i in range(n):
-                neighbors = [j for j in range(n) if j != i and W_sub[i, j] > 0]
-                if not neighbors:
-                    agreement.append(0.5)
-                else:
-                    agree_count = sum(1 for j in neighbors
-                                      if stances_for_agree[j] == stances_for_agree[i])
-                    agreement.append(agree_count / len(neighbors))
-            bids = []
-            for i in range(n):
-                bids.append(AgentBid(
-                    agent_id=f"agent-{node_indices[i]}",
-                    model="adaptive",
-                    alignment_willingness=max(0.05, ic[i]),
-                    revision_cost=max(5.0, 30.0 * (1.0 - agreement[i])),
-                    max_revision_depth=float(np.clip(ec[i], 0.1, 0.95)),
-                    historical_alignment=0.5 * ic[i] + 0.5 * ec[i],
-                ))
-            game = StackelbergGame(num_agents=n, W=W_sub)
-            history = game.run(bids)
-            theta = list(history[-1]["theta"])
-
-        theta_arr = np.array(theta)
-        if theta_arr.max() > theta_arr.min():
-            theta_norm = (theta_arr - theta_arr.min()) / \
-                         (theta_arr.max() - theta_arr.min())
-        else:
-            theta_norm = np.ones(n) * 0.5
-
-        weights = [
-            ic[i] * ec[i] * (1.0 + depth_bonus[i]) * (0.5 + 0.5 * theta_norm[i])
-            for i in range(n)
-        ]
-
-        stances = [extract_stance(nd.get("C", "")) for nd in valid_nodes]
-        vote_scores = {}
-        for i, s in enumerate(stances):
-            if s != "neutral":
-                vote_scores[s] = vote_scores.get(s, 0.0) + weights[i]
-
-        if not vote_scores:
-            decision = "neutral"
-            mechanism = "no_decisive_vote"
-        elif len(vote_scores) == 1:
-            decision = list(vote_scores.keys())[0]
-            mechanism = "unanimous"
-        else:
-            decision = max(vote_scores, key=vote_scores.get)
-            mechanism = "depth_weighted_vote"
-
-        return {
-            "decision": decision,
-            "mechanism": mechanism,
-            "trust": weights,
-            "ic": ic,
-            "ec": ec,
-            "depth_bonus": depth_bonus,
-            "theta": list(theta_norm),
-            "stances": stances,
-        }
+        return evaluate_and_decide(valid_nodes, W_sub, self.sim_calc,
+                                   mode="parallel",
+                                   use_stackelberg=use_stackelberg)

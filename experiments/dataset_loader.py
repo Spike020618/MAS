@@ -702,6 +702,65 @@ def gsm8k_to_aeic(raw_data: List[Dict], agents_per_task: int = 3,
     return tasks
 
 
+# ── GSM-Hard ──────────────────────────────────────────────────
+
+def _load_gsm_hard(n_samples: int = 100) -> List[Dict]:
+    """Load GSM-Hard (GSM8K with large/atypical numbers)."""
+    try:
+        from datasets import load_dataset
+        ds = load_dataset("reasoning-machines/gsm-hard", split=f"train[:{n_samples}]")
+        items = []
+        for row in ds:
+            target = row.get("target", 0)
+            target_str = str(int(target)) if float(target) == int(target) else str(target)
+            items.append({
+                "question": row["input"],
+                "answer": target_str,
+                "solution": row.get("code", ""),
+            })
+        return items
+    except Exception:
+        print("      (using synthetic GSM8K data as GSM-Hard fallback)")
+        return _synthetic_gsm8k(n_samples)
+
+
+# ── MMLU-Hard ─────────────────────────────────────────────────
+
+MMLU_HARD_SUBJECTS = [
+    "college_mathematics", "college_physics", "college_chemistry",
+    "college_biology", "college_computer_science",
+    "abstract_algebra", "formal_logic", "econometrics",
+    "electrical_engineering", "machine_learning",
+    "professional_accounting", "conceptual_physics",
+    "high_school_physics",
+]
+
+
+def _load_mmlu_hard(n_samples: int = 100) -> List[Dict]:
+    """Load MMLU-Hard: difficult STEM subjects from MMLU."""
+    try:
+        from datasets import load_dataset
+        ds = load_dataset("cais/mmlu", "all", split="test")
+        items = []
+        for row in ds:
+            if row.get("subject", "") not in MMLU_HARD_SUBJECTS:
+                continue
+            choices = row["choices"]
+            answer_idx = row["answer"]
+            items.append({
+                "question": row["question"],
+                "correct_answer": choices[answer_idx],
+                "choices": choices,
+                "subject": row.get("subject", "stem"),
+            })
+            if len(items) >= n_samples:
+                break
+        return items
+    except Exception:
+        print("      (using synthetic MMLU data as MMLU-Hard fallback)")
+        return _synthetic_mmlu(n_samples)
+
+
 # ── ARC-Challenge ─────────────────────────────────────────────
 
 def _load_arc(n_samples: int = 100) -> List[Dict]:
@@ -913,6 +972,12 @@ DATASET_REGISTRY = {
     "GSM8K":         {"loader": _load_gsm8k,           "converter": gsm8k_to_aeic,
                       "lang": "en", "difficulty": "medium", "default_n": 100,
                       "gt_type": "numeric"},
+    "GSM-Hard":      {"loader": _load_gsm_hard,        "converter": gsm8k_to_aeic,
+                      "lang": "en", "difficulty": "hard",   "default_n": 100,
+                      "gt_type": "numeric"},
+    "MMLU-Hard":     {"loader": _load_mmlu_hard,        "converter": mmlu_to_aeic,
+                      "lang": "en", "difficulty": "hard",   "default_n": 100,
+                      "gt_type": "text"},
     "ARC-Challenge": {"loader": _load_arc,             "converter": arc_to_aeic,
                       "lang": "en", "difficulty": "medium", "default_n": 100,
                       "gt_type": "text"},

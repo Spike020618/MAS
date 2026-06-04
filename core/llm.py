@@ -43,14 +43,10 @@ ALI_API_KEY = os.environ.get("ALI_API_KEY", "")
 ALI_BASE_URL = os.environ.get("ALI_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
 ALI_EMBED_MODEL = os.environ.get("ALI_EMBED_MODEL", "text-embedding-v3")
 
-# 多LLM后端配置 — 3种后端轮换，模拟异构agent网络
-# Agent 0,3,6 → deepseek (deepseek-chat)
-# Agent 1,4,7 → zhipu_strong (glm-5.1)
-# Agent 2,5,8 → zhipu_flash (glm-4-flash, 免费/弱模型)
+# 多LLM后端配置
 LLM_BACKENDS = {
     "deepseek": {"api_key": DEEPSEEK_API_KEY, "base_url": DEEPSEEK_BASE_URL, "model": DEEPSEEK_MODEL},
-    "zhipu_strong": {"api_key": ZHIPU_API_KEY, "base_url": ZHIPU_BASE_URL, "model": "glm-5.1"},
-    "zhipu_flash": {"api_key": ZHIPU_API_KEY, "base_url": ZHIPU_BASE_URL, "model": "glm-4-flash"},
+    "zhipu_flash": {"api_key": ZHIPU_API_KEY, "base_url": ZHIPU_BASE_URL, "model": ZHIPU_MODEL},
 }
 
 
@@ -87,7 +83,7 @@ AGENT_PERSONAS = [
             "你会考虑非传统的解释和可能性，但最终结论仍基于证据。"
             "尝试从跨学科的角度分析问题。"
         ),
-        "temperature": 0.8,
+        "temperature": 0.5,
     },
     {
         "id": 3,
@@ -109,18 +105,18 @@ AGENT_PERSONAS = [
             "不会过度复杂化简单问题，但也不会忽略关键细节。"
             "用最简洁的推理路径得出结论。"
         ),
-        "temperature": 0.6,
+        "temperature": 0.4,
     },
     {
         "id": 5,
         "name": "Devil's Advocate",
         "name_zh": "反方",
         "system": (
-            "你扮演反方立场的角色。即使你认为某个答案可能正确，"
-            "你也会尝试找到支持相反结论的论据。"
-            "你的目标是测试推理的鲁棒性，但最终还是要给出你认为最可能正确的答案。"
+            "你是一个严格的审查者。你会主动寻找推理中的漏洞和反面证据。"
+            "你必须同时列出支持和反对的论据，然后基于证据强度做出判断。"
+            "你的价值在于发现别人忽略的反面证据，但最终结论必须遵循证据。"
         ),
-        "temperature": 0.7,
+        "temperature": 0.4,
     },
     {
         "id": 6,
@@ -136,12 +132,14 @@ AGENT_PERSONAS = [
 ]
 
 # ── AEIC Prompts ─────────────────────────────────────────────
-AEIC_SYSTEM_BASE = """你是一个多智能体共识系统中的推理节点。对于给定的是非判断题，请按AEIC四层结构进行严格推理：
+AEIC_SYSTEM_BASE = """你是一个多智能体共识系统中的推理节点。对于给定的是非判断题，你必须按AEIC四层结构进行严格推理：
 
-A (Assumption): 明确问题的前提假设和隐含条件（1-2句话）
-E (Evidence): 列出2-4条关键事实证据（必须是具体的，不能笼统）
-I (Inference): 基于证据的逻辑推理过程（2-3句话，逻辑链清晰）
-C (Conclusion): 必须以"Yes"或"No"开头，然后给出简要理由
+A (Assumption): 明确问题的核心前提和关键判断点（1-2句话）
+E (Evidence): 列出2-4条具体的事实证据。每条必须是可验证的具体事实或数据，不能笼统概括
+I (Inference): 基于证据逐步推理。先考虑支持"Yes"的论据，再考虑支持"No"的论据，然后权衡得出结论（2-3句话）
+C (Conclusion): 必须严格以"Yes"或"No"开头（不允许用其他词开头），然后给出一句核心理由
+
+重要原则：结论必须基于证据推理而非直觉或流行说法。如果证据与常见看法矛盾，以证据为准。
 
 {persona_instruction}
 
@@ -201,9 +199,9 @@ class LLMClient:
             "max_tokens": kwargs.get("max_tokens", self.max_tokens),
         }
 
-        for attempt in range(3):
+        for attempt in range(5):
             try:
-                resp = self.session.post(url, json=payload, timeout=60)
+                resp = self.session.post(url, json=payload, timeout=90)
                 resp.raise_for_status()
                 data = resp.json()
                 self._call_count += 1
@@ -212,18 +210,20 @@ class LLMClient:
                 return content
             except (requests.exceptions.Timeout,
                     requests.exceptions.ConnectionError) as e:
-                if attempt < 2:
+                if attempt < 4:
                     time.sleep(2 ** attempt)
                     continue
                 raise
             except requests.exceptions.HTTPError as e:
                 if resp.status_code == 429:
-                    time.sleep(5)
+                    time.sleep(3 * (attempt + 1))
                     continue
                 raise
+        raise RuntimeError(f"API call failed after 5 attempts (last status: 429)")
 
     def generate_aeic(self, question: str, persona_id: int = 0,
-                      evidence_hints: List[str] = None) -> Dict:
+                      evidence_hints: List[str] = None,
+                      temperature_override: float = None) -> Dict:
         """Generate AEIC reasoning for a question using specified persona.
 
         Args:
@@ -247,11 +247,13 @@ class LLMClient:
             {"role": "user", "content": user_msg},
         ]
 
-        raw = self.chat(messages, temperature=persona["temperature"])
+        temp = temperature_override if temperature_override is not None else persona["temperature"]
+        raw = self.chat(messages, temperature=temp)
         return self._parse_aeic_response(raw, question, persona_id)
 
     def generate_aeic_with_context(self, question: str, context: str,
-                                    persona_id: int = 0) -> Dict:
+                                    persona_id: int = 0,
+                                    temperature_override: float = None) -> Dict:
         """Generate AEIC reasoning with upstream context injected.
 
         Used by sequential/star/debate modes where agents receive
@@ -273,12 +275,20 @@ class LLMClient:
             {"role": "user", "content": user_msg},
         ]
 
-        raw = self.chat(messages, temperature=persona["temperature"])
+        temp = temperature_override if temperature_override is not None else persona["temperature"]
+        raw = self.chat(messages, temperature=temp)
         return self._parse_aeic_response(raw, question, persona_id)
 
     def _parse_aeic_response(self, raw: str, question: str,
                              persona_id: int) -> Dict:
         """Parse LLM response into AEIC dict, with fallback."""
+        if raw is None:
+            return {
+                "A": f"Analysis of: {question[:80]}",
+                "E": ["API call failed"],
+                "I": "Unable to generate inference due to API error",
+                "C": "No: insufficient data",
+            }
         text = raw.strip()
 
         if "```json" in text:
@@ -297,27 +307,46 @@ class LLMClient:
                 "C": str(result.get("C", "")),
             }
         except (json.JSONDecodeError, KeyError, TypeError):
-            # Try to find JSON in the text
             import re
-            json_match = re.search(r'\{[^{}]*"A"[^{}]*\}', text, re.DOTALL)
-            if json_match:
-                try:
-                    result = json.loads(json_match.group())
-                    return {
-                        "A": str(result.get("A", "")),
-                        "E": list(result.get("E", [])) if isinstance(result.get("E"), list) else [str(result.get("E", ""))],
-                        "I": str(result.get("I", "")),
-                        "C": str(result.get("C", "")),
-                    }
-                except json.JSONDecodeError:
-                    pass
+            # Try balanced brace matching
+            for m in re.finditer(r'\{', text):
+                start = m.start()
+                depth = 0
+                for k in range(start, len(text)):
+                    if text[k] == '{':
+                        depth += 1
+                    elif text[k] == '}':
+                        depth -= 1
+                    if depth == 0:
+                        candidate = text[start:k+1]
+                        try:
+                            result = json.loads(candidate)
+                            if "C" in result:
+                                if isinstance(result.get("E"), str):
+                                    result["E"] = [result["E"]]
+                                return {
+                                    "A": str(result.get("A", "")),
+                                    "E": list(result.get("E", [])) if isinstance(result.get("E"), list) else [str(result.get("E", ""))],
+                                    "I": str(result.get("I", "")),
+                                    "C": str(result.get("C", "")),
+                                }
+                        except (json.JSONDecodeError, TypeError):
+                            pass
+                        break
 
-            # Final fallback
+            # Final fallback: try to extract stance from raw text
+            raw_lower = raw.lower().strip()
+            if raw_lower.startswith("yes") or "answer is yes" in raw_lower:
+                fallback_c = "Yes: " + raw[:100]
+            elif raw_lower.startswith("no") or "answer is no" in raw_lower:
+                fallback_c = "No: " + raw[:100]
+            else:
+                fallback_c = raw[-200:] if len(raw) > 200 else raw
             return {
                 "A": f"Analysis of: {question[:80]}",
                 "E": [raw[:150]],
                 "I": raw[:300],
-                "C": raw[-200:] if len(raw) > 200 else raw,
+                "C": fallback_c,
             }
 
     @property
@@ -339,27 +368,49 @@ class LLMClient:
 class MultiLLMPool:
     """多LLM后端池 — 每个agent随机分配不同的LLM，增加推理多样性。"""
 
-    def __init__(self, backends: List[str] = None, seed: int = 42):
-        if backends is None:
-            backends = [k for k, v in LLM_BACKENDS.items() if v["api_key"]]
-        self.backends = backends
-        self.clients = {b: LLMClient(backend=b) for b in backends}
+    def __init__(self, backends: List[str] = None,
+                 agent_map: Dict[int, str] = None,
+                 temperature_map: Dict[int, float] = None,
+                 seed: int = 42):
+        if agent_map is not None:
+            all_backends = sorted(set(agent_map.values()))
+            self.backends = all_backends
+            self.clients = {b: LLMClient(backend=b) for b in all_backends}
+            self.agent_map = agent_map
+        else:
+            if backends is None:
+                backends = [k for k, v in LLM_BACKENDS.items() if v["api_key"]]
+            self.backends = backends
+            self.clients = {b: LLMClient(backend=b) for b in backends}
+            self.agent_map = None
+        self.temperature_map = temperature_map or {}
         self._rng = random.Random(seed)
         self._call_count = 0
 
     def get_client(self, agent_id: int = None) -> LLMClient:
-        """为指定agent分配LLM后端（确定性映射）。"""
+        """为指定agent分配LLM后端。"""
+        if self.agent_map is not None and agent_id is not None:
+            backend = self.agent_map.get(agent_id, self.backends[0])
+            return self.clients[backend]
         if agent_id is not None:
             idx = agent_id % len(self.backends)
         else:
             idx = self._rng.randint(0, len(self.backends) - 1)
         return self.clients[self.backends[idx]]
 
+    def get_backend_name(self, agent_id: int) -> str:
+        """返回指定agent的后端名称。"""
+        if self.agent_map is not None:
+            return self.agent_map.get(agent_id, self.backends[0])
+        return self.backends[agent_id % len(self.backends)]
+
     def generate_aeic(self, question: str, persona_id: int = 0,
                       agent_id: int = 0) -> Dict:
         """使用分配给该agent的LLM生成AEIC。"""
         client = self.get_client(agent_id)
-        result = client.generate_aeic(question, persona_id=persona_id)
+        temp = self.temperature_map.get(agent_id)
+        result = client.generate_aeic(question, persona_id=persona_id,
+                                      temperature_override=temp)
         self._call_count += 1
         return result
 
@@ -368,7 +419,9 @@ class MultiLLMPool:
                                     agent_id: int = 0) -> Dict:
         """使用分配给该agent的LLM生成带context的AEIC。"""
         client = self.get_client(agent_id)
-        result = client.generate_aeic_with_context(question, context, persona_id)
+        temp = self.temperature_map.get(agent_id)
+        result = client.generate_aeic_with_context(
+            question, context, persona_id, temperature_override=temp)
         self._call_count += 1
         return result
 

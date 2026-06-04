@@ -154,6 +154,12 @@ class StackelbergGame:
 
     def run(self, bids: List[AgentBid], num_rounds: int = 10) -> List[Dict]:
         """运行多轮博弈"""
+        self.theta = np.array([b.historical_alignment for b in bids])
+        self.theta = np.clip(self.theta, 0.1, 0.9)
+        rng = np.random.default_rng(seed=42)
+        self.theta += rng.uniform(-0.01, 0.01, len(bids))
+        self.theta = np.clip(self.theta, 0.05, 0.95)
+
         history = []
         for t in range(num_rounds):
             result = self.step(bids)

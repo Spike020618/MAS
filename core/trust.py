@@ -1,14 +1,13 @@
 """
-信任评估模块 — AEIC-Stackelberg 核心
+信任评估模块 — AEIC-Stackelberg 核心（统一共识入口）
 
 功能:
   - IC Consistency: 中英双语方向检测 + 语义相似度
   - EC Relevance: 证据-结论方向性评估
   - Evidence Score: 模式感知（parallel=consensus, sequential=novelty）
+  - Evidence Quality: 证据具体性/信息密度
   - Neighbor Agreement: 拓扑感知邻居一致性
-  - Composite Trust: power transform (无min-max归一化)
-  - Quality-Gated Decision: IC×EC质量门控，少数派可override多数派
-  - Stackelberg Bid构建: 4个独立信号 → 4个bid参数
+  - evaluate_and_decide: 统一共识入口 — IC/EC/EQ/EV → bid → Stackelberg → θ加权投票
 """
 from __future__ import annotations
 
@@ -295,28 +294,87 @@ def _flatten_evidence(node) -> str:
     return str(e)
 
 
+def compute_evidence_quality(nodes: List[Dict]) -> List[float]:
+    """
+    证据质量评估 — 衡量证据的具体性和信息密度。
+
+    强模型倾向给出具体事实（含数字、专有名词、年份等），
+    弱模型倾向给出笼统概括。
+
+    评分维度:
+    1. 证据条数（多条独立证据 > 单条）
+    2. 证据平均长度（具体事实通常更长）
+    3. 信息密度（包含数字/年份/专有名词）
+    4. 证据多样性（各条证据不重复）
+    """
+    import re
+    scores = []
+    for nd in nodes:
+        e = nd.get("E", [])
+        if isinstance(e, str):
+            e = [e]
+        if not e:
+            scores.append(0.1)
+            continue
+
+        n_items = len(e)
+        item_count_score = min(n_items / 3.0, 1.0)
+
+        avg_len = np.mean([len(str(x)) for x in e])
+        length_score = min(avg_len / 60.0, 1.0)
+
+        info_count = 0
+        for item in e:
+            text = str(item)
+            info_count += len(re.findall(r'\d{4}', text))
+            info_count += len(re.findall(r'\d+\.?\d*%', text))
+            info_count += len(re.findall(r'\d+(?:\.\d+)?', text))
+            info_count += len(re.findall(
+                r'[A-Z][a-z]+(?:\s[A-Z][a-z]+)*', text))
+        density_score = min(info_count / (n_items * 3.0), 1.0)
+
+        if n_items >= 2:
+            unique_starts = set()
+            for item in e:
+                s = str(item)[:20].lower()
+                unique_starts.add(s)
+            diversity_score = len(unique_starts) / n_items
+        else:
+            diversity_score = 0.5
+
+        score = (0.2 * item_count_score + 0.3 * length_score +
+                 0.3 * density_score + 0.2 * diversity_score)
+        scores.append(float(np.clip(score, 0.05, 1.0)))
+
+    return scores
+
+
 def compute_evidence_consensus(nodes: List[Dict], W: np.ndarray, sim_calc) -> List[float]:
     """
     Parallel/Debate模式: 独立产出的证据相似 = 可靠。
     计算每个agent的证据与邻居证据的平均相似度。
+    W=0时使用全局对比（独立投票中证据趋同 = 更可靠）。
     """
     n = len(nodes)
     scores = []
     evidence_texts = [_flatten_evidence(nd) for nd in nodes]
+    w_is_zero = not np.any(W > 0)
 
     for i in range(n):
-        neighbors = [j for j in range(n) if j != i and W[i, j] > 0]
-        if not neighbors or not evidence_texts[i].strip():
+        if w_is_zero:
+            peers = [j for j in range(n) if j != i]
+        else:
+            peers = [j for j in range(n) if j != i and W[i, j] > 0]
+        if not peers or not evidence_texts[i].strip():
             scores.append(0.5)
             continue
         sims = []
-        for j in neighbors:
+        for j in peers:
             if evidence_texts[j].strip():
                 s = sim_calc.compute(evidence_texts[i], evidence_texts[j])
-                sims.append(s * W[i, j])
+                sims.append(s)
         if sims:
-            w_sum = sum(W[i, j] for j in neighbors if evidence_texts[j].strip())
-            scores.append(sum(sims) / max(w_sum, 1e-9))
+            scores.append(sum(sims) / len(sims))
         else:
             scores.append(0.5)
     return scores
@@ -358,124 +416,32 @@ def compute_evidence_score(nodes: List[Dict], W: np.ndarray, sim_calc,
 # ── Neighbor Agreement ─────────────────────────────────────────
 
 def compute_neighbor_agreement(nodes: List[Dict], W: np.ndarray) -> List[float]:
-    """拓扑感知的邻居一致性。"""
+    """拓扑感知的邻居一致性。W=0时使用全局对比。"""
     n = len(nodes)
     stances = [extract_stance(nd.get("C", "")) for nd in nodes]
+    w_is_zero = not np.any(W > 0)
     scores = []
     for i in range(n):
-        neighbors = [j for j in range(n) if j != i and W[i, j] > 0]
-        if not neighbors:
+        if w_is_zero:
+            peers = [j for j in range(n) if j != i]
+        else:
+            peers = [j for j in range(n) if j != i and W[i, j] > 0]
+        if not peers:
             scores.append(0.5)
             continue
-        agree_count = sum(1 for j in neighbors if stances[j] == stances[i])
-        scores.append(agree_count / len(neighbors))
+        agree_count = sum(1 for j in peers if stances[j] == stances[i])
+        scores.append(agree_count / len(peers))
     return scores
-
-
-# ── Composite Trust ────────────────────────────────────────────
-
-def compute_composite_trust(ic: List[float], ec: List[float],
-                            ev: List[float], ag: List[float],
-                            mode: str = "parallel") -> List[float]:
-    """
-    合成信任值，使用power transformation增加区分度。
-    无min-max归一化，保持绝对标准。
-    """
-    if mode == "sequential":
-        weights = (0.40, 0.25, 0.20, 0.15)
-    elif mode == "debate":
-        weights = (0.35, 0.25, 0.20, 0.20)
-    else:
-        weights = (0.35, 0.25, 0.25, 0.15)
-
-    trust = []
-    for i in range(len(ic)):
-        raw = (weights[0] * ic[i] + weights[1] * ec[i] +
-               weights[2] * ev[i] + weights[3] * ag[i])
-        trust.append(raw ** 1.5)
-    return trust
-
-
-# ── Stackelberg Bid构建 ────────────────────────────────────────
-
-def build_stackelberg_bids(ic: List[float], ec: List[float],
-                           ev: List[float], agreement: List[float],
-                           n: int) -> List[AgentBid]:
-    """
-    从4个独立信号构建Stackelberg bid参数。
-
-    IC → alignment_willingness (内部一致 = 愿意配合)
-    agreement → revision_cost (少数派 = 昂贵)
-    EC → max_revision_depth (证据好 = 有修改空间)
-    IC+EC → historical_alignment (综合可靠性)
-    """
-    bids = []
-    for i in range(n):
-        bids.append(AgentBid(
-            agent_id=f"agent-{i}",
-            model="deepseek-chat",
-            alignment_willingness=max(0.05, ic[i]),
-            revision_cost=max(5.0, 30.0 * (1.0 - agreement[i])),
-            max_revision_depth=float(np.clip(ec[i], 0.1, 0.95)),
-            historical_alignment=0.5 * ic[i] + 0.5 * ec[i],
-        ))
-    return bids
-
-
-# ── Quality-Gated Decision ────────────────────────────────────
-
-def quality_gated_decision(stances: List[str], trust_weights: List[float],
-                           ic_scores: List[float], ec_scores: List[float]) -> Tuple[str, str]:
-    """
-    质量门控决策：当少数派质量显著高于多数派时可override。
-
-    Uses relative quality ratio (robust across different similarity methods)
-    rather than absolute thresholds.
-
-    Returns: (decision_stance, mechanism)
-      mechanism: "unanimous" | "quality_override" | "weighted_vote"
-    """
-    n = len(stances)
-    if n == 0:
-        return "neutral", "empty"
-
-    vote_scores = {}
-    for i in range(n):
-        vote_scores[stances[i]] = vote_scores.get(stances[i], 0.0) + trust_weights[i]
-    majority_stance = max(vote_scores, key=vote_scores.get)
-
-    quality = [ic * ec for ic, ec in zip(ic_scores, ec_scores)]
-
-    majority_idx = [i for i in range(n) if stances[i] == majority_stance]
-    minority_idx = [i for i in range(n) if stances[i] != majority_stance]
-
-    if not minority_idx:
-        return majority_stance, "unanimous"
-
-    majority_quality = float(np.mean([quality[i] for i in majority_idx]))
-    minority_quality = float(max(quality[i] for i in minority_idx))
-    quality_gap = minority_quality - majority_quality
-    quality_ratio = minority_quality / max(majority_quality, 0.01)
-    majority_fraction = len(majority_idx) / n
-
-    # Override conditions (relative + modest absolute):
-    # 1. minority best agent quality > 2× majority average (relative dominance)
-    # 2. quality gap > 0.05 (prevents noise-level overrides)
-    # 3. majority not overwhelming (<=80%)
-    if quality_ratio > 2.0 and quality_gap > 0.05 and majority_fraction <= 0.8:
-        best_minority = minority_idx[int(np.argmax([quality[i] for i in minority_idx]))]
-        return stances[best_minority], "quality_override"
-
-    return majority_stance, "weighted_vote"
 
 
 # ── 完整Pipeline入口 ──────────────────────────────────────────
 
 def evaluate_and_decide(nodes: List[Dict], W: np.ndarray, sim_calc,
                         mode: str = "parallel",
-                        use_stackelberg: bool = True) -> Dict:
+                        use_stackelberg: bool = True,
+                        config=None) -> Dict:
     """
-    完整的信任评估+决策pipeline。
+    统一共识入口 — IC/EC/EQ/EV → bid → Stackelberg → θ加权投票。
 
     Args:
         nodes: List of AEIC dicts [{"A":..,"E":..,"I":..,"C":..}, ...]
@@ -483,19 +449,11 @@ def evaluate_and_decide(nodes: List[Dict], W: np.ndarray, sim_calc,
         sim_calc: SimilarityCalculator instance
         mode: "parallel" | "sequential" | "debate"
         use_stackelberg: 是否启用Stackelberg博弈调整权重
-
-    Returns:
-        {
-            "decision": str,  # "yes" or "no"
-            "mechanism": str,  # "unanimous"/"quality_override"/"weighted_vote"
-            "trust": List[float],
-            "ic": List[float],
-            "ec": List[float],
-            "ev": List[float],
-            "agreement": List[float],
-            "theta": List[float] (if stackelberg),
-        }
+        config: ConsensusConfig (None=默认参数)
     """
+    from core.consensus_config import ConsensusConfig
+    if config is None:
+        config = ConsensusConfig()
     n = len(nodes)
     if n == 0:
         return {"decision": "neutral", "mechanism": "empty",
@@ -516,40 +474,73 @@ def evaluate_and_decide(nodes: List[Dict], W: np.ndarray, sim_calc,
 
     agreement = compute_neighbor_agreement(nodes, W)
 
-    # Step 2: 合成信任
-    trust = compute_composite_trust(ic, ec, ev, agreement, mode=mode)
+    eq = compute_evidence_quality(nodes)
 
-    # Step 3: Stackelberg博弈调整（可选）
-    # W全零时跳过：peer_pressure=0导致θ退化为无意义噪声
+    # Step 2: Stackelberg博弈 → θ作为唯一权重
     _t2 = _time.time()
     theta = [0.5] * n
-    w_has_edges = W.any() if hasattr(W, 'any') else np.any(W > 0)
-    if use_stackelberg and n >= 2 and w_has_edges:
-        bids = build_stackelberg_bids(ic, ec, ev, agreement, n)
-        game = StackelbergGame(num_agents=n, W=W)
+    if use_stackelberg and n >= 2:
+        w_has_edges = W.any() if hasattr(W, 'any') else np.any(W > 0)
+        if w_has_edges:
+            W_game = W
+        else:
+            W_game = np.ones((n, n)) - np.eye(n)
+            W_game /= max(n - 1, 1)
+        bids = []
+        for i in range(n):
+            aw = ic[i]**config.aw_ic_exp * eq[i]**config.aw_eq_exp * \
+                 (config.aw_ev_base + config.aw_ev_scale * ev[i])
+            ha = config.ha_ic*ic[i] + config.ha_ec*ec[i] + \
+                 config.ha_eq*eq[i] + config.ha_ev*ev[i]
+            bids.append(AgentBid(
+                agent_id=f"agent-{i}",
+                model="consensus",
+                alignment_willingness=max(config.aw_floor, aw),
+                revision_cost=max(config.rc_floor,
+                                  config.rc_scale * (1.0 - agreement[i])),
+                max_revision_depth=float(np.clip(ec[i], config.mrd_lo,
+                                                 config.mrd_hi)),
+                historical_alignment=ha,
+            ))
+        game = StackelbergGame(num_agents=n, W=W_game,
+                               lambda_c=config.sg_lambda, mu=config.sg_mu,
+                               eta=config.sg_eta, gamma=config.sg_gamma)
         history = game.run(bids)
         theta = list(history[-1]["theta"])
-        theta_arr = np.array(theta)
-        if theta_arr.max() > theta_arr.min():
-            theta_norm = (theta_arr - theta_arr.min()) / (theta_arr.max() - theta_arr.min())
-        else:
-            theta_norm = np.ones(n) * 0.5
-        trust = [t * (0.5 + 0.5 * tn) for t, tn in zip(trust, theta_norm)]
     _t_sg = _time.time() - _t2
 
-    # Step 4: 质量门控决策
+    theta_arr = np.array(theta)
+    if theta_arr.max() > theta_arr.min():
+        theta_norm = (theta_arr - theta_arr.min()) / (theta_arr.max() - theta_arr.min())
+    else:
+        theta_norm = np.ones(n) * 0.5
+    weights = list(theta_norm)
+
+    # Step 3: 纯θ加权投票
     stances = [extract_stance(nd.get("C", "")) for nd in nodes]
-    decision, mechanism = quality_gated_decision(stances, trust, ic, ec)
+    vote_scores = {}
+    for i in range(n):
+        if stances[i] != "neutral":
+            vote_scores[stances[i]] = vote_scores.get(stances[i], 0.0) + weights[i]
+
+    if not vote_scores:
+        decision, mechanism = "neutral", "no_decisive_vote"
+    elif len(vote_scores) == 1:
+        decision, mechanism = next(iter(vote_scores)), "unanimous"
+    else:
+        decision = max(vote_scores, key=vote_scores.get)
+        mechanism = "weighted_vote"
 
     return {
         "decision": decision,
         "mechanism": mechanism,
-        "trust": trust,
+        "trust": weights,
         "ic": ic,
         "ec": ec,
         "ev": ev,
+        "eq": eq,
         "agreement": agreement,
-        "theta": theta,
+        "theta": list(theta_norm),
         "stances": stances,
         "timing": {
             "ic_ec_time_s": round(_t_ic_ec, 4),

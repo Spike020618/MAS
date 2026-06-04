@@ -1,15 +1,16 @@
 """
-实验脚本 — AEIC-Stackelberg 四种编排模式对比
+Fixed Topology Experiment — AEIC-Stackelberg 四种编排模式对比
 
-对比：
-  方法: MajVote, QualWt, AEIC (no SG), AEIC+SG
-  模式: parallel, sequential, star, debate
-  数据集: StrategyQA (boolean GT, yes/no questions)
+对比方法: MajVote, QualWt, AEIC (no SG), AEIC+SG
+拓扑模式: parallel, sequential, star, debate
+n_agents: 1, 3, 5
+
+每方法输出独立CSV，统一格式，每题一行。
 
 Usage:
   python experiments/exp_orchestrator.py --n_samples 20 --n_agents 3
   python experiments/exp_orchestrator.py --dataset StrategyQA --modes parallel,sequential
-  python experiments/exp_orchestrator.py --dataset StrategyQA --n_samples 20 --csv results/set1.csv
+  python experiments/exp_orchestrator.py --dataset StrategyQA --n_samples 20 --csv_dir results
 """
 from __future__ import annotations
 
@@ -34,52 +35,43 @@ from core.trust import (
     majority_vote,
     quality_weighted_vote,
     extract_stance,
+    compute_ic_consistency,
+    compute_ec_relevance,
+    compute_evidence_quality,
+    compute_evidence_consensus,
 )
+from core.trust_tracker import TrustTracker
 
 
-# ─── CSV断点续跑 ────────────────────────────────────────────────────
+# ─── 统一CSV格式 ───────────────────────────────────────────────────
 
-SET1_FIELDS = [
-    "dataset", "mode", "n_agents", "method", "question_id",
+UNIFIED_FIELDS = [
+    "dataset", "condition", "question_id",
     "question", "ground_truth", "decision", "mechanism",
-    "stances", "ic", "ec", "trust", "theta", "elapsed_s",
-    "trace",
+    "n_agents_used", "selected_agents",
+    "per_agent_stance", "per_agent_ic", "per_agent_ec", "per_agent_eq",
+    "per_agent_theta", "per_agent_backend",
+    "trust_scores", "elapsed_s",
 ]
 
 
-def load_completed(csv_path: str) -> Set[Tuple]:
-    """加载已完成的 (dataset, mode, n_agents, method, question_id) 组合。"""
-    completed = set()
-    if not os.path.exists(csv_path):
-        return completed
-    with open(csv_path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            key = (row["dataset"], row["mode"], row["n_agents"],
-                   row["method"], row["question_id"])
-            completed.add(key)
-    return completed
-
-
-def append_csv_row(csv_path: str, row: Dict, fieldnames: List[str] = None):
-    """追加一行到CSV（首次自动写header）。"""
-    if fieldnames is None:
-        fieldnames = SET1_FIELDS
+def _append_unified_row(csv_path: str, row: Dict):
     write_header = not os.path.exists(csv_path) or os.path.getsize(csv_path) == 0
     with open(csv_path, "a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=UNIFIED_FIELDS)
         if write_header:
             writer.writeheader()
         writer.writerow(row)
 
 
-def _serialize_list(lst) -> str:
-    """将list序列化为字符串存入CSV单元格。"""
-    if lst is None:
-        return ""
-    if isinstance(lst, np.ndarray):
-        lst = lst.tolist()
-    return json.dumps(lst, ensure_ascii=False)
+def _load_completed(csv_path: str) -> Set[Tuple]:
+    completed = set()
+    if not os.path.exists(csv_path):
+        return completed
+    with open(csv_path, "r", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            completed.add((row["dataset"], row["condition"], row["question_id"]))
+    return completed
 
 
 # ─── 数据加载 ───────────────────────────────────────────────────────
@@ -111,9 +103,20 @@ def load_questions(dataset_name: str, n_samples: int, seed: int = 42,
     elif dataset_name == "TruthfulQA":
         for item in raw[offset:]:
             q = item.get("question", "")
-            gt_stance = "yes" if item.get("ground_truth", True) else "no"
-            questions.append({"question": q, "ground_truth": gt_stance,
-                              "source": dataset_name})
+            correct_exp = item.get("correct_explanation", "")
+            wrong_exp = item.get("incorrect_explanation", "")
+            gt_bool = item.get("ground_truth", True)
+            if correct_exp:
+                yes_q = (f"Question: {q}\nProposed answer: {correct_exp}\n"
+                         f"Is this proposed answer factually correct?")
+                questions.append({"question": yes_q, "ground_truth": "yes",
+                                  "source": dataset_name})
+            if wrong_exp:
+                no_q = (f"Question: {q}\nProposed answer: {wrong_exp}\n"
+                        f"Is this proposed answer factually correct?")
+                questions.append({"question": no_q, "ground_truth": "no",
+                                  "source": dataset_name})
+        rng.shuffle(questions)
     elif dataset_name == "HotpotQA":
         for item in raw[offset:]:
             q = item.get("question", "")
@@ -122,28 +125,29 @@ def load_questions(dataset_name: str, n_samples: int, seed: int = 42,
                 questions.append({"question": q, "ground_truth": ans,
                                   "source": dataset_name})
             else:
-                # Convert factoid to yes/no: "Is the answer to '{q}' equal to '{ans}'?"
-                yes_q = f"For the question '{q}', is the answer '{item['answer']}'?"
+                yes_q = (f"Question: {q}\nProposed answer: {item['answer']}\n"
+                         f"Research the question independently, then judge: "
+                         f"is the proposed answer correct?")
                 questions.append({"question": yes_q, "ground_truth": "yes",
                                   "source": dataset_name})
-    elif dataset_name == "GSM8K":
+    elif dataset_name in ("GSM8K", "GSM-Hard"):
         for item in raw[offset:]:
             q = item.get("question", "")
             ans = str(item.get("answer", ""))
-            # Convert: "Is the answer to this math problem X?"
-            yes_q = f"{q} Is the answer {ans}?"
+            yes_q = (f"Solve this math problem step by step: {q}\n"
+                     f"Someone claims the answer is {ans}. "
+                     f"Is this answer correct? Verify by solving independently.")
             questions.append({"question": yes_q, "ground_truth": "yes",
                               "source": dataset_name})
-            # Also add a wrong answer version
             wrong_ans = int(ans) + rng.choice([-5, -3, -2, 2, 3, 5, 10]) if ans.lstrip('-').isdigit() else "0"
-            no_q = f"{q} Is the answer {wrong_ans}?"
+            no_q = (f"Solve this math problem step by step: {q}\n"
+                    f"Someone claims the answer is {wrong_ans}. "
+                    f"Is this answer correct? Verify by solving independently.")
             questions.append({"question": no_q, "ground_truth": "no",
                               "source": dataset_name})
         rng.shuffle(questions)
     else:
         # MCQ datasets (GPQA, MMLU, ARC-Challenge, CommonsenseQA)
-        # Half: "Is [correct] the answer?" (GT=yes)
-        # Half: "Is [wrong] the answer?" (GT=no)
         for item in raw[offset:]:
             q = item.get("question", "")
             correct = item.get("correct_answer", "")
@@ -151,14 +155,18 @@ def load_questions(dataset_name: str, n_samples: int, seed: int = 42,
             if not q or not correct:
                 continue
 
-            yes_q = f"For the question '{q}', is the correct answer '{correct}'?"
+            yes_q = (f"Question: {q}\nProposed answer: {correct}\n"
+                     f"First solve the question independently, then judge: "
+                     f"is the proposed answer correct?")
             questions.append({"question": yes_q, "ground_truth": "yes",
                               "source": dataset_name})
 
             wrong_choices = [c for c in choices if c != correct]
             if wrong_choices:
                 wrong = rng.choice(wrong_choices)
-                no_q = f"For the question '{q}', is the correct answer '{wrong}'?"
+                no_q = (f"Question: {q}\nProposed answer: {wrong}\n"
+                        f"First solve the question independently, then judge: "
+                        f"is the proposed answer correct?")
                 questions.append({"question": no_q, "ground_truth": "no",
                                   "source": dataset_name})
 
@@ -181,28 +189,19 @@ def evaluate_accuracy(results: List[Dict]) -> Dict[str, float]:
     }
 
 
+# ─── 实验主逻辑 ─────────────────────────────────────────────────────
+
 def run_experiment(
     questions: List[Dict],
     modes: List[str],
     n_agents: int = 3,
-    sim_method: str = "tfidf",
-    multi_llm: bool = True,
-    csv_path: str = None,
+    sim_method: str = "embedding",
+    csv_dir: str = None,
     dataset_name: str = "",
 ) -> Dict[str, Dict[str, List[Dict]]]:
-    """
-    Run all modes × all methods on the questions.
+    """Run all modes × all methods on the questions."""
 
-    Returns: {mode: {method: [results]}}
-    """
-    completed = load_completed(csv_path) if csv_path else set()
-    if completed:
-        print(f"  CSV checkpoint: {len(completed)} rows already completed")
-
-    if multi_llm:
-        llm = MultiLLMPool()
-    else:
-        llm = LLMClient(backend="deepseek")
+    llm = MultiLLMPool()
     sim = SimilarityCalculator(method=sim_method)
     orch = Orchestrator(llm, sim, n_agents=n_agents)
 
@@ -211,7 +210,27 @@ def run_experiment(
         "sequential": "path",
         "star": "star",
         "debate": "complete",
+        "selfcorrect": "complete",
+        "agentverse": "complete",
     }
+
+    methods = ["AEIC+SG", "AEIC", "QualWt", "MajVote"]
+
+    # Load completed rows per method file
+    completed_per_method = {}
+    method_paths = {}
+    if csv_dir:
+        for method in methods:
+            fname = f"fixed_{method}_{dataset_name}.csv".replace("+", "_")
+            fpath = os.path.join(csv_dir, fname)
+            method_paths[method] = fpath
+            completed_per_method[method] = _load_completed(fpath)
+        total_completed = sum(len(v) for v in completed_per_method.values())
+        if total_completed:
+            print(f"  CSV checkpoint: {total_completed} rows already completed")
+
+    # TrustTracker across all questions (all modes share same tracker)
+    tracker = TrustTracker(n_agents=n_agents, warmup=3)
 
     all_results = {}
 
@@ -223,25 +242,69 @@ def run_experiment(
         topo_name = topology_map[mode]
         n = n_agents if mode != "star" else n_agents + 1
         W = make_topology(topo_name, n)
+        condition = f"{mode}_{n_agents}a"
 
-        mode_results = {"AEIC+SG": [], "AEIC": [], "QualWt": [], "MajVote": []}
+        mode_results = {m: [] for m in methods}
 
         for q_idx, q_item in enumerate(questions):
             question = q_item["question"]
             gt = q_item["ground_truth"]
 
-            # 断点续跑: 检查该题所有method是否都已完成
-            if csv_path:
+            # 断点续跑
+            if csv_dir:
                 all_done = all(
-                    (dataset_name, mode, str(n_agents), method, str(q_idx))
-                    in completed
-                    for method in ["AEIC+SG", "AEIC", "QualWt", "MajVote"]
+                    (dataset_name, condition, str(q_idx))
+                    in completed_per_method.get(m, set())
+                    for m in methods
                 )
                 if all_done:
                     continue
 
             print(f"\n  [{q_idx+1}/{len(questions)}] {question[:60]}...")
             t0 = time.time()
+
+            # n=1: single agent, no consensus
+            if n_agents == 1:
+                persona_id = 0
+                try:
+                    aeic = llm.generate_aeic(question, persona_id=0, agent_id=0)
+                except Exception as e:
+                    print(f"    ERROR: {e}")
+                    continue
+                stance = extract_stance(aeic.get("C", ""))
+                elapsed = time.time() - t0
+
+                backends = llm.backends if hasattr(llm, 'backends') else ["deepseek"]
+                base = {
+                    "dataset": dataset_name, "condition": condition,
+                    "question_id": str(q_idx),
+                    "question": question, "ground_truth": gt,
+                    "n_agents_used": "1",
+                    "selected_agents": json.dumps([0]),
+                    "per_agent_stance": json.dumps([stance]),
+                    "per_agent_ic": json.dumps([]),
+                    "per_agent_ec": json.dumps([]),
+                    "per_agent_eq": json.dumps([]),
+                    "per_agent_theta": json.dumps([]),
+                    "per_agent_backend": json.dumps([backends[0] if backends else "unknown"]),
+                    "trust_scores": json.dumps(tracker.get_all_scores()),
+                    "elapsed_s": f"{elapsed:.2f}",
+                }
+                for method in methods:
+                    mode_results[method].append({
+                        "question": question, "ground_truth": gt,
+                        "decision": stance, "mechanism": "single_agent",
+                    })
+                    if csv_dir:
+                        _append_unified_row(method_paths[method], {
+                            **base, "decision": stance, "mechanism": "single_agent",
+                        })
+
+                tracker.update(0, 0.5, 0.5, 0.5, 0.5,
+                               agreed_with_consensus=True)
+                tracker.increment_question()
+                print(f"    GT={gt} | Single={stance} | {elapsed:.1f}s")
+                continue
 
             try:
                 result_sg = orch.run(question, mode=mode, topology_W=W,
@@ -253,114 +316,70 @@ def run_experiment(
             elapsed = time.time() - t0
             nodes = result_sg["nodes"]
 
-            # Method 1: AEIC + Stackelberg
-            mode_results["AEIC+SG"].append({
-                "question": question,
-                "ground_truth": gt,
-                "decision": result_sg["decision"],
-                "mechanism": result_sg["mechanism"],
-                "trust": result_sg["trust"],
-                "stances": result_sg["stances"],
-            })
-
-            # Method 2: AEIC without Stackelberg
+            # AEIC without Stackelberg
             result_no_sg = evaluate_and_decide(nodes, W, sim,
                                                mode=mode, use_stackelberg=False)
-            mode_results["AEIC"].append({
-                "question": question,
-                "ground_truth": gt,
-                "decision": result_no_sg["decision"],
-                "mechanism": result_no_sg["mechanism"],
-                "trust": result_no_sg["trust"],
-                "stances": result_no_sg["stances"],
-            })
-
-            # Method 3: Quality-weighted vote
+            # Quality-weighted vote
             qw_decision, qw_weights = quality_weighted_vote(nodes, sim)
-            mode_results["QualWt"].append({
-                "question": question,
-                "ground_truth": gt,
-                "decision": qw_decision,
-                "mechanism": "quality_weighted",
-                "trust": qw_weights,
-                "stances": [extract_stance(nd.get("C", "")) for nd in nodes],
-            })
-
-            # Method 4: Simple majority vote
+            # Majority vote
             mv_decision = majority_vote(nodes)
-            mode_results["MajVote"].append({
-                "question": question,
-                "ground_truth": gt,
-                "decision": mv_decision,
-                "mechanism": "majority",
-                "stances": [extract_stance(nd.get("C", "")) for nd in nodes],
-            })
 
-            # CSV即时写入
-            if csv_path:
-                # 构建trace JSON
-                agent_times = result_sg.get("agent_times", [0.0] * n_agents)
-                timing = result_sg.get("timing", {})
-                backends = llm.backends if hasattr(llm, 'backends') else ["deepseek"]
-                trace = {
-                    "agents": [
-                        {
-                            "id": i,
-                            "role": AGENT_PERSONAS[i % len(AGENT_PERSONAS)]["name"],
-                            "model": backends[i % len(backends)] if backends else "unknown",
-                            "llm_time_s": round(agent_times[i], 2) if i < len(agent_times) else 0,
-                            "stance": result_sg.get("stances", [])[i] if i < len(result_sg.get("stances", [])) else "",
-                            "ic": round(result_sg.get("ic", [])[i], 3) if i < len(result_sg.get("ic", [])) else 0,
-                            "ec": round(result_sg.get("ec", [])[i], 3) if i < len(result_sg.get("ec", [])) else 0,
-                        }
-                        for i in range(n_agents)
-                    ],
-                    "total_llm_time_s": round(sum(agent_times), 2),
-                    "embedding_time_s": round(timing.get("ic_ec_time_s", 0) + timing.get("evidence_time_s", 0), 3),
-                    "stackelberg_time_s": round(timing.get("stackelberg_time_s", 0), 4),
-                    "consensus_time_s": round(sum(timing.values()), 3),
-                    "overhead_s": round(max(0, elapsed - sum(agent_times) - sum(timing.values())), 2),
-                }
-                trace_json = json.dumps(trace, ensure_ascii=False)
+            # Compute per-agent metrics for CSV
+            ic_list = result_sg.get("ic", [])
+            ec_list = result_sg.get("ec", [])
+            eq_list = result_sg.get("eq", [])
+            theta_list = result_sg.get("theta", [])
+            stances_list = result_sg.get("stances", [])
 
-                methods_data = [
-                    ("AEIC+SG", result_sg["decision"], result_sg["mechanism"],
-                     result_sg.get("stances", []), result_sg.get("ic", []),
-                     result_sg.get("ec", []), result_sg.get("trust", []),
-                     result_sg.get("theta", [])),
-                    ("AEIC", result_no_sg["decision"], result_no_sg["mechanism"],
-                     result_no_sg.get("stances", []), result_no_sg.get("ic", []),
-                     result_no_sg.get("ec", []), result_no_sg.get("trust", []),
-                     result_no_sg.get("theta", [])),
-                    ("QualWt", qw_decision, "quality_weighted",
-                     [extract_stance(nd.get("C", "")) for nd in nodes],
-                     [], [], qw_weights, []),
-                    ("MajVote", mv_decision, "majority",
-                     [extract_stance(nd.get("C", "")) for nd in nodes],
-                     [], [], [], []),
-                ]
-                for (method, dec, mech, stances, ic, ec, trust, theta) in methods_data:
-                    row = {
-                        "dataset": dataset_name,
-                        "mode": mode,
-                        "n_agents": str(n_agents),
-                        "method": method,
-                        "question_id": str(q_idx),
-                        "question": question,
-                        "ground_truth": gt,
-                        "decision": dec,
-                        "mechanism": mech,
-                        "stances": _serialize_list(stances),
-                        "ic": _serialize_list(ic),
-                        "ec": _serialize_list(ec),
-                        "trust": _serialize_list(trust),
-                        "theta": _serialize_list(theta),
-                        "elapsed_s": f"{elapsed:.2f}",
-                        "trace": trace_json,
-                    }
-                    append_csv_row(csv_path, row)
+            # Update TrustTracker (using AEIC+SG decision as reference)
+            sg_decision = result_sg["decision"]
+            actual_n = len(nodes)
+            for i in range(actual_n):
+                theta_i = theta_list[i] if i < len(theta_list) else 0.5
+                ic_i = ic_list[i] if i < len(ic_list) else 0.5
+                ec_i = ec_list[i] if i < len(ec_list) else 0.5
+                eq_i = eq_list[i] if i < len(eq_list) else 0.5
+                stance_i = stances_list[i] if i < len(stances_list) else "neutral"
+                tracker.update(i, theta_i, ic_i, ec_i, eq_i,
+                               agreed_with_consensus=(stance_i == sg_decision))
+            tracker.increment_question()
 
-            print(f"    GT={gt} | AEIC+SG={result_sg['decision']}({result_sg['mechanism']}) "
+            backends = llm.backends if hasattr(llm, 'backends') else ["deepseek"]
+            base = {
+                "dataset": dataset_name, "condition": condition,
+                "question_id": str(q_idx),
+                "question": question, "ground_truth": gt,
+                "n_agents_used": str(actual_n),
+                "selected_agents": json.dumps(list(range(actual_n))),
+                "per_agent_stance": json.dumps(stances_list),
+                "per_agent_ic": json.dumps([round(x, 3) for x in ic_list]),
+                "per_agent_ec": json.dumps([round(x, 3) for x in ec_list]),
+                "per_agent_eq": json.dumps([round(x, 3) for x in eq_list]),
+                "per_agent_theta": json.dumps([round(x, 3) for x in theta_list]),
+                "per_agent_backend": json.dumps(
+                    [backends[i % len(backends)] for i in range(actual_n)]),
+                "trust_scores": json.dumps(tracker.get_all_scores()),
+                "elapsed_s": f"{elapsed:.2f}",
+            }
+
+            methods_data = [
+                ("AEIC+SG", result_sg["decision"], result_sg.get("mechanism", "")),
+                ("AEIC", result_no_sg["decision"], result_no_sg.get("mechanism", "")),
+                ("QualWt", qw_decision, "quality_weighted"),
+                ("MajVote", mv_decision, "majority"),
+            ]
+
+            for method, dec, mech in methods_data:
+                mode_results[method].append({
+                    "question": question, "ground_truth": gt,
+                    "decision": dec, "mechanism": mech,
+                })
+                if csv_dir:
+                    _append_unified_row(method_paths[method], {
+                        **base, "decision": dec, "mechanism": mech,
+                    })
+
+            print(f"    GT={gt} | AEIC+SG={sg_decision}({result_sg['mechanism']}) "
                   f"| AEIC={result_no_sg['decision']} | QualWt={qw_decision} "
                   f"| MajVote={mv_decision} | {elapsed:.1f}s")
 
@@ -380,7 +399,6 @@ def print_summary(all_results: Dict[str, Dict[str, List[Dict]]]):
     methods = ["MajVote", "QualWt", "AEIC", "AEIC+SG"]
     modes = list(all_results.keys())
 
-    # Header
     header = f"{'Mode':<12}" + "".join(f"{m:<14}" for m in methods)
     print(f"\n  {header}")
     print(f"  {'-'*len(header)}")
@@ -395,24 +413,12 @@ def print_summary(all_results: Dict[str, Dict[str, List[Dict]]]):
             row += f"{acc:.1%} ({metrics.get('correct',0)}/{n})  "
         print(row)
 
-    # Override statistics
-    print(f"\n  Quality Override Analysis:")
-    print(f"  {'Mode':<12}{'AEIC+SG overrides':<22}{'AEIC overrides'}")
-    print(f"  {'-'*50}")
-    for mode in modes:
-        sg_overrides = sum(1 for r in all_results[mode]["AEIC+SG"]
-                          if r["mechanism"] == "quality_override")
-        no_sg_overrides = sum(1 for r in all_results[mode]["AEIC"]
-                             if r["mechanism"] == "quality_override")
-        n = len(all_results[mode]["AEIC+SG"])
-        print(f"  {mode:<12}{sg_overrides}/{n:<20}{no_sg_overrides}/{n}")
-
 
 def run_adversarial_experiment(
     questions: List[Dict],
     n_agents: int = 5,
     n_corrupted: int = 2,
-    sim_method: str = "tfidf",
+    sim_method: str = "embedding",
 ) -> Dict[str, List[Dict]]:
     """
     Adversarial experiment: inject corrupted agents that flip conclusions.
@@ -434,14 +440,12 @@ def run_adversarial_experiment(
 
         print(f"\n  [{q_idx+1}/{len(questions)}] {question[:55]}...")
 
-        # Generate all agents' AEIC honestly
         nodes = []
         for i in range(n_agents):
             persona_id = i % 7
             aeic = llm.generate_aeic(question, persona_id=persona_id, agent_id=i)
             nodes.append(aeic)
 
-        # Corrupt first n_corrupted agents: flip their C (Tier1 attack)
         for i in range(n_corrupted):
             original_c = nodes[i]["C"]
             stance = extract_stance(original_c)
@@ -452,7 +456,6 @@ def run_adversarial_experiment(
             else:
                 nodes[i]["C"] = "No: Unable to confirm. " + original_c
 
-        # Evaluate with all methods
         result_sg = evaluate_and_decide(nodes, W, sim, mode="parallel", use_stackelberg=True)
         result_no_sg = evaluate_and_decide(nodes, W, sim, mode="parallel", use_stackelberg=False)
         qw_decision, _ = quality_weighted_vote(nodes, sim)
@@ -482,7 +485,7 @@ def run_adversarial_experiment(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="AEIC-Stackelberg Orchestration Experiment")
+    parser = argparse.ArgumentParser(description="Fixed Topology Experiment")
     parser.add_argument("--dataset", default="StrategyQA",
                         help="Dataset name (default: StrategyQA)")
     parser.add_argument("--n_samples", type=int, default=10,
@@ -492,50 +495,47 @@ def main():
     parser.add_argument("--modes", default="parallel,sequential",
                         help="Comma-separated modes to test")
     parser.add_argument("--sim", default="embedding",
-                        help="Similarity method (tfidf/bm25/embedding/api_embedding)")
+                        help="Similarity method")
     parser.add_argument("--offset", type=int, default=0,
                         help="Skip first N questions")
     parser.add_argument("--adversarial", action="store_true",
-                        help="Run adversarial experiment (inject corrupted agents)")
+                        help="Run adversarial experiment")
     parser.add_argument("--n_corrupted", type=int, default=2,
                         help="Number of corrupted agents in adversarial mode")
     parser.add_argument("--output", default=None,
                         help="Output JSON file path")
-    parser.add_argument("--csv", default=None,
-                        help="CSV output path (enables checkpoint/resume)")
-    parser.add_argument("--single_llm", action="store_true",
-                        help="Use single LLM backend (DeepSeek only)")
+    parser.add_argument("--csv_dir", default=None,
+                        help="CSV output directory (enables per-method files + checkpoint)")
     args = parser.parse_args()
 
     modes = [m.strip() for m in args.modes.split(",")]
-    print(f"AEIC-Stackelberg Experiment")
+    print(f"Fixed Topology Experiment")
     print(f"  Dataset: {args.dataset}")
     print(f"  Samples: {args.n_samples}")
     print(f"  Agents: {args.n_agents}")
     print(f"  Modes: {modes}")
     print(f"  Similarity: {args.sim}")
 
-    # Load questions
     print(f"\nLoading {args.dataset} (offset={args.offset})...")
     questions = load_questions(args.dataset, args.n_samples, offset=args.offset)
     print(f"  Loaded {len(questions)} questions")
 
-    # Estimate API calls
     calls_per_q = {
         "parallel": args.n_agents,
         "sequential": args.n_agents,
         "star": args.n_agents + 1,
-        "debate": args.n_agents * 2,  # assume 2 rounds avg
+        "debate": args.n_agents * 2,
+        "selfcorrect": args.n_agents * 3,
+        "agentverse": args.n_agents + 1,
     }
     total_est = sum(calls_per_q.get(m, args.n_agents) for m in modes) * len(questions)
     print(f"  Estimated API calls: ~{total_est}")
 
-    # CSV路径处理
-    csv_path = args.csv
-    if csv_path:
-        os.makedirs(os.path.dirname(csv_path) or "results", exist_ok=True)
+    csv_dir = args.csv_dir
+    if csv_dir:
+        os.makedirs(csv_dir, exist_ok=True)
+        print(f"  CSV output: {csv_dir}/fixed_{{method}}_{args.dataset}.csv")
 
-    # Run
     if args.adversarial:
         print(f"\n  === ADVERSARIAL MODE ===")
         adv_results = run_adversarial_experiment(
@@ -554,17 +554,10 @@ def main():
             metrics = evaluate_accuracy(adv_results[method])
             row += f"{metrics['accuracy']:.1%} ({metrics['correct']}/{metrics['n']})  "
         print(row)
-
-        print(f"\n  Override stats:")
-        for method in ["AEIC", "AEIC+SG"]:
-            overrides = sum(1 for r in adv_results[method] if r["mechanism"] == "quality_override")
-            print(f"    {method}: {overrides} quality overrides")
-
         all_results = {"adversarial": adv_results}
     else:
         all_results = run_experiment(questions, modes, args.n_agents, args.sim,
-                                     multi_llm=not args.single_llm,
-                                     csv_path=csv_path,
+                                     csv_dir=csv_dir,
                                      dataset_name=args.dataset)
         print_summary(all_results)
 
@@ -573,9 +566,8 @@ def main():
         out_path = args.output
     else:
         os.makedirs("results", exist_ok=True)
-        out_path = f"results/exp_orch_{args.dataset}_{len(questions)}q.json"
+        out_path = f"results/exp_fixed_{args.dataset}_{len(questions)}q.json"
 
-    # Convert numpy arrays for JSON serialization
     def convert(obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()

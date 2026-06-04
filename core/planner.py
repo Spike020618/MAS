@@ -29,7 +29,7 @@ class PlanResult:
 
 PLANNER_SYSTEM_TEMPLATE = '''你是一个多智能体协作系统的任务规划器。给定一个是非判断题，你需要设计最优的agent协作拓扑。
 
-核心原则：根据问题复杂度选择合适的agent数量和拓扑结构。简单题用少量agent快速共识，复杂题才需要多agent多角度分析。
+核心原则：根据问题复杂度自适应选择agent数量和拓扑结构。简单问题用少量agent节省资源，复杂问题才增加agent。独立投票是最鲁棒的默认策略；仅在确实需要多步推理时使用信息传递拓扑。
 
 你需要输出严格的JSON格式（不要加markdown代码块）：
 {{
@@ -42,10 +42,7 @@ PLANNER_SYSTEM_TEMPLATE = '''你是一个多智能体协作系统的任务规划
 }}
 
 字段说明：
-- n_agents: agent数量（2-{max_n}）。根据问题复杂度自由选择：
-  * 简单事实/常识 → 2-3个（快速验证即可）
-  * 需要推理/多角度 → 4-5个
-  * 复杂争议/多学科 → 5-{max_n}个
+- n_agents: agent数量（{min_n}-{max_n}）。根据问题复杂度选择，简单题用少量agent，复杂题才增加
 - W: n_agents×n_agents 邻接矩阵。W[i][j]=1 表示 agent j 的结论传递给 agent i
 - roles: 长度=n_agents，每个元素描述该agent的分析角色（中文，15字以内）
 - rounds: 执行轮次。1=DAG单次执行，2-3=多轮迭代
@@ -54,21 +51,22 @@ PLANNER_SYSTEM_TEMPLATE = '''你是一个多智能体协作系统的任务规划
 拓扑设计原则：
 1. W对角线为0。rounds=1时W必须是DAG（无环）
 2. 角色互补，避免重复
-3. 不要盲目用多agent——简单题3个独立投票比5个fan-in更准
-4. 综合者/裁判角色不是必须的，只有当需要融合多方观点时才设置
+3. 独立投票（W全0）是最鲁棒的默认选择——多个独立agent不会相互传染错误
+4. 仅当问题确实需要多步骤分解或多学科交叉时，才使用信息传递拓扑
+5. 如果使用拓扑，确保大多数agent保持独立（至少一半无上游输入）
 
 典型模式（按复杂度选择）：
-- 简单事实验证 → n=2-3, W全0(独立投票), rounds=1
-- 明确的知识题 → n=3, 链式(0→1→2), rounds=1
-- 需要多角度分析 → n=4-5, fan-in(多并行→1综合), rounds=1
-- 争议性/反直觉 → n=3-4, 正反方+裁判, rounds=1
-- 复杂多学科 → n=5-{max_n}, 多角度+迭代, rounds=2'''
+- 简单事实验证/常识 → n=2-3, W全0(独立投票), rounds=1
+- 一般知识推理/数学 → n=3-4, W全0(独立投票), rounds=1
+- 需要多角度分析 → n=4-5, 多数独立+1综合, rounds=1
+- 复杂多步推理 → n=5-{max_n}, fan-in(多并行→1综合), rounds=1
+- 复杂多学科交叉 → n=5-{max_n}, 多角度+迭代, rounds=2'''
 
-PLANNER_USER_TEMPLATE = '''请根据问题复杂度，自由选择合适的agent数量和协作拓扑：
+PLANNER_USER_TEMPLATE = '''请根据问题复杂度，设计合适的agent协作拓扑（至少{min_n}个agent）：
 
 问题: {question}
 
-注意：简单题用2-3个agent就够了，不要过度设计。输出JSON：'''
+输出JSON：'''
 
 
 def topological_layers(W: np.ndarray) -> List[List[int]]:
@@ -123,8 +121,9 @@ class TopologyPlanner:
 
     def plan(self, question: str, n_agents: int = 5) -> PlanResult:
         """分析问题并生成拓扑规划。n_agents作为上限，planner自行决定实际数量。"""
-        system = PLANNER_SYSTEM_TEMPLATE.format(max_n=n_agents)
-        user = PLANNER_USER_TEMPLATE.format(question=question)
+        min_n = 2
+        system = PLANNER_SYSTEM_TEMPLATE.format(min_n=min_n, max_n=n_agents)
+        user = PLANNER_USER_TEMPLATE.format(min_n=min_n, question=question)
 
         messages = [
             {"role": "system", "content": system},
@@ -173,14 +172,15 @@ class TopologyPlanner:
             elif W.size == n_agents * n_agents:
                 W = W.reshape(n_agents, n_agents)
             elif W.shape[0] == W.shape[1]:
-                # Planner给了不同大小的矩阵，截断或pad
                 actual_n = W.shape[0]
                 if actual_n < n_agents:
-                    n_agents = actual_n
+                    new_W = np.zeros((n_agents, n_agents))
+                    new_W[:actual_n, :actual_n] = W[:actual_n, :actual_n]
+                    W = new_W
                 else:
                     W = W[:n_agents, :n_agents]
             else:
-                return self._fallback_plan(min(3, max_agents), question)
+                return self._fallback_plan(min(5, max_agents), question)
 
             np.fill_diagonal(W, 0.0)
             W = (W > 0).astype(float)
@@ -215,14 +215,14 @@ class TopologyPlanner:
             )
 
         except (ValueError, TypeError, KeyError):
-            return self._fallback_plan(min(3, max_agents), question)
+            return self._fallback_plan(min(5, max_agents), question)
 
     def _fallback_plan(self, n_agents: int, question: str) -> PlanResult:
         """Fallback: 独立并行投票（最稳健的默认策略）。"""
-        n_agents = max(2, n_agents)
+        n_agents = max(3, n_agents)
         W = np.zeros((n_agents, n_agents))
 
-        roles = [f"独立验证者{i+1}" for i in range(n_agents)]
+        roles = [f"独立分析师{i+1}" for i in range(n_agents)]
 
         return PlanResult(
             n_agents=n_agents,

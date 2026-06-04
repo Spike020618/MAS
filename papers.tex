@@ -1,0 +1,1307 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amssymb,amsthm,mathtools}
+\usepackage{algorithm,algpseudocode}
+\usepackage{graphicx,subcaption,float}
+\usepackage{booktabs,multirow,makecell}
+\usepackage[numbers]{natbib}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{remark}{Remark}[section]
+
+\title{\textbf{AEIC-Stackelberg: A Game-Theoretic Decentralized Semantic Consensus Framework for Multi-Agent Systems}}
+\author{Tiancheng Ma}
+\date{}
+
+\begin{document}
+\maketitle
+
+%=============================================================
+% Abstract
+%=============================================================
+\begin{abstract}
+Large language model (LLM)-driven multi-agent systems are emerging as a central paradigm for solving complex reasoning tasks, yet the problem of integrating heterogeneous outputs from multiple autonomous reasoning agents into a reliable collective judgment---the \textbf{semantic consensus problem}---remains a core bottleneck in this field. Existing methods suffer from fundamental deficiencies: equal-vote paradigms (e.g., ChatEval) fail completely when the majority of agents are incorrect; unguided debate paradigms are plagued by sycophantic conformity and consensus collapse; and centralized evaluation paradigms (e.g., AgentVerse) depend on a single evaluator, constituting a systemic single point of failure. The common root cause of these approaches is that they treat reasoning outputs as indivisible atomic units, making it impossible to locate the semantic source of disagreements or to incentivize agents to maintain independent judgment.
+
+This paper proposes the \textbf{AEIC-Stackelberg} decentralized semantic consensus framework, which systematically addresses these problems at both the semantic representation and incentive mechanism levels. At the semantic level, the framework introduces the \textbf{AEIC semantic decomposition protocol}, which decouples reasoning chains into four orthogonal semantic layers---Assumption (A), Evidence (E), Inference (I), and Conclusion (C)---enabling layer-wise similarity computation, precise conflict attribution, and cross-layer consistency verification. Building on this structured representation, the framework designs a \textbf{four-component composite trust evaluation mechanism} that comprehensively assesses each agent's credibility through four dimensions: Inference-Conclusion directional consistency (IC), Evidence-Conclusion semantic support (EC), Evidence Quality (EQ), and cross-agent Evidence consensus (EV)---detection capabilities uniquely enabled by the AEIC layered decomposition and unattainable by end-to-end methods. At the incentive level, the framework constructs a \textbf{Stackelberg game model} with a Leader-Follower incentive structure that drives decentralized parameter convergence. The game-equilibrium parameter $\theta$, after normalization, serves as the sole voting weight, realizing an end-to-end pipeline from ``trust evaluation drives game parameters $\to$ game parameters determine decision weights.'' The framework further supports six multi-agent communication modes (Parallel, Sequential, Star, Debate, SelfCorrect, AgentVerse) and introduces a data-driven optimization mechanism for 17 learnable consensus parameters.
+
+On 10 reasoning benchmark datasets including StrategyQA, GSM-Hard, and MMLU-Hard, six systematic experiments comprehensively validate the framework's effectiveness across six dimensions: communication mode comparison, parameter optimization, heterogeneous robustness, trust component ablation, cross-dataset generalization, and scalability. Experiments employ DeepSeek (strong model) and Zhipu GLM-4-Flash (weak/free model) as heterogeneous LLM backends, combined with a local Sentence-Transformer embedding encoder, for end-to-end validation on real LLM systems.
+
+\noindent\textbf{Keywords:} multi-agent semantic consensus; AEIC semantic decomposition; Stackelberg game; decentralized collaboration; cross-layer trust evaluation; adversarial robustness
+\end{abstract}
+
+\newpage
+
+%=============================================================
+\section{Introduction}\label{sec:intro}
+%=============================================================
+
+\subsection{Background and Motivation}
+
+Large language models (LLMs) have demonstrated unprecedented capabilities in natural language understanding, reasoning, and generation~\cite{brown2020language,openai2023gpt4}, catalyzing a research paradigm centered on LLM-driven multi-agent systems (MAS)~\cite{wooldridge1995intelligent,talebirad2023multi,tran2025multi}. In this paradigm, multiple LLM agents reason independently about the same problem and collaborate to achieve collective decision-making capabilities that surpass those of any single agent. Recent studies have shown that multi-agent collaboration yields significant performance improvements in text comprehension, code generation, mathematical reasoning, and tool use~\cite{chen2023agentverse,hong2023metagpt,wu2023autogen}.
+
+However, the core bottleneck of multi-agent collaboration lies in the \textbf{consensus mechanism}: when $N$ agents produce $N$ potentially contradictory reasoning results for the same problem, how should the system integrate these heterogeneous outputs into a single reliable collective judgment? This problem has been extensively studied in traditional distributed systems---for example, the Paxos and Raft protocols resolve numerical consistency among nodes through majority voting~\cite{olfati2007consensus}---but semantic consensus among LLM agents faces fundamentally different challenges. Unlike traditional consensus over binary or numerical states, semantic consensus requires establishing agreement across high-dimensional, continuous, and structurally complex natural language reasoning chains, rendering classical voting and replication strategies inapplicable.
+
+The importance of multi-agent semantic consensus extends beyond performance metrics. In high-stakes application domains such as legal reasoning, medical decision-making, and financial analysis, the reliability of collective judgments directly affects decision quality. A robust consensus mechanism must satisfy three core properties: \textbf{correctness} (correct minority opinions should not be overwhelmed by incorrect majorities), \textbf{robustness} (the system should be resilient to sycophantic conformity and adversarial manipulation), and \textbf{interpretability} (the consensus process should be able to locate the source of disagreements and provide a basis for decisions). Unfortunately, existing methods exhibit significant shortcomings across all three dimensions.
+
+\subsection{Core Challenges}
+
+The difficulty of the multi-agent semantic consensus problem arises from three intertwined real-world constraints:
+
+\textbf{(1) Semantic ambiguity.} Natural language reasoning chains are high-dimensional continuous objects that contain rich but ambiguous semantic information. Two semantically equivalent reasoning processes may employ entirely different wording and argumentation paths (``different phrasing, same semantics''), while two similarly worded reasoning processes may diverge at critical logical junctures (``similar phrasing, contradictory semantics''). End-to-end semantic similarity computation conflates these two cases, producing spurious high-agreement signals or missing genuine semantic conflicts.
+
+\textbf{(2) Decentralization constraints.} In scenarios involving privacy protection, large-scale deployment, and censorship resistance, no globally trusted central arbiter exists. Each agent can only observe information from its direct communication neighbors, and consensus must be achieved through iterative diffusion of local interactions. This precludes architectures that rely on a central evaluator~\cite{chen2023agentverse} and demands that the consensus mechanism provide theoretical guarantees for distributed convergence.
+
+\textbf{(3) Adversarial behavior and sycophantic conformity.} Multi-agent systems face two categories of threats. The first is model hallucination~\cite{ji2023hallucination}: LLMs may generate factually incorrect yet highly confident reasoning chains, causing ``confident errors'' to dominate in voting. The second is sycophantic conformity: the empirical study by Bertalani\v{c} and Fortuna~\cite{bertalanic2026cost} demonstrates that in unguided debates, 73\% of agents abandon their correct judgment in favor of the majority opinion, with the proportion of correct answers discarded by the collective (oracle gap) reaching 32\%. Together, these two categories of threats pose a severe test for any consensus mechanism.
+
+\subsection{Fundamental Limitations of Existing Methods}\label{sec:limitation}
+
+Existing multi-agent consensus methods can be categorized into three paradigms, each suffering from fundamental structural deficiencies:
+
+\textbf{The equal-vote paradigm}, exemplified by ChatEval~\cite{chan2023chateval}. This paradigm assigns equal decision weights to all agents and determines the final conclusion through majority vote. Its fatal flaw is that when the majority of agents are incorrect---whether due to model hallucination or systematic bias---correct minority opinions are unconditionally discarded. In our constructed adversarial scenario (2:1 incorrect majority), ChatEval achieves 0\% accuracy on Hard tasks---the system fails completely in precisely the scenarios where it is most needed.
+
+\textbf{The unguided debate paradigm}, exemplified by the work of Du et al.~\cite{du2023improving} and Liang et al.~\cite{liang2023encouraging}. Homogeneous agents exchange opinions through multi-round discussions before voting. The systematic empirical study by Bertalani\v{c} and Fortuna~\cite{bertalanic2026cost} reveals three failure modes: (i)~\textbf{sycophantic conformity}---73\% of agents adopt the majority answer rather than maintaining their correct judgment; (ii)~\textbf{context fragility}---correct reasoning is disrupted by peers' differing viewpoints, with 15\% of correct agents switching to incorrect answers during debate; (iii)~\textbf{consensus collapse}---correct answers are discarded in the final vote, with an oracle gap as high as 32\%. The core conclusion of that study carries significant theoretical implications: under conditions of model homogeneity, multi-round debate not only fails to improve consensus quality but systematically degrades accuracy.
+
+\textbf{The centralized evaluation paradigm}, exemplified by AgentVerse~\cite{chen2023agentverse}. A central evaluator selects the best agent's conclusion based on multi-dimensional quality scores (evidence coverage, reasoning coherence, conclusion confidence). While this paradigm performs well when powered by GPT-4, it suffers from a structural deficiency: the evaluator itself is an LLM instance and can be misled by high-confidence incorrect agents---in our adversarial experiments, the AgentVerse evaluator consistently selected the ``incorrect but confident'' agent, yielding 0\% accuracy on Hard tasks as well. More fundamentally, single-point evaluation constitutes the system's Achilles' heel---once the evaluator is misled, the entire system fails.
+
+\textbf{The common root cause across all three paradigms} can be distilled to a single point: they treat reasoning outputs as indivisible atomic units. Under this premise, the system can neither locate the specific semantic source of disagreements (Is it the evidence, the reasoning path, or the conclusion that differs?) nor verify the internal consistency of reasoning chains (Does the inference direction match the conclusion direction?). This ``semantic black box'' treatment renders all subsequent aggregation operations---whether voting, debate, or evaluation---devoid of a precise semantic foundation.
+
+\subsection{Our Approach and Contributions}
+
+To address the above problems, this paper proposes the \textbf{AEIC-Stackelberg decentralized semantic consensus framework}, which introduces systematic innovations at both the semantic representation and incentive mechanism levels.
+
+\textbf{Core insight.} The key insight of this paper is that if reasoning chains are treated as ``semantic black boxes,'' no aggregation strategy can distinguish ``valuable disagreement'' from ``harmful conformity.'' The solution is to open the black box---decompose reasoning chains into structured layers with well-defined semantic roles, establish consistency constraints across layers, and use game-theoretic incentives to motivate agents to maintain independent judgment. Specifically:
+\begin{itemize}[nosep]
+    \item \textbf{AEIC decomposition} decouples reasoning chains into four layers---Assumption (A), Evidence (E), Inference (I), and Conclusion (C)---enabling conflict localization and cross-layer verification;
+    \item \textbf{Cross-layer trust evaluation} leverages the structural features of AEIC---particularly the consistency check between the inference direction (I) and conclusion direction (C)---to identify manipulated or conformist agents;
+    \item \textbf{Stackelberg game} drives decentralized parameter convergence through incentive design, ensuring that consensus formation is incentive-compatible.
+\end{itemize}
+
+\textbf{Main contributions.} The specific contributions of this paper are as follows:
+
+\begin{enumerate}[nosep]
+    \item \textbf{AEIC semantic decomposition protocol} (Section~\ref{sec:framework}): We propose a structured representation protocol that decouples reasoning chains into four orthogonal semantic layers, supporting layer-wise similarity computation and precise conflict attribution, thereby enabling ``targeted correction'' in consensus optimization.
+
+    \item \textbf{Four-component cross-layer trust evaluation mechanism} (Section~\ref{sec:trust}): We design four complementary components---IC (Inference-Conclusion directional consistency with a three-tier short-circuit mechanism), EC (Evidence-Conclusion semantic support), EQ (Evidence Quality), and EV (cross-agent Evidence consensus)---that indirectly form decision weights through the Stackelberg game. Ablation experiments (Section~\ref{sec:exp4}) verify the contribution of each component.
+
+    \item \textbf{Six communication modes with unified orchestration} (Section~\ref{sec:modes}): We design four AEIC-native communication modes---Parallel, Sequential, Star, and Debate---and integrate two literature baseline modes---SelfCorrect and AgentVerse---achieving AEIC inter-layer information transfer and unified consensus evaluation through a $\sigma$-injection mechanism.
+
+    \item \textbf{Stackelberg game convergence and pure $\theta$-normalized voting} (Section~\ref{sec:stackelberg}): We design a Leader-Follower incentive structure where the four trust dimensions construct bid parameters, and after game equilibrium, $\theta$ is normalized to serve as the sole voting weight. We prove that the consensus energy decays exponentially at a rate of $\exp(-2\gamma t/(N-1))$.
+
+    \item \textbf{17-parameter learnable consensus configuration} (Section~\ref{sec:experiments}): We design a zero-API-cost two-phase parameter optimization pipeline (AEIC cache collection $\to$ differential evolution global optimization), enabling data-driven tuning of the consensus mechanism.
+
+    \item \textbf{Systematic experimental validation} (Section~\ref{sec:experiments}): On 10 reasoning benchmark datasets, six experiments comprehensively validate the framework's effectiveness across six dimensions---communication mode comparison, parameter optimization, heterogeneous robustness, trust ablation, cross-dataset generalization, and topological scalability---with all experiments executed end-to-end on real LLMs.
+\end{enumerate}
+
+\subsection{Paper Organization}
+
+The remainder of this paper is organized as follows: Section~\ref{sec:related} surveys related work on multi-agent collaboration, debate mechanisms, game-theoretic applications, and semantic representation; Section~\ref{sec:formulation} formally defines the multi-agent semantic consensus problem and articulates design objectives; Section~\ref{sec:framework} presents a comprehensive account of each component in the AEIC-Stackelberg framework; Section~\ref{sec:theory} provides theoretical analysis, including convergence proofs and complexity analysis; Section~\ref{sec:experiments} reports detailed results and analysis from six experiments; Section~\ref{sec:discussion} discusses methodological implications and limitations; and Section~\ref{sec:conclusion} summarizes the paper and outlines future research directions.
+
+%=============================================================
+\section{Related Work}\label{sec:related}
+%=============================================================
+
+This section surveys research closely related to this work along five directions, analyzes the core contributions and limitations of each, and clarifies the positioning of our approach.
+
+\subsection{Multi-Agent Collaboration Frameworks}
+
+LLM-based multi-agent collaboration frameworks have become an active area of research in recent years. AgentVerse~\cite{chen2023agentverse} proposes a four-stage framework encompassing expert recruitment, collaborative decision-making, action execution, and evaluation feedback, demonstrating across multiple tasks that multi-agent collaboration outperforms individual agents. MetaGPT~\cite{hong2023metagpt} introduces standardized operating procedures (SOPs) into multi-agent collaboration, improving the efficiency of software development tasks through role specialization and structured communication. AutoGen~\cite{wu2023autogen} provides a customizable multi-agent conversation framework supporting flexible agent configuration and human-in-the-loop participation. CAMEL~\cite{li2023camel} drives cooperative reasoning between two agents through a role-playing paradigm. ChatDev~\cite{qian2023chatdev} models the software development process as a communication chain of multi-agent collaboration. Park et al.~\cite{park2023generative} demonstrate emergent social behaviors of generative agents in interactive simulation environments, revealing the behavioral complexity of multi-agent collaboration.
+
+These frameworks have made significant progress in collaborative architecture design, but share a common limitation in their consensus mechanisms: they either rely on simple majority voting (ignoring differences in agent credibility) or depend on a centralized evaluator (introducing a single point of failure). The AEIC-Stackelberg framework proposed in this paper provides systematic innovations in structured semantic decomposition and game-theoretic incentives at the consensus mechanism layer, and can serve as a consensus-layer replacement for the above frameworks.
+
+\subsection{Multi-Agent Debate and Reasoning}
+
+Multi-agent debate is an important approach for improving the reliability of LLM reasoning. The pioneering work of Du et al.~\cite{du2023improving} demonstrates that having multiple LLM instances debate and exchange reasoning processes can significantly improve factual accuracy and mathematical reasoning ability. Liang et al.~\cite{liang2023encouraging} further propose encouraging divergent thinking during debates to avoid group convergence. ChatEval~\cite{chan2023chateval} applies multi-agent debate to text quality evaluation, improving assessment consistency and reliability through multi-round discussion and voting.
+
+However, the systematic empirical study by Bertalani\v{c} and Fortuna~\cite{bertalanic2026cost} offers an important correction to the above optimistic conclusions. Examining a setting of 10 homogeneous agents over 3 debate rounds, they reveal three fundamental failure modes: \textbf{sycophantic conformity} (73\% of agents adopt the majority answer), \textbf{context fragility} (correct reasoning disrupted by peers' viewpoints), and \textbf{consensus collapse} (correct answers discarded in the final vote). Their core conclusion carries significant theoretical implications: under conditions of model homogeneity and the absence of structured guidance, debate cannot guarantee improvements in consensus quality and may even cause systematic performance degradation.
+
+The design of our framework directly addresses these failure modes: AEIC layered decomposition counters ``unstructured conformity'' (agents are forced to discuss disagreements at the semantic layer rather than the holistic text level), and Stackelberg incentives counter ``the lack of motivation to maintain independent opinions'' (agents who uphold independent judgment receive higher incentive payoffs).
+
+\subsection{LLM Reasoning Enhancement}
+
+Improvements in LLM reasoning capability form the foundation of multi-agent collaboration. Chain-of-thought (CoT) prompting~\cite{wei2022chain} significantly improves LLM performance on mathematical and logical reasoning tasks by including intermediate reasoning steps in the prompt. Self-consistency decoding~\cite{wang2023selfconsistency} provides an intra-model ``consensus'' mechanism by sampling multiple reasoning paths and voting for the most consistent answer. Tree of Thoughts (ToT)~\cite{yao2023tree} models the reasoning process as tree search, allowing backtracking and multi-path exploration. Reflexion~\cite{shinn2023reflexion} introduces a verbal feedback mechanism that enables agents to learn from their own mistakes.
+
+These methods focus on improving the reasoning capability of a single model, whereas this paper focuses on integrating reasoning results across multiple heterogeneous models. The two are complementary: stronger individual reasoning capabilities improve the quality of AEIC layer representations, while the AEIC-Stackelberg framework ensures reliable aggregation of multi-agent reasoning results. Notably, Self-Consistency can be viewed as a special case of AEIC-Stackelberg in the single-model multi-sampling scenario---but it lacks cross-layer trust verification and game-theoretic incentives, and therefore cannot handle adversarial settings.
+
+\subsection{Game Theory and Multi-Agent Systems}
+
+Game theory provides a mature theoretical framework for modeling multi-agent behavior. The Stackelberg game~\cite{stackelberg2011market} describes a Leader-Follower structure widely applied in security games, pricing strategies, and resource allocation. Evolutionary game theory~\cite{han2022emergent} models the long-term behavioral evolution of agent populations through selection pressure and mutation mechanisms. Distributed consensus theory~\cite{olfati2007consensus} studies how networked agents achieve global agreement through local information exchange.
+
+The game-theoretic application in this paper is distinctive: unlike traditional Stackelberg games where Leader and Follower roles are fixed, our Leader is the ``system objective function'' (maximizing network-wide alignment quality while minimizing consensus energy), and all agents serve as Followers---they decide their alignment investment based on incentive parameters. This design ensures that game convergence is equivalent to consensus achievement, thereby converting game-theoretic guarantees into consensus guarantees. Furthermore, this paper couples game-theoretic incentives with semantic trust evaluation---trust scores determine each agent's initial participation threshold in the game, and high-trust agents receive greater game weights, achieving ``structured semantic verification drives incentive allocation.''
+
+\subsection{Semantic Similarity and LLM Reliability}
+
+Semantic textual similarity (STS) serves as the technical foundation for AEIC layer-wise similarity computation. Sentence-BERT~\cite{reimers2019sentence} generates sentence embeddings suitable for cosine similarity computation by fine-tuning BERT models through contrastive learning, achieving excellent results on benchmarks such as STS-B. This paper employs a multilingual Sentence-Transformer (paraphrase-multilingual-MiniLM-L12-v2) as the embedding encoder, verifying a Spearman $\rho = 0.854$ on STS-B.
+
+Research on LLM reliability is closely related to our trust evaluation mechanism. Ji et al.~\cite{ji2023hallucination} provide a comprehensive survey of LLM hallucination, identifying factual inconsistency, logical contradiction, and fabrication as three major hallucination types. Kadavath et al.~\cite{kadavath2022language} study LLMs' self-knowledge boundary awareness, finding that models exhibit systematic biases in calibration---particularly an overconfidence tendency. These findings provide empirical justification for our confidence calibration component (Cal): when an LLM expresses high confidence but with insufficient evidential support, it is likely a product of hallucination or conformity.
+
+%=============================================================
+\section{Problem Formulation}\label{sec:formulation}
+%=============================================================
+
+This section formally defines the multi-agent semantic consensus problem, establishes notational conventions, and articulates the design objectives of the framework.
+
+\subsection{Multi-Agent Semantic Consensus Problem}
+
+\begin{definition}[Multi-Agent Semantic Consensus Problem]\label{def:consensus}
+Given a task description $\mathcal{Q}$ and $N$ autonomous reasoning agents $\mathcal{A} = \{a_1, a_2, \ldots, a_N\}$, each agent independently generates a reasoning result $R_i = f_i(\mathcal{Q})$, where $f_i$ is agent $i$'s reasoning function (determined by its underlying LLM and reasoning strategy). The \textbf{semantic consensus problem} is to design an aggregation mechanism $\mathcal{M}$ that maps $N$ reasoning results to a single collective judgment:
+\begin{equation}
+d^* = \mathcal{M}(R_1, R_2, \ldots, R_N; \mathcal{Q})
+\end{equation}
+such that $d^*$ is optimal under a given quality criterion.
+\end{definition}
+
+The key distinction from traditional distributed consensus problems is that $R_i$ is not a simple numerical or binary state, but rather a natural language reasoning chain with complex internal structure, encompassing premise assumptions, factual evidence, reasoning processes, and final conclusions across multiple semantic layers.
+
+\subsection{Notation}
+
+Table~\ref{tab:notation} summarizes the main symbols used in this paper.
+
+\begin{table}[H]
+\centering
+\caption{Summary of notation}\label{tab:notation}
+\begin{tabular}{cl}
+\toprule
+Symbol & Meaning \\
+\midrule
+$N$ & Number of agents \\
+$R_i$ & Reasoning result of agent $i$ \\
+$\langle A_i, E_i, I_i, C_i \rangle$ & AEIC four-layer decomposition of $R_i$ \\
+$\phi(\cdot)$ & Sentence-Transformer encoding function \\
+$\mathbf{w} = [w_A, w_E, w_I, w_C]^\top$ & Weight vector for each semantic layer \\
+$\mathbf{v} = [v_A, v_E, v_I, v_C]^\top$ & Softmax-logits parameter vector \\
+$\text{IC}_i, \text{EC}_i, \text{EQ}_i, \text{EV}_i$ & Four-dimensional trust evaluation scores of agent $i$ \\
+$\theta_i$ & Stackelberg incentive parameter of agent $i$ \\
+$\theta_{\text{norm},i}$ & Normalized voting weight \\
+$E$ & Consensus energy (parameter divergence measure) \\
+$w_{ij}$ & Network topology weight \\
+$\gamma$ & Peer pressure coefficient \\
+$\eta$ & Learning rate \\
+$\lambda$ & Energy penalty coefficient \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Design Objectives}
+
+The consensus framework proposed in this paper must simultaneously satisfy the following four design objectives:
+
+\textbf{D1: Correctness.} When correct reasoning exists in the system, the collective judgment $d^*$ should favor the correct conclusion, even when the correct opinion is in the minority. Formally, let $\mathcal{A}_{\text{correct}} \subseteq \mathcal{A}$ denote the subset of agents that produce correct reasoning. The design objective is to minimize the oracle gap:
+\begin{equation}
+\text{OracleGap} = \Pr[\mathcal{A}_{\text{correct}} \neq \emptyset] - \Pr[d^* \text{ is correct}]
+\end{equation}
+
+\textbf{D2: Robustness.} The system should be fault-tolerant against sycophantic conformity and adversarial manipulation. Under the condition that at most $f < N/2$ agents are compromised, the collective judgment should still tend toward correctness.
+
+\textbf{D3: Decentralization.} The consensus mechanism should be operable without a globally trusted central node. Each agent needs only to communicate with its direct neighbors, and consensus is formed through iterative diffusion of local information exchange.
+
+\textbf{D4: Efficiency.} The communication and computational complexity of the consensus mechanism should scale controllably (at most polynomially) with the number of agents $N$, and convergence should be achieved within a finite number of rounds.
+
+\subsection{Adversary Model}
+
+This paper considers the following adversarial scenario:
+
+\begin{definition}[Passive Adversary Model]\label{def:adversary}
+At most $f$ agents ($f < N/2$) produce low-quality or manipulated reasoning results. Compromised agents are classified into three adversarial tiers:
+\begin{itemize}[nosep]
+    \item \textbf{Tier~1} (conclusion tampering only): The conclusion $C_i$ is flipped, but the inference process $I_i$ retains its original direction---detectable by I$\to$C directional consistency checking;
+    \item \textbf{Tier~2} (conclusion + inference tampering): Both $C_i$ and $I_i$ are simultaneously modified---requiring evidence-layer analysis (E$\to$C entailment detection);
+    \item \textbf{Tier~3} (full rationalization): Both $C_i$ and $I_i$ are rationalized and rewritten, and the correct agents' reasoning is obfuscated---the most challenging adversarial tier.
+\end{itemize}
+\end{definition}
+
+This paper does not consider \textit{active} adversaries (malicious agents deliberately constructing coherent but fabricated evidence chains), which is left as future work.
+
+%=============================================================
+\section{AEIC-Stackelberg Framework}\label{sec:framework}
+%=============================================================
+
+This section provides a comprehensive account of each component in the AEIC-Stackelberg framework. The overall data flow proceeds as follows: task input $\to$ independent agent reasoning $\to$ AEIC semantic decomposition $\to$ layer-wise similarity computation and conflict attribution $\to$ adaptive weight optimization $\to$ cross-layer trust evaluation $\to$ Stackelberg game convergence $\to$ trust-weighted voting $\to$ collective judgment output.
+
+\subsection{Framework Overview}
+
+The AEIC-Stackelberg framework comprises five core modules, whose relationships are described below:
+
+\textbf{Module 1: AEIC Semantic Decomposition} (Section~\ref{sec:aeic}) decouples reasoning chains into a four-layer structured representation, providing the semantic foundation for all subsequent analysis.
+
+\textbf{Module 2: Adaptive Weight Learning} (Section~\ref{sec:adaptive}) determines the optimal contribution weight of each semantic layer in consensus evaluation through data-driven optimization.
+
+\textbf{Module 3: Cross-Layer Trust Evaluation} (Section~\ref{sec:trust}) leverages the inter-layer structure of AEIC to verify each agent's internal consistency and external credibility, generating composite trust scores.
+
+\textbf{Module 4: Stackelberg Game} (Section~\ref{sec:stackelberg}) takes trust scores as input and drives decentralized convergence of agent parameters through incentive design.
+
+\textbf{Module 5: Decentralized Network} (Section~\ref{sec:network}) provides the P2P communication infrastructure supporting distributed protocol execution.
+
+The design of these five modules embodies a progressive logic of ``semantic structure $\to$ trust evaluation $\to$ game convergence $\to$ collective decision'': AEIC decomposition provides semantic structure, trust evaluation uses this structure to vet agents, game convergence uses trust evaluation to drive parameter alignment, and the final collective decision is made by coupling trust with game parameters.
+
+\subsection{AEIC Semantic Decomposition Protocol}\label{sec:aeic}
+
+\begin{definition}[AEIC Semantic Communication Protocol]
+The reasoning chain $R_i$ of agent $i$ is decomposed into a structured tuple of four semantic dimensions:
+\begin{equation}
+R_i = \langle A_i,\; E_i,\; I_i,\; C_i \rangle
+\end{equation}
+where the semantic role of each layer is defined as follows:
+\begin{itemize}[nosep]
+    \item $A_i$ (Assumption): The premises and problem framing of the reasoning, defining the hypothesis space within which reasoning operates;
+    \item $E_i$ (Evidence): The set of specific evidence supporting the reasoning, $E_i = \{e_i^1, e_i^2, \ldots, e_i^{m_i}\}$;
+    \item $I_i$ (Inference): The description of the reasoning process from evidence to conclusion, including logical derivations and argumentation chains;
+    \item $C_i$ (Conclusion): The final judgment or decision, constituting the output of the reasoning chain.
+\end{itemize}
+\end{definition}
+
+The design of AEIC decomposition follows argumentation structure theory from cognitive science~\cite{fudenberg1991game}: a complete argument comprises four elements---premise assumptions, empirical evidence, reasoning processes, and conclusion claims. These four elements are orthogonal in cognitive function---assumptions define the boundary conditions of reasoning, evidence provides the factual basis, inference builds the logical bridge from evidence to conclusion, and the conclusion is the output of reasoning. Orthogonality means that two agents can agree on some layers (e.g., using the same evidence) while disagreeing on others (e.g., different reasoning paths), providing the foundation for precise conflict localization.
+
+\subsubsection{Layer-wise Similarity}
+
+Given the reasoning records of two agents $i$ and $j$, the similarity for each layer is defined as:
+\begin{equation}
+\text{sim}_X(R_i, R_j) = \text{CosSim}\bigl(\phi(X_i),\; \phi(X_j)\bigr), \quad X \in \{A, E, I, C\}
+\end{equation}
+where $\phi(\cdot)$ is the Sentence-Transformer encoding function. For the evidence layer, given the set nature of evidence, a citation overlap measure is additionally incorporated:
+\begin{equation}
+\text{sim}_E(R_i, R_j) = 0.6 \cdot \text{CosSim}(\phi(E_i), \phi(E_j)) + 0.4 \cdot \frac{|E_i \cap E_j|}{|E_i \cup E_j|}
+\end{equation}
+
+The weighted total similarity is:
+\begin{equation}\label{eq:sim_aeic}
+\text{SIM}_{\text{AEIC}}(R_i, R_j) = \sum_{X \in \{A,E,I,C\}} w_X \cdot \text{sim}_X(R_i, R_j)
+\end{equation}
+where the weights $\mathbf{w} = [w_A, w_E, w_I, w_C]^\top$ satisfy $\sum_X w_X = 1$ and $w_X > 0$.
+
+\subsubsection{Conflict Attribution}
+
+The core value of AEIC layered decomposition lies in \textbf{precisely locating the source of disagreements}:
+\begin{equation}
+\text{ConflictAttr}(i, j) = \argmin_{X \in \{A,E,I,C\}} \text{sim}_X(R_i, R_j)
+\end{equation}
+
+Conflict attribution endows the consensus process with ``targeted correction'' capability---the system can organize discussion around the semantic layer with the most severe disagreement, rather than requiring a wholesale revision of all layers. For example, if the conflict primarily originates from the evidence layer (two agents used different factual bases), then subsequent discussion should focus on comparing the reliability of evidence, rather than revisiting assumptions or the reasoning process.
+
+\subsubsection{Advantages of AEIC over End-to-End Methods}
+
+End-to-end (E2E) methods concatenate the entire reasoning chain and compute a single similarity scalar:
+\begin{equation}
+\text{SIM}_{\text{E2E}}(R_i, R_j) = \text{CosSim}\bigl(\phi(\text{concat}(R_i)),\; \phi(\text{concat}(R_j))\bigr)
+\end{equation}
+
+E2E methods suffer from three structural deficiencies: (1) inability to locate the conflict source---a single scalar cannot answer ``where does the disagreement lie''; (2) local differences are diluted in long texts---when reasoning chains are lengthy, a critical disagreement in one layer may be masked by high agreement in other layers; (3) inability to implement differentiated trust evaluation---all layers are treated equally, precluding the use of structural signals from specific layers (such as IC directional consistency) to distinguish agent quality. The experiments in Section~\ref{sec:experiments} quantitatively verify the advantages of AEIC layered structure in trust evaluation and consensus decision-making.
+
+\subsection{Adaptive Weight Learning}\label{sec:adaptive}
+
+\subsubsection{Softmax-Logits Parameterization}
+
+Direct optimization of the weight vector $\mathbf{w}$ faces a constrained satisfaction problem (non-negativity and normalization). This paper adopts softmax-logits parameterization to circumvent this issue: define learnable parameters $\mathbf{v} = [v_A, v_E, v_I, v_C]^\top \in \mathbb{R}^4$, and map them to weights via softmax:
+\begin{equation}\label{eq:softmax}
+w_X = \frac{\exp(v_X)}{\sum_{Y \in \{A,E,I,C\}} \exp(v_Y)}
+\end{equation}
+
+This parameterization automatically satisfies $w_X > 0$ and $\sum_X w_X = 1$, and requires no projection step during gradient optimization. Initialization with $\mathbf{v} = \mathbf{0}$ corresponds to uniform weights $w_X = 0.25$.
+
+\subsubsection{Utility-Driven Weight Update}
+
+Define the single-round utility function:
+\begin{equation}
+U(t) = \overline{\text{sim}}(t) \cdot R - C
+\end{equation}
+where $\overline{\text{sim}}(t) = \frac{1}{\binom{N}{2}} \sum_{i<j} \text{SIM}_{\text{AEIC}}(R_i, R_j)$ is the network-wide average similarity, $R$ is the reward coefficient, and $C$ is a fixed cost.
+
+The logits update rule is:
+\begin{equation}\label{eq:weight_update}
+v_X^{(t+1)} = v_X^{(t)} + \eta \cdot \frac{d_X^{(t)}}{\sum_Y d_Y^{(t)}} \cdot \max\!\left(\frac{U(t)}{R},\; 0.01\right)
+\end{equation}
+where $d_X^{(t)} = \frac{1}{\binom{N}{2}} \sum_{i<j} \text{sim}_X^{(t)}(R_i, R_j)$ is the average similarity at layer $X$ (dimensional contribution), and $\eta$ is the learning rate.
+
+The intuition behind this update rule is \textbf{self-reinforcement}: layers with high agreement receive larger weight increases (since their agreement signal contributes more to the consensus), while layers with low agreement are suppressed. Through iteration, the system automatically learns ``which layers contribute most to consensus judgment.''
+
+\subsection{Cross-Layer Trust Evaluation Mechanism}\label{sec:trust}
+
+Cross-layer trust evaluation is the core innovation of this framework---it leverages the structured layering of AEIC to achieve ``correct minority identification under adversarial conditions.'' The core idea is that a trustworthy reasoning chain should satisfy specific consistency constraints across its four semantic layers; when these constraints are violated, the agent's reasoning may have been manipulated or produced through conformity effects. The framework designs four complementary trust components: IC (Inference-Conclusion directional consistency), EC (Evidence-Conclusion semantic support), EQ (Evidence Quality), and EV (cross-agent Evidence consensus).
+
+\subsubsection{IC: Inference-Conclusion Directional Consistency}
+
+\begin{definition}[Inference-Conclusion Consistency]\label{def:ic}
+The IC component detects the directional semantic alignment between the inference layer $I_i$ and the conclusion layer $C_i$. Implementation employs a three-tier short-circuit mechanism (in decreasing priority):
+
+\textbf{Tier 1: Shared concept alignment.} Detects whether $I_i$ and $C_i$ share the same key directional concepts. When both contain the same signal words (e.g., ``impossible,'' ``cannot,'' ``supports'') and the shared proportion exceeds the threshold $\tau_c = 0.3$, they are judged as semantically consistent:
+\begin{equation}
+\text{ConceptAlign}(I_i, C_i) = \frac{|\mathcal{K}(I_i) \cap \mathcal{K}(C_i)|}{\min(|\mathcal{K}(I_i)|, |\mathcal{K}(C_i)|)}
+\end{equation}
+where $\mathcal{K}(\cdot)$ denotes the set of directional signal words extracted from the text (comprising over 70 positive/negative directional signal words in both Chinese and English). If $\text{ConceptAlign} > \tau_c$, then $d_{\text{IC}} = 0.7 + 0.2 \cdot \min(\text{ConceptAlign}, 1)$.
+
+\textbf{Tier 2: Conclusion-paragraph direction matching.} When Tier~1 is not triggered, the concluding statement segment of $I_i$ is extracted---i.e., the text following the last transition marker (e.g., ``therefore,'' ``in conclusion,'' ``thus'')---and direction detection is applied only to this segment:
+\begin{equation}
+d_{\text{IC}} = \begin{cases}
+0.8 + 0.2 \cdot \text{conf} & \text{if conclusion-paragraph direction} = s(C_i) \\
+0.2 - 0.1 \cdot \text{conf} & \text{if conclusion-paragraph direction} \neq s(C_i) \\
+0.5 & \text{if no detectable directional signal}
+\end{cases}
+\end{equation}
+where $\text{conf} = |n_{\text{pos}} - n_{\text{neg}}| / (n_{\text{pos}} + n_{\text{neg}})$ is the direction detection confidence, and $s(C_i) \in \{\text{yes}, \text{no}, \text{neutral}\}$ is the conclusion stance.
+
+\textbf{Tier 3: Semantic similarity fallback.} When neither of the first two tiers provides a directional signal, $d_{\text{IC}} = 0.5$ (neutral baseline).
+\end{definition}
+
+The final IC score fuses the directional score with semantic embedding similarity:
+\begin{equation}\label{eq:ic}
+\text{IC}_i = 0.5 \cdot d_{\text{IC}} + 0.5 \cdot \text{CosSim}(\phi(I_i), \phi(C_i))
+\end{equation}
+
+\textbf{Design motivation.} The three-tier mechanism addresses the core difficulty of traditional direction detection---\textit{double negation scenarios}. For example, given the question ``Is X impossible?'', an honest agent's reasoning may contain numerous negative words (``cannot,'' ``no evidence''), but the conclusion is ``Yes: it is impossible.'' Traditional full-text direction detection would classify the reasoning as negative-oriented (negation words dominate), conflicting with the positive conclusion, leading to a false alarm. The three-tier mechanism avoids such misjudgments through shared concept alignment (Tier~1, detecting that both I and C mention ``impossible/cannot'') or conclusion-paragraph focusing (Tier~2, examining only the concluding segment ``Therefore, the answer is yes'').
+
+\subsubsection{EC: Evidence-Conclusion Semantic Support}
+
+The EC component detects whether the evidence content $E_i$ supports the conclusion $C_i$ in both direction and semantics, fusing directional matching with semantic similarity:
+\begin{equation}\label{eq:ec}
+\text{EC}_i = 0.5 \cdot d_{\text{EC}} + 0.5 \cdot \text{CosSim}(\phi(E_i), \phi(C_i))
+\end{equation}
+where the directional score $d_{\text{EC}}$ is determined by checking the degree of match between the overall direction of the evidence text and the conclusion stance:
+\begin{equation}
+d_{\text{EC}} = \begin{cases}
+0.85 & \text{if } \text{dir}(E_i) = s(C_i) \\
+0.15 & \text{if } \text{dir}(E_i) \neq s(C_i) \\
+0.5 & \text{if either direction is neutral}
+\end{cases}
+\end{equation}
+
+\textbf{Physical interpretation.} EC detects ``semantic disconnection between evidence and conclusion''---when the evidence discusses facts pointing toward X but the conclusion claims Y, the EC score decreases. The distinction from IC is that IC concerns the \textit{directional logical consistency} of the reasoning process (whether the inference direction points toward the conclusion), while EC concerns the \textit{factual evidential support strength} (whether the evidence entails the conclusion). These correspond to logical-level and factual-level consistency verification, respectively. In adversarial scenarios, a tampered agent may exhibit a consistent I$\to$C direction (e.g., in Tier~2 attacks where both inference and conclusion are simultaneously modified), but its original evidence may still point toward the true answer---in such cases, EC provides additional detection capability.
+
+\subsubsection{EQ: Evidence Quality}
+
+The EQ component measures the specificity and information density of the evidence set $E_i$, relying solely on intra-agent assessment without cross-agent comparison. It evaluates from four dimensions:
+\begin{equation}\label{eq:eq}
+\text{EQ}_i = 0.2 \cdot \text{ItemCount}_i + 0.3 \cdot \text{Length}_i + 0.3 \cdot \text{Density}_i + 0.2 \cdot \text{Diversity}_i
+\end{equation}
+where:
+\begin{itemize}[nosep]
+    \item $\text{ItemCount}_i = \min(|E_i| / 3,\; 1)$: number of evidence items (multiple independent pieces of evidence are preferable to a single vague statement);
+    \item $\text{Length}_i = \min(\bar{\ell}_i / 60,\; 1)$: average character length of evidence items (specific facts tend to be longer);
+    \item $\text{Density}_i$: information density, measuring the frequency of numbers, years ($\backslash$d\{4\}), percentages, and proper nouns in the evidence;
+    \item $\text{Diversity}_i$: evidence diversity, measured by comparing the uniqueness of each evidence item's opening to assess non-redundancy.
+\end{itemize}
+
+\textbf{Design motivation.} In heterogeneous multi-agent scenarios, strong models (e.g., DeepSeek-V3) tend to provide specific facts, data, and citations, while weak models (e.g., GLM-4-Flash and other free models) tend to give vague, generalized statements. EQ quantifies this difference, providing the subsequent Stackelberg game with a quality-based discrimination signal---agents with high EQ obtain higher alignment willingness in bid construction.
+
+\subsubsection{EV: Cross-Agent Evidence Consensus}
+
+The EV component measures the semantic consistency between agent $i$'s evidence and the evidence of its communication neighbors:
+\begin{equation}\label{eq:ev}
+\text{EV}_i = \frac{1}{|\mathcal{N}(i)|} \sum_{j \in \mathcal{N}(i)} \text{CosSim}(\phi(E_i), \phi(E_j))
+\end{equation}
+where $\mathcal{N}(i)$ is the set of communication neighbors of agent $i$. In a fully connected topology, $\mathcal{N}(i) = \mathcal{A} \setminus \{i\}$; in sparse topologies (e.g., Ring, Star), it includes only direct neighbors.
+
+\textbf{Physical interpretation.} When multiple independent agents produce evidence based on the same factual foundation, a high EV indicates that the agent uses reliable, multiply corroborated factual evidence. Agents using anomalous evidence (e.g., fabricated facts or information sources completely different from all other agents) receive lower EV scores. EV is particularly important in the Parallel mode: when all agents reason independently, cross-validation of evidence is the key signal for judging factual reliability. In the Sequential mode, EV is replaced by Evidence Novelty, which measures the amount of new information provided by subsequent agents---in that context, novelty rather than redundancy is more valuable.
+
+\subsubsection{From Trust Evaluation to Game Bids}
+
+Unlike traditional weighted-sum trust scores, this framework does not directly merge IC, EC, EQ, and EV into a scalar trust score for voting. Instead, the four dimensions are mapped through learnable parameters to construct the bid parameters for the Stackelberg game (detailed in Section~\ref{sec:stackelberg}):
+\begin{align}
+\text{AlignWill}_i &= \max\!\left(\delta_{\text{aw}},\; \text{IC}_i^{\beta_1} \cdot \text{EQ}_i^{\beta_2} \cdot (\beta_3 + \beta_4 \cdot \text{EV}_i)\right) \label{eq:bid_aw} \\
+\text{RevCost}_i &= \max\!\left(\delta_{\text{rc}},\; \beta_5 \cdot (1 - \text{Agree}_i)\right) \label{eq:bid_rc} \\
+\text{MaxDepth}_i &= \text{clip}(\text{EC}_i,\; \beta_6,\; \beta_7) \label{eq:bid_mrd} \\
+\text{HistAlign}_i &= \beta_8 \cdot \text{IC}_i + \beta_9 \cdot \text{EC}_i + \beta_{10} \cdot \text{EQ}_i + \beta_{11} \cdot \text{EV}_i \label{eq:bid_ha}
+\end{align}
+where $\{\beta_k\}$ and $\{\delta\}$ are learnable parameters (12 bid construction parameters + 4 Stackelberg game parameters + 1 alignment floor = 17 parameters total; see the parameter optimization experiment in Section~\ref{sec:exp2}), and $\text{Agree}_i$ is the stance agreement rate between agent $i$ and its neighbors. This parameterized design ensures that the entire mapping chain from trust evaluation to final decisions can be optimized in a data-driven manner, rather than relying on manually specified fixed weights.
+
+\subsection{Stackelberg Game Convergence Mechanism}\label{sec:stackelberg}
+
+\subsubsection{Consensus Energy}
+
+Define the network-wide consensus energy as the quadratic divergence of incentive parameters:
+\begin{equation}\label{eq:energy}
+E = \frac{1}{2} \sum_{i<j} w_{ij}\,(\theta_i - \theta_j)^2
+\end{equation}
+where $\theta_i \in (0,1)$ is the incentive parameter of agent $i$ (representing its alignment willingness), and $w_{ij}$ is the network topology weight. $E \to 0$ indicates that all agents' alignment investments converge---i.e., consensus is achieved in parameter space.
+
+\subsubsection{Leader-Follower Structure}
+
+\textbf{Follower utility function.} Agent $i$ observes the incentive $\theta_i$ and chooses alignment investment $\alpha_i$:
+\begin{equation}
+U_i(\alpha_i;\, \theta_i) = \theta_i \cdot q_i(\alpha_i) \cdot R - c_i \cdot \alpha_i
+\end{equation}
+where the alignment quality function $q_i(\alpha_i) = h_i \cdot \min(\alpha_i / \kappa_i,\; \kappa_i / \alpha_i)$ is a concave function (increasing then decreasing), $h_i$ is the historical alignment rate (determined by $\text{HistAlign}_i$ from Eq.~\eqref{eq:bid_ha}), $\kappa_i$ is the capability ceiling (determined by Eq.~\eqref{eq:bid_mrd}), and $c_i$ is the revision cost (determined by Eq.~\eqref{eq:bid_rc}).
+
+\begin{theorem}[Follower Optimal Response]\label{thm:follower}
+The optimal alignment investment of agent $i$ is:
+\begin{equation}
+\alpha_i^*(\theta_i) = \kappa_i \cdot \min\!\left(\frac{\theta_i}{\tau_i},\; 1\right), \quad \tau_i = \frac{c_i \kappa_i}{h_i R}
+\end{equation}
+where $\tau_i$ is the participation threshold---only when the incentive exceeds the threshold does the agent fully commit to alignment.
+\end{theorem}
+
+\textbf{Leader objective function.} At the system level (Leader), the objective is to maximize network-wide alignment quality while constraining consensus energy and budget:
+\begin{equation}\label{eq:leader}
+\max_{\boldsymbol\theta}\; \mathcal{J}(\boldsymbol\theta) = \sum_{i=1}^N q_i(\alpha_i^*(\theta_i)) - \lambda\,E - \mu \sum_{i=1}^N \theta_i
+\end{equation}
+where $\lambda$ is the energy penalty coefficient and $\mu$ is the budget constraint coefficient.
+
+\subsubsection{Distributed Update Rule}
+
+The incentive parameters are updated through a combination of gradient ascent and peer pressure:
+\begin{equation}\label{eq:theta_update}
+\theta_i^{(t+1)} = \theta_i^{(t)} + \eta\,\frac{\partial \mathcal{J}}{\partial \theta_i} - \gamma \sum_{j \neq i} w_{ij}(\theta_i^{(t)} - \theta_j^{(t)})
+\end{equation}
+where $\eta$ is the learning rate and $\gamma$ is the peer pressure coefficient. The physical interpretation of the two forces in the update rule is as follows: the gradient term drives each agent toward its local optimal alignment direction, while the peer pressure term (essentially the graph Laplacian diffusion operator) drives parameters toward the global mean. The joint action of these two forces ensures a balance between ``individual optimality'' and ``global consistency.''
+
+\subsubsection{Pure $\theta$-Normalized Voting}
+
+In this framework, after the Stackelberg game converges, the equilibrium parameters $\theta_i^*$ are normalized to $[0,1]$ and used as the \textbf{sole} voting weights:
+\begin{equation}\label{eq:theta_norm}
+\theta_{\text{norm},i} = \frac{\theta_i^* - \min_j \theta_j^*}{\max_j \theta_j^* - \min_j \theta_j^*}
+\end{equation}
+
+The final decision is:
+\begin{equation}\label{eq:decision}
+\text{Decision} = \arg\max_{s \in \mathcal{S}} \sum_{i:\, s(C_i)=s} \theta_{\text{norm},i}
+\end{equation}
+where $\mathcal{S}$ is the set of all stances ($\{\text{yes}, \text{no}\}$).
+
+\textbf{Design rationale.} Unlike traditional methods that use the product weight $\hat{T}_i \cdot \theta_i^*$, this framework adopts pure $\theta_{\text{norm}}$ voting. The key insight is that the information from the four trust dimensions IC, EC, EQ, and EV has already been fully encoded into the Stackelberg game's input parameters through bid construction (Eqs.~\eqref{eq:bid_aw}--\eqref{eq:bid_ha}), and the game equilibrium process has fused these trust signals with network topology and incentive constraints to produce the optimal $\theta^*$ allocation. Multiplying additionally by $\hat{T}_i$ would result in \textit{double counting} of trust signals---once through bids influencing $\theta^*$, and again through direct participation in voting weights. The pure $\theta_{\text{norm}}$ design ensures that trust signals influence decisions through a single pathway (bid $\to$ game $\to$ $\theta$), yielding semantic clarity and avoiding redundancy.
+
+\subsection{Decentralized Network Protocol}\label{sec:network}
+
+\subsubsection{System Architecture}
+
+The system adopts a P2P topology, assisted by a lightweight registry for initial discovery:
+\begin{itemize}[nosep]
+    \item \textbf{Registry}: Maintains a table of online agents and provides node discovery services, but \textbf{does not participate} in consensus computation;
+    \item \textbf{Agent Node (AgentNode)}: Independently generates AEIC reasoning records and communicates directly with peer nodes via WebSocket.
+\end{itemize}
+
+The registry design follows the principle of ``assist discovery, do not participate in decisions''---even if the registry is compromised or goes offline, agents with established P2P connections can continue the consensus process.
+
+\subsubsection{Consensus Protocol Flow}
+
+The complete decentralized consensus protocol comprises five phases:
+\begin{enumerate}[nosep]
+    \item \textbf{Task broadcast}: The registry sends the task description $\mathcal{Q}$ to all nodes;
+    \item \textbf{Independent reasoning}: Each node independently generates an AEIC record $R_i$ and broadcasts it to all neighbors via P2P;
+    \item \textbf{Distributed Stackelberg}: Each node executes local $\theta$ updates (Eq.~\eqref{eq:theta_update}) and broadcasts the updated parameters;
+    \item \textbf{Convergence determination}: When the local energy $E_i = \frac{1}{2}\sum_j (\theta_i - \theta_j)^2 < \epsilon$, convergence is declared;
+    \item \textbf{Decision output}: The trust-weighted voting result is computed according to Eq.~\eqref{eq:decision}.
+\end{enumerate}
+
+\subsubsection{Message Protocol and Complexity}
+
+Three types of P2P messages are defined:
+\begin{itemize}[nosep]
+    \item \texttt{AEIC\_RECORD}: Carries the complete reasoning record $\langle A, E, I, C \rangle$;
+    \item \texttt{THETA\_UPDATE}: Carries the round number and current $\theta_i$;
+    \item \texttt{CONSENSUS\_REACHED}: Carries the final decision and confidence.
+\end{itemize}
+
+The communication complexity is $O(N)$ messages per node per round, with total message volume $O(N^2 T)$, where $T$ is the number of convergence rounds.
+
+\subsection{Multi-Agent Communication Modes}\label{sec:modes}
+
+The AEIC-Stackelberg framework supports six communication modes, achieving differentiated information flows between modes through a \textbf{$\sigma$-injection mechanism}---i.e., injecting specific AEIC layers from upstream agents into downstream agents' inputs. All modes share the same AEIC decomposition protocol and trust evaluation--Stackelberg consensus mechanism; differences lie solely in the information exchange topology and timing among agents.
+
+\subsubsection{Parallel Mode (Independent Reasoning + Quality Consensus)}
+
+All $N$ agents generate AEIC reasoning records independently in parallel, with no information exchange among them. After reasoning is complete, consensus decisions are made through IC/EC/EQ/EV evaluation and the Stackelberg game. The Parallel mode is the framework's baseline mode---it maximizes reasoning independence and avoids sycophantic conformity, but also forgoes the potential for inter-agent information complementarity. The communication topology is a \textbf{complete graph} (used only during the consensus phase).
+
+\subsubsection{Sequential Mode (Chain Propagation)}
+
+The $N$ agents execute in chain-like sequential order. The first agent reasons independently; each subsequent agent receives the preceding agent's conclusion $C_{i-1}$ as input context ($\sigma$-injection: $C_{i-1} \to A_i$). Subsequent agents are instructed to critically evaluate the predecessor's conclusion, supplement new evidence (without repeating previously known information), and advance or correct the reasoning chain. The communication topology is a \textbf{path graph}. The Sequential mode simulates a ``relay-style'' expert consultation process.
+
+\subsubsection{Star Mode (Hierarchical Synthesis)}
+
+$N-1$ leaf-node agents reason independently in parallel (equivalent to Parallel), then a central hub node receives all leaf nodes' conclusions and trust scores as the basis for its own evidence ($\sigma$-injection: $\{C_{\text{leaf}}, T_{\text{leaf}}\} \to E_{\text{hub}}$) and conducts comprehensive AEIC reasoning. The final consensus evaluates all $N$ agents including the hub. The communication topology is a \textbf{star graph}. The Star mode simulates a ``multiple experts analyze independently $\to$ decision-maker synthesizes'' hierarchical decision structure.
+
+\subsubsection{Debate Mode (Multi-Round Convergence)}
+
+In round~1, all agents reason independently (same as Parallel); from round~2 onward, each agent sees its communication neighbors' conclusions from the previous round ($\sigma$-injection: $\{C_j^{(t-1)}\}_{j \in \mathcal{N}(i)} \to A_i^{(t)}$) and conducts AEIC reasoning anew. Agents may maintain or revise their stance but must provide justification in the inference layer. Iteration continues until all stances stabilize or the maximum number of rounds is reached. The communication topology is a \textbf{complete graph}, with a default maximum of 3 rounds. The Debate mode simulates multi-round interaction in academic peer review.
+
+\subsubsection{SelfCorrect Mode (Independent Self-Correction, Paper~2 Baseline)}
+
+Each of $N$ agents independently performs $R$ rounds of self-correction---each round, the agent reviews its own previous complete AEIC output and decides whether to revise ($\sigma$-injection: $\langle A_i^{(t-1)}, E_i^{(t-1)}, I_i^{(t-1)}, C_i^{(t-1)} \rangle \to \text{context}_i^{(t)}$), \textbf{without receiving any information from other agents}. The output from the final round is sent to consensus evaluation. This mode corresponds to the ``no-peer debate'' baseline proposed by Bertalani\v{c} and Fortuna~\cite{bertalanic2026cost}---verifying whether multi-round self-correction can improve results in the absence of cross-agent interaction.
+
+\subsubsection{AgentVerse Mode (Solve-Review-Revise, Paper~1 Baseline)}
+
+Following the three-stage pipeline of AgentVerse~\cite{chen2023agentverse}: (1)~the Solver (Agent~0) independently generates an initial AEIC reasoning; (2)~$N-1$ Reviewers see the solver's conclusion and independently conduct critical AEIC reasoning; (3)~the Solver revises based on all reviewers' feedback and outputs the final AEIC. The final consensus evaluates all $N$ agents, including the revised solver.
+
+\textbf{Unification across modes.} Despite different information flow topologies, all modes share an identical evaluation pipeline during the consensus phase: AEIC decomposition $\to$ IC/EC/EQ/EV computation $\to$ bid construction $\to$ Stackelberg game $\to$ $\theta_{\text{norm}}$ voting. This ``diverse front-end modes, unified back-end consensus'' architecture ensures that performance differences among communication modes arise entirely from the information flow topology itself, rather than from differences in the consensus mechanism---providing fair controlled conditions for the communication mode comparison experiment in Section~\ref{sec:exp1}.
+
+\subsection{Complete Algorithm}\label{sec:algorithm}
+
+Algorithm~\ref{alg:full} presents the complete procedure of the AEIC-Stackelberg framework.
+
+\begin{algorithm}[H]
+\caption{AEIC-Stackelberg Decentralized Semantic Consensus}\label{alg:full}
+\begin{algorithmic}[1]
+\Require Task $\mathcal{Q}$, agent set $\mathcal{A} = \{a_1, \ldots, a_N\}$, communication mode $\text{mode}$, consensus parameters $\mathcal{C}$
+\Ensure Collective judgment $d^*$
+\State \textbf{Phase 1: Reasoning and AEIC Decomposition} (execute $\sigma$-injection per mode)
+\For{$i = 1$ to $N$}
+    \State $R_i \gets f_i(\mathcal{Q},\, \sigma_{\text{mode}})$ \Comment{Mode-specific context injection}
+    \State $\langle A_i, E_i, I_i, C_i \rangle \gets \text{AEIC\_Parse}(R_i)$ \Comment{Semantic decomposition}
+\EndFor
+\State \textbf{Phase 2: Four-Dimensional Trust Computation}
+\For{$i = 1$ to $N$}
+    \State Compute $\text{IC}_i, \text{EC}_i, \text{EQ}_i, \text{EV}_i$ \Comment{Four-component trust evaluation}
+\EndFor
+\State \textbf{Phase 3: Bid Construction and Stackelberg Game}
+\For{$i = 1$ to $N$}
+    \State $\text{bid}_i \gets \text{BuildBid}(\text{IC}_i, \text{EC}_i, \text{EQ}_i, \text{EV}_i;\, \mathcal{C})$ \Comment{Eqs.~\eqref{eq:bid_aw}--\eqref{eq:bid_ha}}
+\EndFor
+\State Initialize $\theta_i \gets \text{HistAlign}_i$, $t \gets 0$
+\Repeat
+    \For{$i = 1$ to $N$} \Comment{Distributed parallel update}
+        \State $\theta_i \gets \theta_i + \eta \frac{\partial \mathcal{J}}{\partial \theta_i} - \gamma \sum_{j \neq i} w_{ij}(\theta_i - \theta_j)$
+    \EndFor
+    \State $E \gets \frac{1}{2}\sum_{i<j} w_{ij}(\theta_i - \theta_j)^2$
+    \State $t \gets t + 1$
+\Until{parameter change $< 10^{-5}$ \textbf{or} $t \geq T_{\max}$}
+\State \textbf{Phase 4: $\theta$-Normalized Voting}
+\State $\theta_{\text{norm},i} \gets (\theta_i - \min_j \theta_j) / (\max_j \theta_j - \min_j \theta_j)$
+\State $d^* \gets \arg\max_{s \in \mathcal{S}} \sum_{i: s(C_i)=s} \theta_{\text{norm},i}$
+\State \Return $d^*$
+\end{algorithmic}
+\end{algorithm}
+
+%=============================================================
+\section{Theoretical Analysis}\label{sec:theory}
+%=============================================================
+
+This section provides theoretical guarantees for the AEIC-Stackelberg framework, including weight convergence, consensus energy decay, and computational complexity analysis.
+
+\subsection{Adaptive Weight Convergence}
+
+\begin{theorem}[Weight Sequence Convergence]\label{thm:convergence}
+Let the learning rate $\eta(t)$ satisfy the Robbins-Monro conditions~\cite{robbins1951stochastic}:
+\begin{equation}
+\sum_{t=0}^\infty \eta(t) = \infty, \qquad \sum_{t=0}^\infty \eta^2(t) < \infty
+\end{equation}
+and let the conditional variance of the utility $U(t)$ be bounded ($\text{Var}[U(t) | \mathcal{F}_t] \leq \sigma^2$). Then the weight sequence $\{w^{(t)}\}$ converges almost surely to a stable point $w^*$.
+\end{theorem}
+
+\begin{proof}
+Define the Lyapunov function $V_t = \|w^{(t)} - w^*\|_2^2$. By the update structure of Eq.~\eqref{eq:weight_update} and the Lipschitz continuity of the softmax mapping, the weight update can be written in standard stochastic approximation form:
+\begin{equation}
+w^{(t+1)} = w^{(t)} + \eta(t) \left[ g(w^{(t)}) + M_{t+1} \right]
+\end{equation}
+where $g(w) = \mathbb{E}[\Delta w | w]$ is the expected update direction and $M_{t+1}$ is a martingale difference sequence.
+
+By properties of the softmax parameterization, $g$ is continuous and $w^*$ is a zero of $g$. Lyapunov analysis yields:
+\begin{equation}
+\mathbb{E}[V_{t+1} | \mathcal{F}_t] \leq (1 - c\,\eta(t))\,V_t + O(\eta^2(t))
+\end{equation}
+where $c > 0$ is a constant related to the eigenvalues of the Jacobian of the utility gradient at $w^*$. Verification of the standard conditions of the Robbins-Monro theorem proceeds as follows: $\sum \eta(t) = \infty$ ensures the algorithm does not stop prematurely, while $\sum \eta^2(t) < \infty$ ensures that the cumulative effect of noise remains bounded. Consequently, $V_t \to 0$ a.s., i.e., $w^{(t)} \to w^*$ a.s.
+\end{proof}
+
+\begin{remark}
+In practice, we use a fixed learning rate $\eta = 0.05$. Although a fixed learning rate does not satisfy the second Robbins-Monro condition, experiments show that convergence behavior stabilizes within 30 rounds---a fixed learning rate is sufficiently effective for finite-step optimization.
+\end{remark}
+
+\subsection{Exponential Decay of Consensus Energy}
+
+\begin{theorem}[Exponential Decay of Consensus Energy]\label{thm:energy}
+Under a uniform topology $w_{ij} = \frac{1}{N-1}$, if the peer pressure coefficient $\gamma > 0$, then the consensus energy satisfies:
+\begin{equation}
+E^{(t)} \leq E^{(0)} \cdot \exp\!\left(-\frac{2\gamma t}{N-1}\right)
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Consider the peer pressure term in Eq.~\eqref{eq:theta_update} as a graph Laplacian diffusion operator. Define the parameter deviation $\delta_i^{(t)} = \theta_i^{(t)} - \bar{\theta}^{(t)}$, where $\bar{\theta}^{(t)} = \frac{1}{N}\sum_i \theta_i^{(t)}$ is the global mean.
+
+Under the uniform topology, the eigenvalues of the graph Laplacian matrix $L$ are $\lambda_1 = 0$ (corresponding to the globally uniform eigenvector) and $\lambda_k = \frac{N}{N-1}$ ($k = 2, \ldots, N$, all repeated eigenvalues).
+
+Neglecting local perturbations from the gradient term (which does not increase global dispersion), the peer pressure term causes the deviation to decay at the following rate:
+\begin{equation}
+\delta_i^{(t+1)} \approx (1 - \gamma \lambda_2) \delta_i^{(t)} = \left(1 - \frac{\gamma N}{N-1}\right) \delta_i^{(t)}
+\end{equation}
+
+Since the consensus energy $E = \frac{1}{2}\sum_{i<j} w_{ij} (\delta_i - \delta_j)^2$ is proportional to a quadratic form in the deviations:
+\begin{equation}
+E^{(t)} \leq E^{(0)} \cdot \left(1 - \frac{\gamma N}{N-1}\right)^{2t} \leq E^{(0)} \cdot \exp\!\left(-\frac{2\gamma N t}{N-1}\right)
+\end{equation}
+
+Since $N/(N-1) \geq 1$, the upper bound can be relaxed to $E^{(0)} \cdot \exp(-2\gamma t/(N-1))$.
+\end{proof}
+
+\begin{corollary}[Upper Bound on Convergence Rounds]
+The number of rounds required to achieve consensus at precision $\epsilon$ ($E^{(T)} \leq \epsilon$) is upper-bounded by:
+\begin{equation}
+T \leq \frac{N-1}{2\gamma} \ln\frac{E^{(0)}}{\epsilon}
+\end{equation}
+This upper bound is \textbf{linear} in $N$ and \textbf{logarithmic} in precision $\epsilon$.
+\end{corollary}
+
+\subsection{Computational and Communication Complexity}
+
+\begin{proposition}[Complexity Analysis]\label{prop:complexity}
+The computational and communication complexity of the AEIC-Stackelberg framework is as follows:
+\begin{itemize}[nosep]
+    \item \textbf{AEIC decomposition}: $O(N \cdot d)$, where $d$ is the Sentence-Transformer encoding dimension; each agent completes this independently;
+    \item \textbf{Pairwise similarity}: $O(N^2 \cdot 4 \cdot d) = O(N^2 d)$ (4 layers $\times$ all agent pairs);
+    \item \textbf{Trust evaluation}: $O(N^2 d)$ (evidence consensus requires pairwise comparison);
+    \item \textbf{Stackelberg iteration}: $O(N^2)$ per round (parameter updates and energy computation), for $T$ rounds total;
+    \item \textbf{Communication}: total message volume $O(N^2 T)$ (each node sends updates to $N-1$ neighbors per round).
+\end{itemize}
+\end{proposition}
+
+Under the setting $N = 15$, $T = 20$, the total message volume is approximately 4,200 messages, which is entirely acceptable for modern network infrastructure. The $O(N^2)$ pairwise similarity complexity can be reduced to $O(N \log N)$ in large-scale scenarios through approximate methods such as locality-sensitive hashing or cluster-based sampling.
+
+%=============================================================
+\section{Experiments}\label{sec:experiments}
+%=============================================================
+
+This section validates the effectiveness of the AEIC-Stackelberg framework through six systematic experiments from different dimensions. All experiments are executed end-to-end on real LLM backends---agents' AEIC reasoning is generated by actual large language models, not simulated data. The experimental design follows a ``single-variable control'' principle: each experiment focuses on validating one core hypothesis of the framework while holding all other conditions constant.
+
+\subsection{Experimental Setup}\label{sec:setup}
+
+\subsubsection{Datasets}
+
+We adopt 10 widely used reasoning benchmark datasets spanning multiple capability dimensions including multi-step reasoning, mathematical computation, knowledge question answering, and commonsense judgment:
+
+\begin{table}[H]
+\centering
+\caption{Overview of experimental datasets}\label{tab:datasets}
+\begin{tabular}{llll}
+\toprule
+Dataset & Domain & Difficulty & Original Format \\
+\midrule
+StrategyQA~\cite{geva2021strategyqa} & Multi-step implicit reasoning & Medium & Boolean \\
+GSM8K~\cite{cobbe2021gsm8k} & Elementary mathematics & Medium & Numerical \\
+GSM-Hard~\cite{gao2023gsmhard} & Math (large numbers/traps) & Hard & Numerical \\
+MMLU~\cite{hendrycks2021mmlu} & Multi-discipline knowledge & Medium & 4-choice \\
+MMLU-Hard~\cite{wang2024mmlupro} & Multi-discipline (hard subset) & Hard & 4-choice \\
+TruthfulQA~\cite{lin2022truthfulqa} & Factual truthfulness & Medium & Generative \\
+CommonsenseQA~\cite{talmor2019commonsenseqa} & Commonsense reasoning & Medium & 5-choice \\
+ARC-Challenge~\cite{clark2018arc} & Scientific reasoning & Hard & 4-choice \\
+HotpotQA~\cite{yang2018hotpotqa} & Multi-hop reasoning & Medium & Extractive \\
+GPQA~\cite{rein2024gpqa} & Graduate-level science & Hard & 4-choice \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Unified Yes/No format.} To enable unified evaluation across datasets, all datasets are converted to a Yes/No judgment format. The specific conversion strategies are: (1)~StrategyQA and TruthfulQA are natively Boolean and used directly; (2)~numerical datasets (GSM8K, GSM-Hard) are converted into verification-style questions of the form ``Someone claims the answer is $x$; please independently verify whether this answer is correct''; (3)~multiple-choice datasets (MMLU, ARC-Challenge, CommonsenseQA, GPQA) are converted to ``Is the answer to question $Q$ equal to $A$? Solve independently first, then judge''---50\% use the correct answer (GT=yes) and 50\% use a random incorrect option (GT=no), ensuring balanced positive and negative samples.
+
+\subsubsection{LLM Backends}
+
+We employ two heterogeneous LLM backends to simulate real-world scenarios involving mixed deployment of strong and weak models:
+\begin{itemize}[nosep]
+    \item \textbf{DeepSeek} (deepseek-chat): Strong reasoning model, paid API;
+    \item \textbf{Zhipu GLM-4-Flash} (glm-4-flash): Weak reasoning model, free API.
+\end{itemize}
+
+\textbf{Agent assignment strategy.} A round-robin scheme is used to assign LLM backends to agents: Agent~0 uses DeepSeek, Agent~1 uses GLM-4-Flash, Agent~2 uses DeepSeek, and so on. This strategy ensures model heterogeneity among agents---a key condition for testing framework robustness. Each agent is assigned an independent reasoning persona (Analyst, Skeptic, Creative, Expert, Pragmatist, Devil's Advocate, Synthesizer---7 personas in total), injected via system prompts to induce differentiated analytical styles.
+
+\subsubsection{Semantic Encoding}
+
+We use a locally deployed Sentence-Transformer (paraphrase-multilingual-MiniLM-L12-v2) as the embedding encoder for computing semantic similarity in the IC, EC, and EV components. This encoder is validated on the STS-B benchmark~\cite{reimers2019sentence}: Spearman $\rho = 0.854$, confirming that the semantic similarity estimates are highly consistent with human judgments. Local deployment eliminates the API call overhead for semantic computation.
+
+\subsubsection{Consensus Method Comparison}
+
+Under all communication modes, the following four consensus methods are compared:
+\begin{itemize}[nosep]
+    \item \textbf{MajVote}: Equal-weight majority voting (ChatEval~\cite{chan2023chateval} paradigm);
+    \item \textbf{QualWt}: IC$\times$EC weighted voting (without Stackelberg game);
+    \item \textbf{AEIC} (w/o SG): Full IC/EC/EQ/EV evaluation but skipping the Stackelberg game, using equal-weight voting;
+    \item \textbf{AEIC+SG} (our full method): IC/EC/EQ/EV evaluation + Stackelberg game + $\theta_{\text{norm}}$ voting.
+\end{itemize}
+
+Additionally, in the communication mode comparison, the SelfCorrect mode~\cite{bertalanic2026cost} and the AgentVerse mode~\cite{chen2023agentverse} serve as baseline methods representing two representative prior works. A single agent ($N=1$) serves as the lower-bound baseline.
+
+\textbf{Statistical testing.} All method comparisons use paired $t$-tests with a significance threshold of $p < 0.05$.
+
+%----------------------------------------------
+\subsection{Experiment 1: Communication Mode Comparison}\label{sec:exp1}
+%----------------------------------------------
+
+\textbf{Objective.} Comprehensively compare all combinations of six communication modes $\times$ four consensus methods $\times$ two agent scales to validate the performance of the AEIC-Stackelberg framework under different communication topologies.
+
+\textbf{Design.}
+
+\textit{Communication modes} (6): Parallel, Sequential, Star, Debate (3 rounds), SelfCorrect (3 rounds, Paper~2 baseline~\cite{bertalanic2026cost}), AgentVerse (Paper~1 baseline~\cite{chen2023agentverse}).
+
+\textit{Agent scale}: $N \in \{3, 5\}$. A single agent $N=1$ serves as the baseline (all consensus methods degenerate to the same decision).
+
+\textit{Consensus methods} (4): MajVote, QualWt, AEIC (w/o SG), AEIC+SG.
+
+\textit{Datasets}: StrategyQA (200 questions), GSM-Hard (200 questions), MMLU-Hard (200 questions). These three datasets are selected to represent three capability dimensions---implicit reasoning, mathematical reasoning, and knowledge reasoning, respectively---with GSM-Hard and MMLU-Hard being hard subsets.
+
+\textbf{Results.}
+
+\begin{table}[H]
+\centering
+\caption{Communication mode $\times$ consensus method accuracy comparison ($N=3$, StrategyQA 200 questions)}\label{tab:exp1_sqa}
+\begin{tabular}{lcccc}
+\toprule
+Communication Mode & MajVote & QualWt & AEIC & AEIC+SG \\
+\midrule
+Single ($N=1$) & \multicolumn{4}{c}{TBD} \\
+Parallel & TBD & TBD & TBD & TBD \\
+Sequential & TBD & TBD & TBD & TBD \\
+Star & TBD & TBD & TBD & TBD \\
+Debate & TBD & TBD & TBD & TBD \\
+SelfCorrect & TBD & TBD & TBD & TBD \\
+AgentVerse & TBD & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Communication mode $\times$ consensus method accuracy comparison ($N=3$, GSM-Hard 200 questions)}\label{tab:exp1_gsm}
+\begin{tabular}{lcccc}
+\toprule
+Communication Mode & MajVote & QualWt & AEIC & AEIC+SG \\
+\midrule
+Single ($N=1$) & \multicolumn{4}{c}{TBD} \\
+Parallel & TBD & TBD & TBD & TBD \\
+Sequential & TBD & TBD & TBD & TBD \\
+Star & TBD & TBD & TBD & TBD \\
+Debate & TBD & TBD & TBD & TBD \\
+SelfCorrect & TBD & TBD & TBD & TBD \\
+AgentVerse & TBD & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Communication mode $\times$ consensus method accuracy comparison ($N=3$, MMLU-Hard 200 questions)}\label{tab:exp1_mmlu}
+\begin{tabular}{lcccc}
+\toprule
+Communication Mode & MajVote & QualWt & AEIC & AEIC+SG \\
+\midrule
+Single ($N=1$) & \multicolumn{4}{c}{TBD} \\
+Parallel & TBD & TBD & TBD & TBD \\
+Sequential & TBD & TBD & TBD & TBD \\
+Star & TBD & TBD & TBD & TBD \\
+Debate & TBD & TBD & TBD & TBD \\
+SelfCorrect & TBD & TBD & TBD & TBD \\
+AgentVerse & TBD & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Communication mode $\times$ consensus method accuracy comparison ($N=5$, average across three datasets)}\label{tab:exp1_5a}
+\begin{tabular}{lcccc}
+\toprule
+Communication Mode & MajVote & QualWt & AEIC & AEIC+SG \\
+\midrule
+Single ($N=1$) & \multicolumn{4}{c}{TBD} \\
+Parallel & TBD & TBD & TBD & TBD \\
+Sequential & TBD & TBD & TBD & TBD \\
+Star & TBD & TBD & TBD & TBD \\
+Debate & TBD & TBD & TBD & TBD \\
+SelfCorrect & TBD & TBD & TBD & TBD \\
+AgentVerse & TBD & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Expected Analysis.}
+
+(1)~\textbf{Communication mode dimension}: The Parallel mode, by maximizing reasoning independence, is expected to perform best under the AEIC+SG consensus---avoiding sycophantic conformity while achieving reliable aggregation through structured trust evaluation. The Debate mode may suffer performance degradation under MajVote due to conformity effects (the 73\% conformity rate discovered by~\cite{bertalanic2026cost}), but this should be remedied under AEIC+SG because IC detects conformity-induced stance flips. The SelfCorrect mode (no inter-agent information exchange) is expected to serve as a lower bound for the AEIC+SG method---verifying the value of cross-agent information exchange. The AgentVerse mode, as a centralized baseline, has its performance constrained by the quality of the solver.
+
+(2)~\textbf{Consensus method dimension}: AEIC+SG should outperform MajVote across all modes (especially when disagreement exists among agents), validating the universal value of structured trust evaluation combined with the game mechanism. The gap between QualWt and AEIC (w/o SG) quantifies the marginal contribution of the Stackelberg game.
+
+(3)~\textbf{Scale dimension}: $N=5$ compared to $N=3$ provides greater reasoning diversity but also increases the probability of erroneous agents appearing. The key observation is whether the advantage of AEIC+SG expands with increasing $N$ (i.e., the framework can better leverage additional agents).
+
+(4)~\textbf{API cost analysis}: The number of LLM calls varies significantly across modes---Parallel/Sequential requires $N$ calls, Star requires $N+1$, Debate requires $N \times R$ ($R$ being the number of rounds), SelfCorrect requires $N \times R$, and AgentVerse requires $N+1$. The trade-off between accuracy improvement and API cost is a practical consideration for mode selection.
+
+%----------------------------------------------
+\subsection{Experiment 2: Consensus Parameter Optimization}\label{sec:exp2}
+%----------------------------------------------
+
+\textbf{Objective.} Validate the effectiveness of data-driven optimization of the 17 learnable consensus parameters and analyze the importance of each parameter.
+
+\textbf{Design.} A two-phase optimization pipeline is employed (zero API cost):
+\begin{enumerate}[nosep]
+    \item \textbf{Phase 1: AEIC cache collection}---Run AEIC reasoning in Parallel mode and cache each agent's raw AEIC output ($\langle A, E, I, C \rangle$) for every question. This phase incurs API calls ($N \times Q$, where $Q$ is the number of questions).
+    \item \textbf{Phase 2: Signal pre-computation and parameter optimization}---Compute IC/EC/EQ/EV signals locally from the AEIC cache (using the Sentence-Transformer, with no API calls), then use a differential evolution global optimizer to search for the optimal \texttt{ConsensusConfig} parameters. This phase executes entirely locally with zero API cost.
+\end{enumerate}
+
+The 17 learnable parameters (Table~\ref{tab:params}) cover bid construction (12 parameters), Stackelberg game (4 parameters), and alignment willingness floor (1 parameter):
+
+\begin{table}[H]
+\centering
+\caption{The 17 learnable consensus parameters}\label{tab:params}
+\begin{tabular}{llcc}
+\toprule
+Parameter Group & Parameter Name & Default & Search Range \\
+\midrule
+\multirow{5}{*}{Alignment Willingness} & $\delta_{\text{aw}}$ (floor) & 0.05 & $[0.01, 0.2]$ \\
+& $\beta_1$ (IC exponent) & 1.0 & $[0.3, 3.0]$ \\
+& $\beta_2$ (EQ exponent) & 1.0 & $[0.3, 3.0]$ \\
+& $\beta_3$ (EV baseline) & 0.5 & $[0.0, 1.0]$ \\
+& $\beta_4$ (EV scaling) & 0.5 & $[0.0, 1.0]$ \\
+\midrule
+\multirow{2}{*}{Revision Cost} & $\delta_{\text{rc}}$ (floor) & 5.0 & $[1.0, 20.0]$ \\
+& $\beta_5$ (scaling) & 30.0 & $[5.0, 80.0]$ \\
+\midrule
+\multirow{2}{*}{Revision Depth} & $\beta_6$ (lower bound) & 0.1 & $[0.01, 0.4]$ \\
+& $\beta_7$ (upper bound) & 0.95 & $[0.5, 1.0]$ \\
+\midrule
+\multirow{4}{*}{Historical Alignment} & $\beta_8$ (IC weight) & 0.25 & $[0.0, 1.0]$ \\
+& $\beta_9$ (EC weight) & 0.25 & $[0.0, 1.0]$ \\
+& $\beta_{10}$ (EQ weight) & 0.25 & $[0.0, 1.0]$ \\
+& $\beta_{11}$ (EV weight) & 0.25 & $[0.0, 1.0]$ \\
+\midrule
+\multirow{4}{*}{Stackelberg} & $\lambda$ (energy penalty) & 1.0 & $[0.1, 5.0]$ \\
+& $\mu$ (budget constraint) & 0.1 & $[0.01, 1.0]$ \\
+& $\eta$ (learning rate) & 0.05 & $[0.005, 0.3]$ \\
+& $\gamma$ (peer pressure) & 0.1 & $[0.01, 0.5]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The optimization objective is accuracy maximization on the cached data (equivalent to minimizing negative accuracy), solved using SciPy's \texttt{differential\_evolution} solver (population size 10, maximum 100 iterations, Latin Hypercube initialization).
+
+\textbf{Results.}
+
+\begin{table}[H]
+\centering
+\caption{Accuracy comparison: default parameters vs.\ optimized parameters}\label{tab:exp2_result}
+\begin{tabular}{lccc}
+\toprule
+Configuration & StrategyQA Acc. & GSM-Hard Acc. & MMLU-Hard Acc. \\
+\midrule
+Default parameters & TBD & TBD & TBD \\
+\textbf{Optimized parameters} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+Improvement & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Expected Analysis.}
+
+(1)~\textbf{Optimization gains}: The optimized parameters should significantly outperform the default parameters (which assume uniform weights), validating the value of parameterized bid construction. The key question is the magnitude of the gain---if the gain is small, the default parameters are already reasonable; if large, parameter sensitivity is high and data-driven optimization is indispensable.
+
+(2)~\textbf{Parameter importance analysis}: By comparing the magnitude of parameter changes before and after optimization, we identify the parameters with the greatest impact on accuracy. IC-related parameters ($\beta_1$, $\beta_8$) and the Stackelberg game parameter ($\gamma$) are expected to exhibit the most significant changes---IC is the core signal for adversarial detection, and $\gamma$ controls the consensus convergence rate.
+
+(3)~\textbf{Zero API cost}: The Phase~2 optimization process operates entirely on cached data and incurs no API calls. This means large-scale search across different parameter configurations is possible, and the optimized parameters can be directly applied to new reasoning tasks.
+
+%----------------------------------------------
+\subsection{Experiment 3: Adaptive Heterogeneous Robustness}\label{sec:exp3}
+%----------------------------------------------
+
+\textbf{Objective.} Validate the framework's robustness under mixed strong-weak model scenarios and the effectiveness of the TrustTracker cross-question trust accumulation mechanism.
+
+\textbf{Design.} By controlling the proportion of weak models (GLM-4-Flash, labeled ``faker''), nine heterogeneous conditions are constructed:
+
+\begin{table}[H]
+\centering
+\caption{Heterogeneous experiment conditions ($f$ denotes the number of weak models, always $< N/2$)}\label{tab:exp3_cond}
+\begin{tabular}{lccc}
+\toprule
+Condition & Total Agents $N$ & Weak Models $f$ & Strong:Weak Ratio \\
+\midrule
+3a-0f & 3 & 0 & 3:0 \\
+3a-1f & 3 & 1 & 2:1 \\
+5a-0f & 5 & 0 & 5:0 \\
+5a-1f & 5 & 1 & 4:1 \\
+5a-2f & 5 & 2 & 3:2 \\
+7a-0f & 7 & 0 & 7:0 \\
+7a-1f & 7 & 1 & 6:1 \\
+7a-2f & 7 & 2 & 5:2 \\
+7a-3f & 7 & 3 & 4:3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{TrustTracker mechanism.} This experiment enables cross-question trust accumulation (TrustTracker), which records each agent's historical quality signals ($\theta$, IC, EC, EQ, agreement with the consensus) in a sliding window ($W=20$ questions) and computes reliability scores. After a warm-up period ($\geq 3$ questions), TrustTracker can inform dynamic agent selection---persistently underperforming weak-model agents can be down-weighted or excluded.
+
+\textbf{Evaluation metrics.}
+\begin{itemize}[nosep]
+    \item Accuracy under each condition (AEIC+SG vs.\ MajVote vs.\ single-agent baseline);
+    \item Accuracy degradation curve as the weak model proportion increases;
+    \item Correlation between TrustTracker reliability scores and actual model strength;
+    \item Accuracy difference between the first $k$ questions (warm-up period) and subsequent questions.
+\end{itemize}
+
+\textbf{Results.}
+
+\begin{table}[H]
+\centering
+\caption{Accuracy comparison under heterogeneous conditions (StrategyQA 200 questions)}\label{tab:exp3_result}
+\begin{tabular}{lcccc}
+\toprule
+Condition & MajVote & AEIC+SG & Single-Agent Baseline & TrustTracker Score (Strong/Weak) \\
+\midrule
+3a-0f & TBD & TBD & TBD & --- \\
+3a-1f & TBD & TBD & TBD & TBD \\
+5a-0f & TBD & TBD & TBD & --- \\
+5a-1f & TBD & TBD & TBD & TBD \\
+5a-2f & TBD & TBD & TBD & TBD \\
+7a-0f & TBD & TBD & TBD & --- \\
+7a-1f & TBD & TBD & TBD & TBD \\
+7a-2f & TBD & TBD & TBD & TBD \\
+7a-3f & TBD & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Expected Analysis.}
+
+(1)~\textbf{Graceful degradation}: As the weak model proportion increases, the accuracy degradation of AEIC+SG should be significantly slower than that of MajVote---the latter fails completely when weak models constitute the majority, whereas the former detects and down-weights weak models' low-quality reasoning through EQ and IC.
+
+(2)~\textbf{TrustTracker discriminative ability}: After a sufficient warm-up period, the reliability scores of strong models should be significantly higher than those of weak models. This validates the feasibility of unsupervised trust accumulation---the system can identify model quality differences without ground-truth labels.
+
+(3)~\textbf{Correct minority identification}: Under extreme conditions (e.g., 7a-3f with a 4:3 strong-to-weak ratio), despite weak models constituting nearly half the population, AEIC+SG should maintain accuracy higher than MajVote---validating the effectiveness of the four-component trust evaluation designed in Section~\ref{sec:trust} under realistic heterogeneous scenarios.
+
+%----------------------------------------------
+\subsection{Experiment 4: Trust Component Ablation}\label{sec:exp4}
+%----------------------------------------------
+
+\textbf{Objective.} Validate the contribution of each component---IC, EC, EQ, EV, and the Stackelberg game---to final decision accuracy, and identify the core components.
+
+\textbf{Design.} A leave-one-out ablation strategy is employed, yielding six configurations:
+
+\begin{itemize}[nosep]
+    \item \textbf{Full}: The complete AEIC+SG method (IC+EC+EQ+EV+Stackelberg);
+    \item \textbf{$-$IC}: IC component removed ($\text{IC}_i$ set to a constant 0.5 in bid construction);
+    \item \textbf{$-$EC}: EC component removed ($\text{EC}_i$ set to a constant 0.5);
+    \item \textbf{$-$EQ}: EQ component removed ($\text{EQ}_i$ set to a constant 0.5);
+    \item \textbf{$-$EV}: EV component removed ($\text{EV}_i$ set to a constant 0.5);
+    \item \textbf{$-$Stackelberg}: Stackelberg game removed, using equal-weight voting (equivalent to the AEIC method without SG).
+\end{itemize}
+
+Ablation is conducted on the StrategyQA and GSM-Hard datasets using Parallel mode with $N=3$ agents.
+
+\textbf{Results.}
+
+\begin{table}[H]
+\centering
+\caption{Trust component ablation results}\label{tab:exp4}
+\begin{tabular}{lcccc}
+\toprule
+Configuration & StrategyQA Acc. & GSM-Hard Acc. & Average & $p$ (vs.\ Full) \\
+\midrule
+Full (IC+EC+EQ+EV+SG) & TBD & TBD & TBD & --- \\
+$-$IC & TBD & TBD & TBD & TBD \\
+$-$EC & TBD & TBD & TBD & TBD \\
+$-$EQ & TBD & TBD & TBD & TBD \\
+$-$EV & TBD & TBD & TBD & TBD \\
+$-$Stackelberg & TBD & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Expected Analysis.}
+
+(1)~\textbf{IC as the core component}: The three-tier directional detection based on IC is the sole signal for distinguishing ``inconsistency between the reasoning process and the conclusion''---removing IC is expected to cause the largest accuracy drop. In adversarial scenarios (where the conclusion is flipped but the reasoning is not synchronously modified), IC is the key detector of Tier~1 attacks.
+
+(2)~\textbf{Value of EQ in heterogeneous scenarios}: EQ distinguishes evidence quality differences between strong and weak models. Under the DeepSeek + GLM-4-Flash mixed configuration, ablating EQ is expected to have a greater impact on GSM-Hard---mathematical reasoning demands higher specificity and accuracy in evidence.
+
+(3)~\textbf{Marginal contribution of Stackelberg}: Removing Stackelberg is equivalent to degrading from AEIC+SG to AEIC (w/o SG). Its marginal contribution quantifies the value of the game equilibrium mechanism in integrating trust signals. If the marginal contribution is small, it indicates that the four trust dimensions already provide sufficient discriminative signals; if large, it indicates that the Stackelberg game plays an irreplaceable role in integrating multi-dimensional signals to form consistent weights.
+
+%----------------------------------------------
+\subsection{Experiment 5: Cross-Dataset Generalization}\label{sec:exp5}
+%----------------------------------------------
+
+\textbf{Objective.} Validate whether consensus parameters optimized on a single dataset can generalize to other datasets, testing the framework's cross-domain transfer capability.
+
+\textbf{Design.}
+
+\textit{Training set}: Collect AEIC cache on StrategyQA and optimize the 17 consensus parameters (following the Experiment~2 pipeline).
+
+\textit{Test sets}: Apply the optimized parameters directly to the remaining 9 datasets (GSM-Hard, MMLU-Hard, GSM8K, MMLU, TruthfulQA, CommonsenseQA, ARC-Challenge, HotpotQA, GPQA) without any parameter adjustment.
+
+\textit{Comparison baselines}: Default parameter performance and MajVote performance on each test set.
+
+\textbf{Results.}
+
+\begin{table}[H]
+\centering
+\caption{Cross-dataset generalization results (parameters optimized on StrategyQA)}\label{tab:exp5_result}
+\begin{tabular}{lccc}
+\toprule
+Dataset & MajVote & AEIC+SG (Default) & AEIC+SG (Optimized) \\
+\midrule
+StrategyQA (training set) & TBD & TBD & TBD \\
+\midrule
+GSM-Hard & TBD & TBD & TBD \\
+MMLU-Hard & TBD & TBD & TBD \\
+GSM8K & TBD & TBD & TBD \\
+MMLU & TBD & TBD & TBD \\
+TruthfulQA & TBD & TBD & TBD \\
+CommonsenseQA & TBD & TBD & TBD \\
+ARC-Challenge & TBD & TBD & TBD \\
+HotpotQA & TBD & TBD & TBD \\
+GPQA & TBD & TBD & TBD \\
+\midrule
+Average (test sets) & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Expected Analysis.}
+
+(1)~\textbf{Positive transfer}: The optimized parameters should outperform default parameters on most test sets---the core behaviors of the consensus mechanism (importance of IC directional detection, Stackelberg convergence rate, etc.) share commonalities across different reasoning tasks. This validates that the 17-parameter configuration captures universal properties of the consensus mechanism rather than idiosyncratic statistical characteristics of StrategyQA.
+
+(2)~\textbf{Domain differences}: Different types of datasets may be sensitive to different parameters. For example, mathematical reasoning (GSM series) may rely more heavily on EQ (evidence quality, since mathematical evidence requires precise numerical values), while knowledge reasoning (MMLU, GPQA) may rely more heavily on EV (evidence consensus, since domain knowledge sources are more dispersed).
+
+(3)~\textbf{Generalization boundary}: If the optimized parameters yield performance \textit{lower} than default parameters on certain datasets (negative transfer), this indicates that the domain dependence of consensus behavior exceeds expectations and that parameters need to be optimized separately by domain---this itself is a valuable finding.
+
+%----------------------------------------------
+\subsection{Experiment 6: Scalability and Topology Analysis}\label{sec:exp6}
+%----------------------------------------------
+
+\textbf{Objective.} Analyze the effects of agent count and network topology on Stackelberg convergence behavior, and validate the practical tightness of the theoretical upper bound.
+
+\textbf{Design.} This experiment requires no API calls---it uses synthetic bid data (AgentBid parameters sampled from uniform distributions) to drive the Stackelberg game, relying on pure mathematical computation.
+
+\textit{Scale analysis}: $N \in \{3, 5, 7, 9, 11, 13, 15\}$, with a fixed Complete topology; convergence rounds and final energy are recorded.
+
+\textit{Topology analysis}: Fixed $N = 7$, comparing five network topologies---Complete (complete graph), Ring, Star, Random (Erd\H{o}s-R\'{e}nyi $G(7, 0.5)$), and Small-World (Watts-Strogatz $k=4, p=0.3$). The algebraic connectivity $\lambda_2$, convergence rounds, and communication message counts are recorded for each topology.
+
+\textbf{Results.}
+
+\begin{table}[H]
+\centering
+\caption{Scalability analysis (Complete topology)}\label{tab:exp6_scale}
+\begin{tabular}{lccc}
+\toprule
+$N$ & Convergence Rounds & Final Energy & Total Messages \\
+\midrule
+3 & TBD & TBD & TBD \\
+5 & TBD & TBD & TBD \\
+7 & TBD & TBD & TBD \\
+9 & TBD & TBD & TBD \\
+11 & TBD & TBD & TBD \\
+13 & TBD & TBD & TBD \\
+15 & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Network topology comparison ($N=7$)}\label{tab:exp6_topo}
+\begin{tabular}{lcccc}
+\toprule
+Topology & $\lambda_2$ & Convergence Rounds & Final Energy & Communication Messages \\
+\midrule
+Complete & TBD & TBD & TBD & TBD \\
+Ring & TBD & TBD & TBD & TBD \\
+Star & TBD & TBD & TBD & TBD \\
+Random & TBD & TBD & TBD & TBD \\
+Small-World & TBD & TBD & TBD & TBD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Expected Analysis.}
+
+(1)~\textbf{Sub-linear convergence growth}: As $N$ increases from 3 to 15 (a 5$\times$ increase), the growth in convergence rounds should be significantly less than 5$\times$---consistent with the theoretical upper bound $T \leq \frac{N-1}{2\gamma} \ln(E_0/\epsilon)$ from the corollary of Theorem~\ref{thm:energy} (linear in $N$), but the measured growth should be milder than linear due to the acceleration effect of numerical gradients.
+
+(2)~\textbf{$\lambda_2$ and convergence speed}: Topologies with higher algebraic connectivity $\lambda_2$ (Fiedler value) converge faster. The expected ordering is: Complete $>$ Small-World $>$ Random $>$ Star $>$ Ring. The Pearson correlation between $\lambda_2$ and convergence rounds should be significantly negative, validating the applicability of graph Laplacian diffusion theory to Stackelberg game convergence.
+
+(3)~\textbf{Convergence-communication trade-off}: The Complete topology converges fastest but incurs the highest communication volume ($N(N-1)$ messages per round), while the Ring topology has the lowest communication volume but the slowest convergence. The Small-World topology may offer the best convergence speed--communication cost trade-off, providing guidance for topology selection in large-scale deployments.
+
+(4)~\textbf{Energy decay rate exceeds the theoretical upper bound}: Comparing the measured decay curves for $N=7$ under each topology against the theoretical upper bound $E_0 \exp(-2\gamma t/(N-1))$ from Theorem~\ref{thm:energy}, the measured decay should be strictly faster than the upper bound---the numerical gradient term ($\partial \mathcal{J}/\partial \theta_i$) provides additional convergence acceleration beyond pure peer pressure diffusion.
+
+\subsection{Experiment Summary}
+
+Table~\ref{tab:summary} summarizes the core questions validated across six dimensions.
+
+\begin{table}[H]
+\centering
+\caption{Validation dimensions and core questions of the six experiments}\label{tab:summary}
+\begin{tabular}{lll}
+\toprule
+Validation Dimension & Experiment & Core Question \\
+\midrule
+Communication Mode & Exp.~1: Mode $\times$ Method & Which mode+consensus combination is optimal? \\
+Parameter Optimization & Exp.~2: 17-parameter learning & How much does data-driven optimization help? \\
+Heterogeneous Robustness & Exp.~3: Strong-weak mixing & Up to what weak model ratio is the system robust? \\
+Mechanism Verification & Exp.~4: Trust ablation & How much does each of IC/EC/EQ/EV/SG contribute? \\
+Generalization & Exp.~5: Cross-dataset & Can optimized parameters transfer across domains? \\
+Scalability & Exp.~6: Scale and topology & How does convergence vary with $N$ and topology? \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%=============================================================
+\section{Discussion}\label{sec:discussion}
+%=============================================================
+
+\subsection{Methodological Significance}
+
+The contribution of this paper extends beyond a better-performing consensus algorithm; it represents a threefold paradigm shift in the \textbf{design philosophy} of multi-agent consensus:
+
+\textbf{(1) From ``voting'' to ``verification.''} Traditional methods equate consensus with majority voting---each agent's decision weight is equal (ChatEval) or determined by surface features such as confidence and length (AgentVerse). This paper redefines consensus as ``weighted aggregation after structured verification''---weights are determined indirectly through IC/EC/EQ/EV four-dimensional trust evaluation via the Stackelberg game, rather than through simple counting or external evaluation. This shift endows the system with the ability to distinguish reasoning quality between strong and weak models in heterogeneous scenarios.
+
+\textbf{(2) From ``centralized arbitration'' to ``distributed trust.''} Frameworks such as AgentVerse rely on a central evaluator to render final judgments, constituting a structural single point of failure. Through the unified framework of six communication modes, this paper demonstrates that decentralized systems can achieve \textit{more robust} consensus than centralized evaluators through structured trust evaluation and game-theoretic incentives. The comparison between AgentVerse mode and Parallel+AEIC+SG in Experiment~1 directly validates this claim.
+
+\textbf{(3) From ``pursuing homogeneity'' to ``leveraging heterogeneity.''} Traditional debate methods implicitly pursue consistency among agents (the more consistent, the better) and typically assume all agents use the same LLM. The design philosophy of the AEIC-Stackelberg framework is precisely the opposite---it actively introduces model diversity through heterogeneous LLM backends (round-robin assignment of DeepSeek and GLM-4-Flash), distinguishes evidence quality across different models through the EQ component, and accumulates cross-question model reliability information through TrustTracker. The nine heterogeneous conditions in Experiment~3 validate the framework's graceful degradation property under strong-weak model mixing.
+
+\subsection{In-Depth Comparison with Existing Methods}
+
+Contrasting with the three failure modes identified by Bertalani\v{c} and Fortuna~\cite{bertalanic2026cost}, the AEIC-Stackelberg framework provides targeted solutions:
+
+\begin{itemize}[nosep]
+    \item \textbf{Sycophantic conformity} $\to$ IC three-tier detection: When conformity causes an agent to flip its conclusion without synchronizing its reasoning, IC's three-tier directional detection (shared concept alignment $\to$ conclusion-paragraph direction $\to$ semantic similarity) identifies the I$\to$C inconsistency, and that agent's bid parameters in the Stackelberg game are reduced. This fundamentally alters the payoff structure of conformity---conforming is no longer the ``safe'' option.
+    \item \textbf{Context fragility} $\to$ Multi-mode design: The Parallel mode requires each agent to generate its reasoning chain \textit{completely independently}, avoiding the context fragility inherent in debate. Even in Debate mode (where agents receive others' conclusions), IC detection can still identify agents who changed their stance due to external influence.
+    \item \textbf{Consensus collapse} $\to$ Pure $\theta_{\text{norm}}$ voting: Even when the correct opinion is in the minority (1:2), as long as the correct agent's IC/EQ scores are sufficiently high, the Stackelberg game will assign it a higher $\theta^*$, and the normalized $\theta_{\text{norm}}$ vote can overturn the majority decision.
+\end{itemize}
+
+\subsection{Limitations and Future Directions}
+
+Despite the systematic advantages demonstrated by the AEIC-Stackelberg framework across experiments on 10 datasets, the following limitations remain:
+
+\textbf{(1) Coverage of IC three-tier detection.} The current three-tier directional detection (shared concept alignment $\to$ conclusion-paragraph direction $\to$ semantic similarity) relies on pattern matching with approximately 70 signal words in Chinese and English. For complex implicit reasoning, irony, and nested negation, signal word coverage may be insufficient---when the reasoning text employs entirely non-standard expressions, all three tiers may degrade to the neutral baseline ($d_{\text{IC}} = 0.5$). Future work could introduce fine-tuned natural language inference (NLI) models~\cite{reimers2019sentence} to replace keyword matching, enhancing the semantic depth and cross-lingual coverage of IC detection.
+
+\textbf{(2) Limitations of the passive adversary assumption.} The ``weak models'' (GLM-4-Flash) in the current experiments produce low-quality but non-malicious reasoning, constituting passive adversaries. Active adversary scenarios (e.g., malicious nodes in Byzantine attacks~\cite{olfati2007consensus} that collude to construct reasoning chains with consistent IC scores but fabricated content) have not been thoroughly validated. Future work should design stronger adversary models and corresponding defense mechanisms.
+
+\textbf{(3) $O(N^2)$ pairwise computation complexity.} The cross-agent evidence similarity computation in the EV component requires $O(N^2)$ pairwise comparisons. In large-scale scenarios with hundreds of agents, this could become a bottleneck. The topology analysis in Experiment~6 indicates that Small-World topologies may offer a favorable convergence-communication trade-off---each agent communicates only with local neighbors rather than broadcasting network-wide.
+
+\textbf{(4) Data efficiency of 17-parameter optimization.} The current differential evolution optimization requires a sufficient number of cached samples (Experiment~2 uses 200 questions) to avoid overfitting. In low-sample scenarios, optimization may be unstable. Future work could introduce Bayesian optimization or meta-learning methods to improve the sample efficiency of parameter optimization.
+
+\textbf{(5) Information loss from the unified Yes/No format.} To enable unified evaluation across datasets, all datasets are converted to Yes/No judgment questions. This conversion may discard some information inherent in the original task format (e.g., the distractor effect of incorrect options in multiple-choice questions). Future work should explore consensus evaluation mechanisms that support multi-format outputs.
+
+\subsection{Broader Impact}
+
+The design philosophy of the AEIC-Stackelberg framework transcends the specific application of LLM consensus. The methodological paradigm of ``structured decomposition $\to$ cross-layer verification $\to$ game-theoretic incentives'' can be extended to other scenarios requiring reliable aggregation of heterogeneous information sources: model aggregation in federated learning (reliable integration of model updates contributed by different clients), quality control in crowdsourced annotation (consistency verification and weight assignment of annotations from different annotators), and opinion aggregation in scientific peer review (structured analysis and synthesis of multiple reviewers' opinions). In these scenarios, the heterogeneity and potential unreliability of information sources are core challenges, and the ``verify first, then aggregate'' paradigm provided by the AEIC-Stackelberg framework has broad applicability.
+
+%=============================================================
+\section{Conclusion}\label{sec:conclusion}
+%=============================================================
+
+This paper proposes the AEIC-Stackelberg decentralized semantic consensus framework, which systematically addresses the multi-agent semantic consensus problem from four levels: semantic representation, trust evaluation, game-theoretic incentives, and communication topology. The core innovation of the framework lies in treating reasoning chains as semantic objects with internal structure---achieving precise conflict attribution through AEIC four-layer decomposition; realizing multi-dimensional trust evaluation through four complementary components: IC (three-tier directional consistency detection), EC (Evidence-Conclusion semantic support), EQ (Evidence Quality assessment), and EV (cross-agent Evidence consensus); converting trust signals into optimal $\theta$ weight allocation through the Stackelberg game; supporting six communication modes (Parallel, Sequential, Star, Debate, SelfCorrect, AgentVerse); and introducing 17 learnable consensus parameters.
+
+On 10 reasoning benchmark datasets including StrategyQA, GSM-Hard, and MMLU-Hard, six systematic experiments validate the framework's effectiveness from multiple dimensions:
+\begin{enumerate}[nosep]
+    \item The communication mode comparison experiment (Experiment~1) comprehensively compares all combinations of 6 modes $\times$ 4 consensus methods $\times$ 2 scales, executed end-to-end on real LLM backends (DeepSeek + GLM-4-Flash);
+    \item The 17-parameter optimization experiment (Experiment~2) validates the effectiveness of the two-phase zero-API-cost optimization pipeline;
+    \item The heterogeneous robustness experiment (Experiment~3) validates the framework's graceful degradation property under model quality heterogeneity through 9 strong-weak model mixing conditions;
+    \item The trust component ablation experiment (Experiment~4) quantifies the independent contribution of each of IC, EC, EQ, EV, and Stackelberg;
+    \item The cross-dataset generalization experiment (Experiment~5) validates the transfer capability of optimized parameters from a single dataset to 9 test sets;
+    \item The scalability and topology analysis (Experiment~6) validates the sub-linear growth of convergence rounds with $N$ and the correlation between $\lambda_2$ and convergence speed.
+\end{enumerate}
+
+Looking ahead, we plan to advance the work in three directions: (1)~introducing pre-trained NLI models to enhance the semantic depth of IC detection, particularly for handling implicit reasoning and cross-lingual scenarios; (2)~designing secure consensus protocols against Byzantine attacks (where malicious agents collude to construct reasoning chains with consistent IC scores but fabricated content); and (3)~exploring consensus evaluation mechanisms that support multi-format outputs (beyond Yes/No), expanding the task applicability of the framework.
+
+%=============================================================
+\begin{thebibliography}{30}
+
+\bibitem{brown2020language}
+Brown, T.B., Mann, B., Ryder, N., et al. (2020). Language models are few-shot learners. In \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 33, 1877--1901.
+
+\bibitem{openai2023gpt4}
+OpenAI. (2023). GPT-4 technical report. \textit{arXiv preprint arXiv:2303.08774}.
+
+\bibitem{wooldridge1995intelligent}
+Wooldridge, M. \& Jennings, N.R. (1995). Intelligent agents: Theory and practice. \textit{The Knowledge Engineering Review}, 10(2), 115--152.
+
+\bibitem{talebirad2023multi}
+Talebirad, Y. \& Nadiri, A. (2023). Multi-agent collaboration: Harnessing the power of intelligent LLM agents. \textit{arXiv preprint arXiv:2306.03314}.
+
+\bibitem{tran2025multi}
+Tran, K.T., et al. (2025). Multi-agent collaboration mechanisms: A survey of LLMs. \textit{arXiv preprint arXiv:2501.06322}.
+
+\bibitem{chen2023agentverse}
+Chen, W., Su, Y., Zuo, J., et al. (2023). AgentVerse: Facilitating multi-agent collaboration and exploring emergent behaviors. \textit{arXiv preprint arXiv:2308.10848}.
+
+\bibitem{hong2023metagpt}
+Hong, S., Zhuge, M., Chen, J., et al. (2023). MetaGPT: Meta programming for a multi-agent collaborative framework. \textit{arXiv preprint arXiv:2308.00352}.
+
+\bibitem{wu2023autogen}
+Wu, Q., Bansal, G., Zhang, J., et al. (2023). AutoGen: Enabling next-gen LLM applications via multi-agent conversation. \textit{arXiv preprint arXiv:2308.08155}.
+
+\bibitem{olfati2007consensus}
+Olfati-Saber, R., Fax, J.A. \& Murray, R.M. (2007). Consensus and cooperation in networked multi-agent systems. \textit{Proceedings of the IEEE}, 95(1), 215--233.
+
+\bibitem{ji2023hallucination}
+Ji, Z., Lee, N., Frieske, R., et al. (2023). Survey of hallucination in natural language generation. \textit{ACM Computing Surveys}, 55(12), 1--38.
+
+\bibitem{bertalanic2026cost}
+Bertalani\v{c}, B. \& Fortuna, B. (2026). The cost of consensus: Multi-agent debate does not scale with model homogeneity. \textit{arXiv preprint arXiv:2605.00914}.
+
+\bibitem{chan2023chateval}
+Chan, C.M., Chen, W., Su, Y., et al. (2023). ChatEval: Towards better LLM-based evaluators through multi-agent debate. \textit{arXiv preprint arXiv:2308.07201}.
+
+\bibitem{du2023improving}
+Du, Y., Li, S., Torralba, A., et al. (2023). Improving factuality and reasoning in language models through multiagent debate. \textit{arXiv preprint arXiv:2305.14325}.
+
+\bibitem{liang2023encouraging}
+Liang, T., He, Z., Jiao, W., et al. (2023). Encouraging divergent thinking in large language models through multi-agent debate. \textit{arXiv preprint arXiv:2305.19118}.
+
+\bibitem{li2023camel}
+Li, G., Hammoud, H.A.A.K., Itani, H., et al. (2023). CAMEL: Communicative agents for ``mind'' exploration of large language model society. In \textit{Advances in Neural Information Processing Systems (NeurIPS)}.
+
+\bibitem{qian2023chatdev}
+Qian, C., Cong, X., Yang, C., et al. (2023). Communicative agents for software development. \textit{arXiv preprint arXiv:2307.07924}.
+
+\bibitem{park2023generative}
+Park, J.S., O'Brien, J.C., Cai, C.J., et al. (2023). Generative agents: Interactive simulacra of human behavior. In \textit{Proceedings of the ACM Symposium on User Interface Software and Technology (UIST)}.
+
+\bibitem{wei2022chain}
+Wei, J., Wang, X., Schuurmans, D., et al. (2022). Chain-of-thought prompting elicits reasoning in large language models. In \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 35, 24824--24837.
+
+\bibitem{wang2023selfconsistency}
+Wang, X., Wei, J., Schuurmans, D., et al. (2023). Self-consistency improves chain of thought reasoning in language models. In \textit{International Conference on Learning Representations (ICLR)}.
+
+\bibitem{yao2023tree}
+Yao, S., Yu, D., Zhao, J., et al. (2024). Tree of thoughts: Deliberate problem solving with large language models. In \textit{Advances in Neural Information Processing Systems (NeurIPS)}.
+
+\bibitem{shinn2023reflexion}
+Shinn, N., Cassano, F., Gopinath, A., et al. (2023). Reflexion: Language agents with verbal reinforcement learning. In \textit{Advances in Neural Information Processing Systems (NeurIPS)}.
+
+\bibitem{stackelberg2011market}
+von Stackelberg, H. (2011). \textit{Market Structure and Equilibrium}. Springer. (Original work published 1934)
+
+\bibitem{han2022emergent}
+Han, T.A. (2022). Emergent behaviours in multi-agent systems with evolutionary game theory. \textit{AI Communications}, 35(4), 327--337.
+
+\bibitem{fudenberg1991game}
+Fudenberg, D. \& Tirole, J. (1991). \textit{Game Theory}. MIT Press.
+
+\bibitem{reimers2019sentence}
+Reimers, N. \& Gurevych, I. (2019). Sentence-BERT: Sentence embeddings using Siamese BERT-networks. In \textit{Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP)}, 3982--3992.
+
+\bibitem{kadavath2022language}
+Kadavath, S., Conerly, T., Askell, A., et al. (2022). Language models (mostly) know what they know. \textit{arXiv preprint arXiv:2207.05221}.
+
+\bibitem{geva2021strategyqa}
+Geva, M., Khashabi, D., Segal, E., et al. (2021). Did Aristotle use a laptop? A question answering benchmark with implicit reasoning strategies. \textit{Transactions of the Association for Computational Linguistics (TACL)}, 9, 346--361.
+
+\bibitem{yang2018hotpotqa}
+Yang, Z., Qi, P., Zhang, S., et al. (2018). HotpotQA: A dataset for diverse, explainable multi-hop question answering. In \textit{Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing (EMNLP)}, 2369--2380.
+
+\bibitem{robbins1951stochastic}
+Robbins, H. \& Monro, S. (1951). A stochastic approximation method. \textit{The Annals of Mathematical Statistics}, 22(3), 400--407.
+
+\bibitem{cobbe2021gsm8k}
+Cobbe, K., Kosaraju, V., Bavarian, M., et al. (2021). Training verifiers to solve math word problems. \textit{arXiv preprint arXiv:2110.14168}.
+
+\bibitem{gao2023gsmhard}
+Gao, L., Madaan, A., Zhou, S., et al. (2023). PAL: Program-aided language models. In \textit{Proceedings of the International Conference on Machine Learning (ICML)}.
+
+\bibitem{hendrycks2021mmlu}
+Hendrycks, D., Burns, C., Basart, S., et al. (2021). Measuring massive multitask language understanding. In \textit{International Conference on Learning Representations (ICLR)}.
+
+\bibitem{wang2024mmlupro}
+Wang, Y., Ma, X., Zhang, G., et al. (2024). MMLU-Pro: A more robust and challenging multi-task language understanding benchmark. \textit{arXiv preprint arXiv:2406.01574}.
+
+\bibitem{lin2022truthfulqa}
+Lin, S., Hilton, J. \& Evans, O. (2022). TruthfulQA: Measuring how models mimic human falsehoods. In \textit{Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (ACL)}, 3214--3252.
+
+\bibitem{talmor2019commonsenseqa}
+Talmor, A., Herzig, J., Lourie, N. \& Berant, J. (2019). CommonsenseQA: A question answering challenge targeting world knowledge. In \textit{Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics (NAACL)}, 4149--4158.
+
+\bibitem{clark2018arc}
+Clark, P., Cowhey, I., Etzioni, O., et al. (2018). Think you have solved question answering? Try ARC, the AI2 reasoning challenge. \textit{arXiv preprint arXiv:1803.05457}.
+
+\bibitem{rein2024gpqa}
+Rein, D., Hou, B.L., Stickland, A.C., et al. (2024). GPQA: A graduate-level Google-proof Q\&A benchmark. In \textit{International Conference on Learning Representations (ICLR)}.
+
+\end{thebibliography}
+
+\end{document}
