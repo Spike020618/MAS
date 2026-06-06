@@ -9,7 +9,7 @@ Usage:
   python experiments/collect_cache.py --dataset StrategyQA --n_samples 50 --n_agents 3
 
   # Phase 2: 预计算信号（本地embedding）
-  python experiments/collect_cache.py --precompute results/aeic_cache_StrategyQA_3a.json
+  python experiments/collect_cache.py --precompute results/cache/StrategyQA.json
 """
 from __future__ import annotations
 
@@ -31,8 +31,7 @@ def collect_aeic(dataset: str, n_samples: int, n_agents: int,
     """Phase 1: 独立生成每agent每题的AEIC，增量缓存。"""
     from experiments.exp_orchestrator import load_questions
 
-    cache_path = os.path.join(out_dir,
-                              f"aeic_cache_{dataset}_{n_agents}a.json")
+    cache_path = os.path.join(out_dir, "cache", f"{dataset}.json")
     if os.path.exists(cache_path):
         with open(cache_path, "r", encoding="utf-8") as f:
             cache = json.load(f)
@@ -140,7 +139,7 @@ def precompute_signals(cache_path: str):
         if (q_idx + 1) % 10 == 0:
             print(f"  Precomputed {q_idx+1}/{len(cache['questions'])}")
 
-    out_path = cache_path.replace("aeic_cache_", "signals_")
+    out_path = cache_path.replace("/cache/", "/signals/")
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
 
@@ -158,7 +157,8 @@ def main():
                         help="Path to aeic_cache JSON for Phase 2")
     args = parser.parse_args()
 
-    os.makedirs(args.out_dir, exist_ok=True)
+    os.makedirs(os.path.join(args.out_dir, "cache"), exist_ok=True)
+    os.makedirs(os.path.join(args.out_dir, "signals"), exist_ok=True)
 
     if args.precompute:
         print("Phase 2: Precomputing signals...")

@@ -62,6 +62,19 @@ C: {prev_C}
 
 如果发现问题，请修正后重新给出完整的AEIC分析。如果确认无误，可以维持原结论。"""
 
+# ── Hierarchical 总分总 ────────────────────────────────────────
+HIERARCHICAL_SUBGROUP_CONTEXT = """你所在的讨论小组中，其他成员的初步结论如下：
+{group_conclusions}
+
+请在考虑小组成员的观点后，重新进行AEIC推理。
+注意综合你的独立判断和小组讨论的启发，给出修正后的结论。"""
+
+HIERARCHICAL_SYNTHESIS_CONTEXT = """各讨论小组已完成分组讨论，以下是各小组的代表性结论：
+{subgroup_summaries}
+
+请综合所有小组的观点，进行最终的AEIC推理。
+在Inference中权衡不同小组的分歧与共识，给出你的最终Conclusion。"""
+
 # ── AgentVerse Solver-Reviewer (Paper 1 baseline) ──────────────
 AGENTVERSE_REVIEW_CONTEXT = """一位分析师对以下问题给出了结论：'{solver_conclusion}'
 
@@ -120,6 +133,7 @@ class Orchestrator:
             "sequential": self._run_sequential,
             "star": self._run_star,
             "debate": self._run_debate,
+            "hierarchical": self._run_hierarchical,
             "selfcorrect": self._run_selfcorrect,
             "agentverse": self._run_agentverse,
         }
@@ -318,6 +332,92 @@ class Orchestrator:
         result["mode"] = "debate"
         result["num_rounds"] = len(all_rounds)
         result["all_rounds"] = all_rounds
+        result["agent_times"] = agent_times
+        return result
+
+    def _run_hierarchical(self, question: str, W: np.ndarray,
+                          use_stackelberg: bool, **kwargs) -> Dict:
+        """P5: 总分总 — 独立→分组讨论→全局综合"""
+        all_agent_times = [[0.0] * self.n_agents for _ in range(3)]
+
+        # Phase 1 (总): All agents independently generate AEIC
+        phase1_nodes = [None] * self.n_agents
+
+        def _gen_p1(i):
+            persona_id = i % len(AGENT_PERSONAS)
+            t0 = _time.time()
+            aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i)
+            return i, aeic, _time.time() - t0
+
+        with ThreadPoolExecutor(max_workers=self.n_agents) as pool:
+            futures = [pool.submit(_gen_p1, i) for i in range(self.n_agents)]
+            for f in as_completed(futures):
+                idx, aeic, elapsed = f.result()
+                phase1_nodes[idx] = aeic
+                all_agent_times[0][idx] = elapsed
+
+        # Phase 2 (分): Split into subgroups for focused discussion
+        mid = self.n_agents // 2
+        groups = [list(range(mid)), list(range(mid, self.n_agents))]
+        phase2_nodes = [None] * self.n_agents
+
+        def _gen_subgroup(i, group_members):
+            persona_id = i % len(AGENT_PERSONAS)
+            t0 = _time.time()
+            other_lines = []
+            for j in group_members:
+                if j != i:
+                    c = phase1_nodes[j].get("C", "")
+                    other_lines.append(f"- 成员{j+1}: {c}")
+            context = HIERARCHICAL_SUBGROUP_CONTEXT.format(
+                group_conclusions="\n".join(other_lines))
+            aeic = self._generate_aeic_ctx(question, context, persona_id=persona_id, agent_id=i)
+            return i, aeic, _time.time() - t0
+
+        with ThreadPoolExecutor(max_workers=self.n_agents) as pool:
+            futures = []
+            for group in groups:
+                for i in group:
+                    futures.append(pool.submit(_gen_subgroup, i, group))
+            for f in as_completed(futures):
+                idx, aeic, elapsed = f.result()
+                phase2_nodes[idx] = aeic
+                all_agent_times[1][idx] = elapsed
+
+        # Phase 3 (总): All agents see subgroup summaries and synthesize
+        subgroup_lines = []
+        for g_idx, group in enumerate(groups):
+            for j in group:
+                c = phase2_nodes[j].get("C", "")
+                subgroup_lines.append(f"- 小组{g_idx+1}-成员{j+1}: {c}")
+        subgroup_text = "\n".join(subgroup_lines)
+
+        phase3_nodes = [None] * self.n_agents
+
+        def _gen_synthesis(i):
+            persona_id = i % len(AGENT_PERSONAS)
+            t0 = _time.time()
+            context = HIERARCHICAL_SYNTHESIS_CONTEXT.format(
+                subgroup_summaries=subgroup_text)
+            aeic = self._generate_aeic_ctx(question, context, persona_id=persona_id, agent_id=i)
+            return i, aeic, _time.time() - t0
+
+        with ThreadPoolExecutor(max_workers=self.n_agents) as pool:
+            futures = [pool.submit(_gen_synthesis, i) for i in range(self.n_agents)]
+            for f in as_completed(futures):
+                idx, aeic, elapsed = f.result()
+                phase3_nodes[idx] = aeic
+                all_agent_times[2][idx] = elapsed
+
+        agent_times = [sum(all_agent_times[p][i] for p in range(3))
+                       for i in range(self.n_agents)]
+
+        result = evaluate_and_decide(phase3_nodes, W, self.sim_calc,
+                                     mode="parallel",
+                                     use_stackelberg=use_stackelberg)
+        result["nodes"] = phase3_nodes
+        result["mode"] = "hierarchical"
+        result["phases"] = [phase1_nodes, phase2_nodes, phase3_nodes]
         result["agent_times"] = agent_times
         return result
 

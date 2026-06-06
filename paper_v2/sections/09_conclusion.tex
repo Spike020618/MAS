@@ -1,0 +1,15 @@
+%======================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+%======================================================================
+
+We presented an adaptive game-theoretic framework for multi-agent LLM consensus that combines AEIC reasoning decomposition, Stackelberg incentive mechanisms, and neural topology routing. On 900 questions across three reasoning benchmarks with 5 agents and 5 communication topologies, our adaptive router achieves 92.4\% consensus accuracy---17.6pp above single-agent performance and 9.7pp above the best fixed-topology majority vote---closing 74.8\% of the gap to the oracle ceiling (95.9\%).
+
+Our key findings include: (1)~AEIC quality signals measure reasoning process quality rather than answer correctness, making them more valuable as topology routing features than as direct voting weights; (2)~per-topology Stackelberg optimization discovers interpretable parameter profiles, including anti-sycophancy effects where cross-agent consensus signals are suppressed on information-sharing topologies; and (3)~a neural router with per-dataset scoring heads and top-2 selection substantially outperforms any fixed topology choice.
+
+Future work includes developing online routing that selects topologies from question features without running all candidates, exploring heterogeneous agent pools with diverse LLM backends, and investigating richer topology spaces to further close the remaining 3.5pp oracle gap.
+
+\begin{credits}
+\subsubsection{\discintname}
+The authors have no competing interests to declare.
+\end{credits}

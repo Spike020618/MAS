@@ -25,7 +25,9 @@ from typing import Dict, List, Optional
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.consensus_config import ConsensusConfig
-from experiments.optimize_consensus import consensus_from_signals, evaluate_config
+from experiments.optimize_consensus import (
+    consensus_from_signals, evaluate_config, compute_ic_metric,
+)
 
 
 LOG_PATH = "results/optimization_log.json"
@@ -53,7 +55,7 @@ def next_experiment_id(log: Dict) -> str:
 
 
 def find_all_signals(results_dir: str = "results") -> List[str]:
-    pattern = os.path.join(results_dir, "signals_*_5a.json")
+    pattern = os.path.join(results_dir, "signals", "*.json")
     return sorted(glob.glob(pattern))
 
 
@@ -78,7 +80,7 @@ def extract_single_agent_baseline(signals_path: str) -> Dict:
 
 def evaluate_on_all(config: ConsensusConfig,
                     signal_files: List[str]) -> Dict[str, Dict]:
-    """评估config在多个数据集上的准确率。"""
+    """评估config在多个数据集上的准确率和IC。"""
     results = {}
     for sf in signal_files:
         with open(sf, "r", encoding="utf-8") as f:
@@ -86,6 +88,7 @@ def evaluate_on_all(config: ConsensusConfig,
         dataset = data["meta"]["dataset"]
         n_agents = data["meta"]["n_agents"]
         result = evaluate_config(data["questions"], config, n_agents)
+        result["ic"] = compute_ic_metric(data["questions"], config, n_agents)
         results[dataset] = result
     return results
 
@@ -115,29 +118,36 @@ def run_generalization(config_path: str,
             ds = json.load(f)["meta"]["dataset"]
         single_agent[ds] = extract_single_agent_baseline(sf)
 
-    header = f"{'Dataset':<18} {'1-Agent':>8} {'5A-Default':>11} {'5A-Optimized':>13} {'Delta':>7}"
+    header = (f"{'Dataset':<18} {'1-Agent':>8} {'Default':>8} {'Optimized':>10} "
+              f"{'Δacc':>6} {'IC-def':>7} {'IC-opt':>7}")
     print(header)
     print("-" * len(header))
 
     datasets = sorted(optimized_results.keys())
-    sum_1a, sum_def, sum_opt = 0, 0, 0
+    sum_1a, sum_def, sum_opt, sum_ic_def, sum_ic_opt = 0, 0, 0, 0, 0
     n_ds = 0
     for ds in datasets:
         a1 = single_agent.get(ds, {}).get("accuracy", 0)
         a_def = default_results[ds]["accuracy"]
         a_opt = optimized_results[ds]["accuracy"]
+        ic_def = default_results[ds].get("ic", 0)
+        ic_opt = optimized_results[ds].get("ic", 0)
         delta = a_opt - a_def
         marker = " *" if train_datasets and ds in train_datasets else ""
-        print(f"{ds:<18} {a1:>7.1%} {a_def:>10.1%} {a_opt:>12.1%} {delta:>+6.1%}{marker}")
+        print(f"{ds:<18} {a1:>7.1%} {a_def:>7.1%} {a_opt:>9.1%} "
+              f"{delta:>+5.1%} {ic_def:>6.1%} {ic_opt:>6.1%}{marker}")
         sum_1a += a1
         sum_def += a_def
         sum_opt += a_opt
+        sum_ic_def += ic_def
+        sum_ic_opt += ic_opt
         n_ds += 1
 
     if n_ds > 0:
         print("-" * len(header))
-        print(f"{'Average':<18} {sum_1a/n_ds:>7.1%} {sum_def/n_ds:>10.1%} "
-              f"{sum_opt/n_ds:>12.1%} {(sum_opt-sum_def)/n_ds:>+6.1%}")
+        print(f"{'Average':<18} {sum_1a/n_ds:>7.1%} {sum_def/n_ds:>7.1%} "
+              f"{sum_opt/n_ds:>9.1%} {(sum_opt-sum_def)/n_ds:>+5.1%} "
+              f"{sum_ic_def/n_ds:>6.1%} {sum_ic_opt/n_ds:>6.1%}")
 
     test_results = {}
     for ds in datasets:
@@ -155,7 +165,9 @@ def run_generalization(config_path: str,
         "config_path": config_path,
         "train_accuracy": train_accuracy,
         "default_accuracy": {ds: default_results[ds]["accuracy"] for ds in datasets},
+        "default_ic": {ds: default_results[ds].get("ic", 0) for ds in datasets},
         "optimized_accuracy": {ds: optimized_results[ds]["accuracy"] for ds in datasets},
+        "optimized_ic": {ds: optimized_results[ds].get("ic", 0) for ds in datasets},
         "single_agent_accuracy": {ds: single_agent.get(ds, {}).get("accuracy", 0) for ds in datasets},
         "test_results": test_results,
         "avg_test_accuracy": avg_test,

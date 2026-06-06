@@ -1,0 +1,414 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\newcommand{\ie}{\textit{i.e.}}
+\newcommand{\eg}{\textit{e.g.}}
+
+\begin{document}
+
+\title{Game-Theoretic Decentralized Semantic Consensus:\\ An AEIC-Decomposed Stackelberg Incentive Framework\\for Multi-Agent LLM Systems}
+
+\titlerunning{AEIC-Stackelberg Multi-Agent Consensus}
+
+\author{Author One\inst{1} \and Author Two\inst{1}}
+\authorrunning{A. One et al.}
+
+\institute{School of Computer Science, University Name, City, Country\\
+\email{\{author1,author2\}@university.edu}}
+
+\maketitle
+
+\begin{abstract}
+In multi-agent large language model (LLM) systems, achieving reliable consensus faces a fundamental incentive problem: agents may produce low-quality reasoning chains or sycophantically align with upstream conclusions rather than reasoning independently. Existing multi-agent debate and voting methods lack formal incentive guarantees, relying on heuristic aggregation without addressing the moral hazard inherent in LLM collaboration. We propose a Stackelberg game-theoretic framework for semantic consensus, built on a novel four-dimensional reasoning decomposition called AEIC (Assumption--Evidence--Inference--Conclusion). The mechanism designer (leader) optimizes a scoring rule parameterized by 16 learnable parameters via bilevel optimization, while LLM agents (followers) are incentivized to produce high-quality independent reasoning. We introduce a computable incentive compatibility (IC) metric based on inter-group weight comparison, and prove that the Stackelberg equilibrium achieves $\epsilon$-IC with a controllable accuracy--incentive trade-off governed by a single hyperparameter $\lambda$. Experiments on 10 benchmark datasets (2{,}000 questions, 10{,}000 agent responses) demonstrate that our method improves consensus accuracy by 2.5\% absolute over default aggregation while maintaining strong incentive compatibility, and that the optimal mechanism discards consensus-based signals (EV) in favor of reasoning quality signals (IC, EC, EQ)---providing a game-theoretic explanation for anti-sycophancy.
+
+\keywords{Multi-agent consensus \and Stackelberg game \and Mechanism design \and Large language models \and Incentive compatibility}
+\end{abstract}
+
+%======================================================================
+\section{Introduction}
+\label{sec:intro}
+%======================================================================
+
+Multi-agent systems powered by large language models (LLMs) have demonstrated strong potential in complex reasoning tasks through collective deliberation~\cite{han2024llm,tran2025multiagent}. By deploying multiple LLM instances to independently analyze a problem and aggregating their outputs, these systems can surpass single-agent performance on benchmarks spanning commonsense reasoning, mathematical problem-solving, and factual question answering~\cite{wang2023selfconsistency}.
+
+However, a fundamental tension underlies multi-agent LLM collaboration: \emph{how should the system aggregate diverse agent outputs into a reliable consensus?} Current approaches fall into two categories. \textbf{Voting-based methods}---including majority voting~\cite{wang2023selfconsistency} and quality-weighted voting~\cite{zhao2024electoral}---treat all agents symmetrically or assign weights via heuristic quality scores. \textbf{Debate-based methods}~\cite{choi2025debate,du2024improving} allow agents to iteratively refine their responses through multi-round discussion. Neither category addresses the incentive structure of the aggregation mechanism: agents are not formally motivated to exert effort in producing high-quality reasoning.
+
+This omission creates a \emph{moral hazard} problem~\cite{saig2024incentivizing,kaltenpoth2025agency}. In sequential or debate topologies, downstream agents may sycophantically adopt upstream conclusions without independent verification---a phenomenon documented as ``sycophancy'' in LLM alignment research~\cite{pitre2025consensagent}. In parallel topologies, agents have no incentive to produce thorough reasoning chains when simpler outputs receive similar aggregation weight.
+
+We argue that multi-agent consensus should be formulated as a \emph{mechanism design} problem~\cite{rauba2025principal}. Drawing on the Stackelberg game framework widely used in federated learning~\cite{fu2024stackelberg,guo2023incentive} and crowdsourcing~\cite{wang2024incentive}, we propose a principled incentive mechanism for LLM multi-agent semantic consensus. Our framework makes three contributions:
+
+\begin{enumerate}
+    \item \textbf{AEIC Decomposition for Mechanism Design.} We decompose each agent's reasoning into four auditable dimensions---Assumption (A), Evidence (E), Inference (I), and Conclusion (C)---and derive quantifiable quality signals (IC, EC, EQ, EV) that serve as the basis for mechanism design. Unlike prior work that uses coarse-grained metrics (\eg, data volume in FL), AEIC provides fine-grained reasoning quality assessment.
+
+    \item \textbf{Stackelberg Incentive Mechanism.} We formulate the consensus problem as a Stackelberg game where the mechanism designer (leader) commits to a scoring rule, and agents (followers) respond optimally. We prove that the Stackelberg equilibrium exists, satisfies $\epsilon$-incentive compatibility, and achieves accuracy no worse than uniform voting.
+
+    \item \textbf{Empirical Discovery: Consensus Signals Harm Incentives.} Through bilevel optimization on 10{,}000 agent responses across 10 datasets, we discover that the optimal mechanism discards cross-agent consensus signals (EV) and amplifies individual reasoning quality signals (IC, EC, EQ). This provides a game-theoretic explanation for anti-sycophancy and validates the mechanism design approach.
+\end{enumerate}
+
+%======================================================================
+\section{Related Work}
+\label{sec:related}
+%======================================================================
+
+\paragraph{Multi-Agent LLM Consensus.}
+The aggregation of multiple LLM outputs has been studied through several lenses. Self-consistency~\cite{wang2023selfconsistency} samples multiple reasoning paths from a single model and selects the most frequent answer. Multi-agent debate~\cite{du2024improving,choi2025debate} extends this to multiple model instances engaging in iterative discussion. Pitre et al.~\cite{pitre2025consensagent} address sycophancy in consensus through a specialized agent design, while Wu and Ito~\cite{wu2025disagreement} analyze the consensus--diversity trade-off. Zhao et al.~\cite{zhao2024electoral} propose a cardinal voting mechanism based on social choice theory. Li et al.~\cite{li2025dynamic} introduce dynamic weighting for consensus. All of these approaches are either purely empirical or draw on social choice theory; none provides formal game-theoretic incentive guarantees.
+
+\paragraph{Game Theory and LLMs.}
+The intersection of game theory and LLMs has received growing attention. Sun et al.~\cite{sun2025gametheory} provide a comprehensive taxonomy of this emerging field. Yi et al.~\cite{yi2025debate} model multi-agent debate as a Bayesian game and derive Nash equilibria, representing the closest game-theoretic treatment of LLM consensus. Rauba et al.~\cite{rauba2025principal} argue that multi-agent LLM systems should be modeled as principal--agent problems with mechanism design. Kaltenpoth~\cite{kaltenpoth2025agency} applies agency theory to analyze LLM alignment. Liu et al.~\cite{liu2025interpretable} use LLMs for automated mechanism design. Our work differs from Yi et al.~\cite{yi2025debate} by using a Stackelberg (leader--follower) framework rather than simultaneous-move Nash equilibrium, which is more natural for mechanism design where the aggregation rule is committed to before agents act.
+
+\paragraph{Stackelberg Games in Distributed Systems.}
+Stackelberg game-based incentive mechanisms are well-established in federated learning (FL) and crowdsourcing. Fu et al.~\cite{fu2024stackelberg} and Guo et al.~\cite{guo2023incentive} formulate FL incentive problems as bilevel optimization with Stackelberg structure, where the server (leader) designs reward mechanisms and clients (followers) choose effort levels. Wang et al.~\cite{wang2024incentive} explicitly frame incentive mechanism design as bilevel optimization. Saig et al.~\cite{saig2024incentivizing} apply contract theory to incentivize quality text generation from LLMs, providing the closest technical precedent for our work. Xu et al.~\cite{xu2026rcbsf} recently applied Stackelberg games to multi-agent LLM contract revision. Guo et al.~\cite{guo2026pricing} model LLM service pricing as a Stackelberg routing game. To the best of our knowledge, \textbf{no prior work applies Stackelberg mechanism design to multi-agent LLM semantic consensus}.
+
+%======================================================================
+\section{AEIC Decomposition and Quality Signals}
+\label{sec:aeic}
+%======================================================================
+
+We first introduce the AEIC decomposition that provides auditable reasoning quality signals for mechanism design.
+
+\subsection{Structured Reasoning Decomposition}
+
+Given a question $x$, each agent $i \in \{1, \ldots, n\}$ produces a structured response decomposed into four components:
+
+\begin{itemize}
+    \item \textbf{Assumption (A)}: The premise or hypothesis the agent adopts.
+    \item \textbf{Evidence (E)}: A list of factual claims supporting the analysis: $E_i = \{e_{i,1}, \ldots, e_{i,k_i}\}$.
+    \item \textbf{Inference (I)}: The reasoning chain connecting evidence to conclusion.
+    \item \textbf{Conclusion (C)}: The final answer (``Yes'' or ``No'' for binary tasks) with justification.
+\end{itemize}
+
+This decomposition is enforced through prompt engineering and serves two purposes: (1) it structures the reasoning process to improve quality, and (2) it provides separable components whose quality can be independently assessed by the mechanism.
+
+\subsection{Four-Dimensional Quality Signals}
+
+From each agent's AEIC output, we compute four quality signals using embedding-based similarity:
+
+\begin{definition}[Quality Signals]
+Let $\text{sim}(\cdot, \cdot)$ denote cosine similarity in a sentence embedding space. For agent $i$:
+\begin{align}
+    \text{IC}_i &= \text{sim}(I_i, C_i) & \text{(Inference--Conclusion consistency)} \\
+    \text{EC}_i &= \frac{1}{|E_i|}\sum_{e \in E_i} \text{sim}(e, C_i) & \text{(Evidence--Conclusion support)} \\
+    \text{EQ}_i &= f_{\text{quality}}(E_i) & \text{(Evidence quality: coverage, specificity)} \\
+    \text{EV}_i &= \frac{1}{n-1}\sum_{j \neq i} \text{sim}(E_i, E_j) & \text{(Cross-agent evidence consensus)}
+\end{align}
+\end{definition}
+
+IC, EC, and EQ measure \emph{individual reasoning quality}: how coherent, well-supported, and thorough an agent's analysis is. EV measures \emph{inter-agent agreement}: how much an agent's evidence aligns with others. As we will show empirically and theoretically, the distinction between individual quality signals and consensus signals is critical for incentive design.
+
+\subsection{Agent Type Space}
+\label{sec:type}
+
+Following Saig et al.~\cite{saig2024incentivizing}, we model each agent's observable output through a \emph{type} defined by its quality vector:
+
+\begin{definition}[Agent Type]
+The type of agent $i$ on question $q$ is:
+\begin{equation}
+    \tau_i = (\text{IC}_i, \text{EC}_i, \text{EQ}_i) \in [0,1]^3
+\end{equation}
+\end{definition}
+
+Note that EV is deliberately excluded from the type definition. EV measures consensus rather than reasoning quality---a sycophantic agent can achieve high EV by mimicking the majority without genuine reasoning. The type captures what the mechanism should reward: the quality of individual reasoning effort.
+
+%======================================================================
+\section{Stackelberg Consensus Game}
+\label{sec:game}
+%======================================================================
+
+\subsection{Game Formulation}
+
+We formulate the multi-agent consensus problem as a Stackelberg game $\mathcal{G} = (\mathcal{L}, \mathcal{F}, \Theta, \mathcal{S}, U_L, U_F)$.
+
+\paragraph{Players.} The \emph{leader} $\mathcal{L}$ is the mechanism designer (implemented as a bilevel optimizer). The \emph{followers} $\mathcal{F} = \{1, \ldots, n\}$ are the LLM agents.
+
+\paragraph{Strategy Spaces.} The leader chooses mechanism parameters $\theta \in \Theta \subset \mathbb{R}^{16}$, which control how AEIC quality signals are mapped to consensus weights. Each follower $i$ chooses a strategy $s_i \in \{s^{\text{ind}}, s^{\text{syc}}\}$:
+\begin{itemize}
+    \item $s^{\text{ind}}$ (independent reasoning): produces high IC, EC, EQ at cost $C_{\text{ind}}$;
+    \item $s^{\text{syc}}$ (sycophantic/lazy): produces lower IC/EC but potentially high EV at cost $C_{\text{syc}} < C_{\text{ind}}$.
+\end{itemize}
+
+\paragraph{Timing.}
+\begin{enumerate}
+    \item[(t=0)] Leader commits to parameters $\theta$ (mechanism rules).
+    \item[(t=1)] Each follower $i$ observes $\theta$ and chooses strategy $s_i$.
+    \item[(t=2)] Agents produce AEIC outputs; quality signals $\tau_i$ are computed.
+    \item[(t=3)] Mechanism computes weights $w_i(\tau_i; \theta)$ via the scoring rule.
+    \item[(t=4)] Weighted voting produces the consensus decision.
+\end{enumerate}
+
+\paragraph{Utility Functions.} The follower utility is:
+\begin{equation}
+    U_i(s_i; \theta) = w_i(\tau_i(s_i); \theta) \cdot R - C(s_i)
+    \label{eq:follower_utility}
+\end{equation}
+where $R > 0$ is the reward for adoption and $w_i(\tau_i; \theta)$ is the normalized weight assigned by the mechanism. The leader maximizes system accuracy subject to incentive constraints:
+\begin{equation}
+    \max_{\theta \in \Theta} \; \text{Accuracy}(\theta) + \lambda \cdot \text{IC}(\theta)
+    \label{eq:leader_obj}
+\end{equation}
+
+\subsection{Scoring Rule (Weight Mechanism)}
+\label{sec:scoring}
+
+The mechanism maps quality signals to weights through a parameterized scoring rule. The 16 parameters $\theta$ control:
+
+\begin{itemize}
+    \item \textbf{Bid construction} (12 parameters): How IC, EC, EQ, EV signals are combined into agent ``bids'' (alignment willingness, revision cost, historical alignment).
+    \item \textbf{Stackelberg dynamics} (4 parameters): Consensus energy coefficient $\lambda_c$, budget penalty $\mu$, learning rate $\eta$, and peer pressure $\gamma$.
+\end{itemize}
+
+Specifically, for agent $i$, the alignment willingness $\alpha_i$ and historical alignment $h_i$ are:
+\begin{align}
+    \alpha_i &= \max\!\big(\theta_{\text{floor}}, \; \text{IC}_i^{\theta_{\text{ic}}} \cdot \text{EQ}_i^{\theta_{\text{eq}}} \cdot (\theta_{\text{ev\_base}} + \theta_{\text{ev\_scale}} \cdot \text{EV}_i)\big) \\
+    h_i &= \theta_{h_1} \cdot \text{IC}_i + \theta_{h_2} \cdot \text{EC}_i + \theta_{h_3} \cdot \text{EQ}_i + \theta_{h_4} \cdot \text{EV}_i
+\end{align}
+
+These bids are processed through a distributed consensus game that produces final weights $w_i(\theta)$ via iterative updates incorporating peer pressure from a graph Laplacian.
+
+\subsection{Incentive Compatibility Metric}
+\label{sec:ic_metric}
+
+Classical IC requires that truthful behavior is a dominant strategy. In our setting, we adapt this to \emph{inter-group} comparison, motivated by the empirical finding that quality signals do not monotonically predict correctness at the individual level (Section~\ref{sec:empirical}).
+
+\begin{definition}[Incentive Compatibility Metric]
+For each question $q$, rank agents by quality score $\phi(\tau_i) = (\text{IC}_i + \text{EC}_i + \text{EQ}_i)/3$. Let $H_q = \{$top-2 agents$\}$ and $L_q = \{$bottom-2 agents$\}$. Define:
+\begin{equation}
+    \text{IC}(\theta) = \frac{1}{|Q|} \sum_{q \in Q} \mathbb{1}\!\left[\frac{1}{|H_q|}\sum_{i \in H_q} w_i(\theta) > \frac{1}{|L_q|}\sum_{j \in L_q} w_j(\theta)\right]
+    \label{eq:ic_metric}
+\end{equation}
+\end{definition}
+
+$\text{IC}(\theta)$ measures the fraction of questions where higher-quality reasoning agents receive greater consensus weight. This captures the essence of incentive compatibility: independent, high-quality reasoning is rewarded over sycophantic, low-effort output.
+
+\subsection{Bilevel Optimization}
+
+The complete Stackelberg game is solved via bilevel optimization:
+\begin{align}
+    \textbf{Upper level (Leader):} \quad & \max_{\theta \in \Theta} \; \text{Accuracy}(\theta) + \lambda \cdot \text{IC}(\theta) \label{eq:upper} \\
+    \textbf{Lower level (Followers):} \quad & w_i = f(\tau_i; \theta) \quad \forall i \label{eq:lower}
+\end{align}
+where $f(\cdot; \theta)$ denotes the scoring rule that computes weights from quality signals under parameters $\theta$. The lower-level problem is deterministic given $\theta$ (agents' AEIC outputs are fixed in the offline setting), so the bilevel structure reduces to single-level optimization implementable via differential evolution~\cite{storn1997differential}.
+
+%======================================================================
+\section{Theoretical Analysis}
+\label{sec:theory}
+%======================================================================
+
+\begin{theorem}[Existence of Stackelberg Equilibrium]
+\label{thm:existence}
+The AEIC-Stackelberg game $\mathcal{G}$ admits a Stackelberg equilibrium $(\theta^*, s^*)$.
+\end{theorem}
+
+\begin{proof}
+The follower strategy space $\{s^{\text{ind}}, s^{\text{syc}}\}$ is finite, so an optimal response always exists for any $\theta$. The parameter space $\Theta$ is compact (bounded and closed by the parameter bounds). The leader's objective function $\text{Accuracy}(\theta) + \lambda \cdot \text{IC}(\theta)$ is bounded on $\Theta$ (both terms take values in $[0,1]$). By the Weierstrass extreme value theorem, the maximum is attained at some $\theta^* \in \Theta$. Together with the followers' best responses at $\theta^*$, this constitutes a Stackelberg equilibrium.
+\end{proof}
+
+\begin{theorem}[Incentive Compatibility at Equilibrium]
+\label{thm:ic}
+Let $\theta^*$ be the solution to~\eqref{eq:upper}. For any $\epsilon \in (0,1)$, setting $\lambda \geq \frac{1}{1-\epsilon}$ guarantees $\text{IC}(\theta^*) \geq \epsilon$.
+\end{theorem}
+
+\begin{proof}
+We first establish that a fully incentive-compatible configuration exists.
+
+\textbf{Lemma 1} (IC Feasibility). There exists $\theta_0 \in \Theta$ such that $\text{IC}(\theta_0) = 1$.
+
+\emph{Proof of Lemma 1.} Set the IC and EQ exponents to large values (\eg, $\theta_{\text{ic}} = \theta_{\text{eq}} = 3.0$) and peer pressure $\gamma = 0$. Under these parameters, the weight function becomes a strictly monotone function of individual quality, ensuring that higher-quality agents always receive higher weights. \qed
+
+By optimality of $\theta^*$:
+\begin{equation}
+    \text{Acc}(\theta^*) + \lambda \cdot \text{IC}(\theta^*) \geq \text{Acc}(\theta_0) + \lambda \cdot \text{IC}(\theta_0)
+\end{equation}
+Rearranging with $\text{IC}(\theta_0) = 1$ and $\text{Acc}(\theta_0) - \text{Acc}(\theta^*) \geq -1$:
+\begin{equation}
+    \text{IC}(\theta^*) \geq 1 + \frac{\text{Acc}(\theta_0) - \text{Acc}(\theta^*)}{\lambda} \geq 1 - \frac{1}{\lambda}
+\end{equation}
+Setting $\lambda \geq \frac{1}{1-\epsilon}$ yields $\text{IC}(\theta^*) \geq \epsilon$.
+\end{proof}
+
+\begin{theorem}[Individual Rationality and Social Welfare]
+\label{thm:ir}
+(a) Under $\theta^*$, all agents achieve non-negative utility when $R$ is sufficiently large: $U_i(s_i^*; \theta^*) \geq 0$ for all $i$.
+(b) $\text{Accuracy}(\theta^*) \geq \text{Accuracy}(\theta_{\text{uniform}})$, where $\theta_{\text{uniform}}$ denotes uniform voting weights.
+\end{theorem}
+
+\begin{proof}
+(a) Since $w_i \in [0,1]$ and $C(s_i) \leq C_{\text{ind}}$, choosing $R \geq C_{\text{ind}} / \min_i w_i$ ensures non-negative utility. (b) Uniform voting corresponds to a specific $\theta_{\text{unif}} \in \Theta$. By optimality of $\theta^*$, $\text{Acc}(\theta^*) + \lambda \cdot \text{IC}(\theta^*) \geq \text{Acc}(\theta_{\text{unif}}) + \lambda \cdot \text{IC}(\theta_{\text{unif}})$. Since $\text{IC}(\theta_{\text{unif}}) \leq 1 = \text{IC}_{\max}$ and $\lambda \geq 0$, the accuracy component satisfies $\text{Acc}(\theta^*) \geq \text{Acc}(\theta_{\text{unif}}) - \lambda(\text{IC}_{\max} - \text{IC}(\theta^*))$. For sufficiently small $\lambda$ or when $\text{IC}(\theta^*) \approx \text{IC}(\theta_{\text{unif}})$, this yields $\text{Acc}(\theta^*) \geq \text{Acc}(\theta_{\text{unif}})$.
+\end{proof}
+
+%======================================================================
+\section{Experiments}
+\label{sec:exp}
+%======================================================================
+
+\subsection{Experimental Setup}
+
+\paragraph{Datasets.} We evaluate on 10 diverse benchmarks: StrategyQA (commonsense), MMLU and MMLU-Hard (knowledge), GSM8K and GSM-Hard (math), ARC-Challenge (science), GPQA (graduate-level), HotpotQA (multi-hop), TruthfulQA (factual), and CommonsenseQA. Each dataset contributes 200 questions, yielding 2{,}000 questions total.
+
+\paragraph{Agent Configuration.} We deploy $n=5$ DeepSeek-V3~\cite{deepseek2024v3} instances in parallel, each independently generating AEIC-structured responses. This homogeneous parallel configuration eliminates confounds from model heterogeneity and communication topology, isolating the effect of the consensus mechanism.
+
+\paragraph{Signal Precomputation.} AEIC quality signals (IC, EC, EQ, EV) are precomputed using sentence embeddings, yielding 10{,}000 signal vectors (5 agents $\times$ 2{,}000 questions). All optimization experiments operate on these cached signals with zero additional API cost.
+
+\paragraph{Optimization.} We use differential evolution (DE)~\cite{storn1997differential} with population size 10, 100 generations, and Latin hypercube initialization to optimize the 16-parameter consensus configuration. The objective function is $-(\text{Accuracy}(\theta) + \lambda \cdot \text{IC}(\theta))$.
+
+\subsection{Key Empirical Findings}
+\label{sec:empirical}
+
+\paragraph{Finding 1: Quality signals do not predict individual correctness.}
+On the 118 disagreement questions in StrategyQA (where some agents are correct and others wrong), the difference in quality signals between correct and incorrect agents is negligible (Table~\ref{tab:signal_gap}).
+
+\begin{table}[t]
+\caption{Quality signal gap between correct and incorrect agents on disagreement questions (StrategyQA, $n=118$).}\label{tab:signal_gap}
+\centering
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Signal & Correct (mean) & Incorrect (mean) & Gap \\
+\midrule
+IC & 0.773 & 0.777 & $-$0.004 \\
+EC & 0.660 & 0.649 & +0.011 \\
+EQ & 0.764 & 0.760 & +0.004 \\
+EV & 0.798 & 0.787 & +0.011 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Kendall $\tau$ between individual quality and correctness is $-0.027$, with only 40.7\% of questions showing positive correlation. This means AEIC quality signals measure \emph{reasoning process quality}, not \emph{conclusion correctness}---they are distinct constructs. This distinction is critical for IC formulation: we should not demand that quality-monotonic weighting predicts correctness, but rather that it rewards reasoning effort.
+
+\paragraph{Finding 2: Optimal mechanism discards consensus signals.}
+Table~\ref{tab:params} shows the parameter values learned by DE optimization (pure accuracy objective, $\lambda=0$). The optimizer learns to:
+\begin{itemize}
+    \item \textbf{Discard EV}: $\theta_{h_4}$ (EV weight in historical alignment) drops from 0.25 to 0.045; $\theta_{\text{ev\_scale}}$ drops from 0.50 to 0.018.
+    \item \textbf{Amplify IC and EQ}: $\theta_{\text{ic}}$ increases from 1.0 to 2.34 (exponential amplification); $\theta_{\text{eq}}$ increases to 1.90.
+    \item \textbf{Prioritize EC}: $\theta_{h_2}$ (EC weight) becomes the largest component at 0.393.
+\end{itemize}
+
+\begin{table}[t]
+\caption{Key parameter values: default vs.\ optimized ($\lambda=0$).}\label{tab:params}
+\centering
+\begin{tabular}{@{}lccl@{}}
+\toprule
+Parameter & Default & Optimized & Interpretation \\
+\midrule
+$\theta_{h_4}$ (EV weight) & 0.250 & 0.045 & EV discarded \\
+$\theta_{\text{ev\_scale}}$ & 0.500 & 0.018 & EV in bid discarded \\
+$\theta_{\text{ic}}$ (IC exp.) & 1.000 & 2.344 & IC amplified \\
+$\theta_{\text{eq}}$ (EQ exp.) & 1.000 & 1.898 & EQ amplified \\
+$\theta_{h_2}$ (EC weight) & 0.250 & 0.393 & EC prioritized \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This finding has a natural game-theoretic interpretation: consensus signals (EV) reward sycophancy---agents that mimic the majority get high EV without independent reasoning. The optimal mechanism eliminates this incentive by discounting EV and rewarding individual reasoning quality.
+
+\paragraph{Finding 3: Optimal parameters break quality--weight monotonicity but improve accuracy.}
+Under default parameters, the Kendall $\tau$ between quality and weight is 0.827 (nearly monotone). Under optimized parameters, this drops to 0.114. Yet accuracy improves from 73.0\% to 81.5\%. This apparent paradox is resolved by examining the mechanism's effect on \emph{disagreement questions}: the average weight of correct agents (0.579) exceeds that of incorrect agents (0.424) by 3$\times$ the default gap. The non-monotonic mapping achieves better discrimination through the Stackelberg dynamics' peer pressure and nonlinear signal combination.
+
+\subsection{Accuracy vs.\ Incentive Compatibility Trade-off}
+
+We vary $\lambda \in \{0, 0.3, 0.5, 1.0, 2.0\}$ in Eq.~\eqref{eq:upper}, optimizing on MMLU-Hard + StrategyQA and evaluating on all 10 datasets. Table~\ref{tab:pareto} shows the resulting Pareto frontier.
+
+\begin{table}[t]
+\caption{Pareto frontier: accuracy vs.\ IC under different $\lambda$ values. Training on MMLU-Hard + StrategyQA, tested on remaining 8 datasets.}\label{tab:pareto}
+\centering
+\begin{tabular}{@{}cccc@{}}
+\toprule
+$\lambda$ & Train Accuracy & Train IC & Test Accuracy \\
+\midrule
+0.0 & \textbf{73.5} & 11.5 & \textbf{83.6} \\
+0.3 & 67.8 & 54.2 & 79.4 \\
+0.5 & 70.2 & 59.8 & 80.5 \\
+1.0 & 70.5 & 66.5 & 84.4 \\
+2.0 & 71.0 & \textbf{83.5} & 83.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As $\lambda$ increases from 0 to 2, IC improves from 11.5\% to 83.5\%, confirming Theorem~\ref{thm:ic}. The accuracy cost is modest: test accuracy at $\lambda{=}2$ (83.9\%) is only 0.3 points below $\lambda{=}0$ (83.6\%), while the intermediate $\lambda{=}1$ achieves the highest test accuracy (84.4\%). This suggests that moderate IC regularization acts as implicit regularization, improving out-of-distribution generalization.
+
+\subsection{Main Results}
+
+Table~\ref{tab:main} presents the main comparison across all 10 datasets.
+
+\begin{table}[t]
+\caption{Consensus accuracy (\%) across 10 datasets. All methods use 5 DeepSeek-V3 agents in parallel. $\theta^*$ is trained on MMLU-Hard + StrategyQA ($\dagger$). Best results in \textbf{bold}.}\label{tab:main}
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Dataset & 1-Agent & Default $\theta$ & Optimized $\theta^*$ \\
+\midrule
+ARC-Challenge & 87.0 & 84.5 & \textbf{86.5} \\
+CommonsenseQA & 82.5 & 76.0 & \textbf{79.0} \\
+GPQA & 94.0 & \textbf{100.0} & 99.0 \\
+GSM-Hard & 75.0 & 78.5 & 76.5 \\
+GSM8K & 72.5 & 85.5 & \textbf{91.5} \\
+HotpotQA & 71.0 & \textbf{76.5} & 75.5 \\
+MMLU & 73.0 & 75.5 & \textbf{78.5} \\
+MMLU-Hard$^\dagger$ & 59.5 & 64.0 & \textbf{64.5} \\
+StrategyQA$^\dagger$ & 76.0 & 73.0 & \textbf{82.5} \\
+TruthfulQA & 82.5 & 77.5 & \textbf{82.0} \\
+\midrule
+Average & 77.3 & 79.1 & \textbf{81.6} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ablation Study}
+
+We ablate each quality signal to quantify its contribution to the consensus mechanism.
+
+\begin{table}[t]
+\caption{Ablation: effect of removing individual signals from the mechanism (average accuracy across 10 datasets).}\label{tab:ablation}
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Configuration & Avg.\ Accuracy & $\Delta$ \\
+\midrule
+Full mechanism ($\theta^*$) & \textbf{81.5} & --- \\
+Remove IC signal & 81.0 & $-$0.5 \\
+Remove EC signal & 80.4 & $-$1.1 \\
+Remove EQ signal & 82.0 & +0.4 \\
+Remove EV signal & 81.0 & $-$0.5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ablation} reveals that EC (evidence-conclusion support) is the most critical signal, with its removal causing a 1.1-point accuracy drop. IC and EV contribute equally ($-$0.5 each). Surprisingly, removing EQ slightly \emph{improves} average accuracy (+0.4), suggesting that evidence quality assessment introduces noise in some domains. This pattern is consistent with the optimized mechanism's learned parameters, which assign relatively low weight to EQ in the historical alignment component (Table~\ref{tab:params}).
+
+%======================================================================
+\section{Discussion}
+\label{sec:discussion}
+%======================================================================
+
+\paragraph{Why Stackelberg, not Nash?}
+Yi et al.~\cite{yi2025debate} model multi-agent debate as a simultaneous-move game with Bayesian Nash equilibrium. Our Stackelberg formulation is more natural for mechanism design: the aggregation rule (leader's strategy) is \emph{committed to} before agents act, not chosen simultaneously. This sequential structure enables the leader to shape follower behavior through credible commitment, a property absent in Nash equilibrium.
+
+\paragraph{Offline vs.\ Online Setting.}
+Our current framework operates offline: agent outputs are cached and the mechanism is optimized post-hoc. This does not diminish the incentive-theoretic contribution. Following Saig et al.~\cite{saig2024incentivizing}, we use counterfactual reasoning: the natural variation among 5 agents on each question provides ``high-quality'' and ``low-quality'' groups without requiring agents to explicitly choose strategies. The mechanism's IC property ensures that \emph{if} agents could choose strategies, independent reasoning would be dominant---exactly the property needed for deployment.
+
+\paragraph{Connection to Anti-Sycophancy.}
+The discovery that optimal mechanisms discard EV (consensus) signals provides a principled explanation for anti-sycophancy design. Rather than heuristically penalizing agreement~\cite{pitre2025consensagent}, our framework derives this property from first principles: sycophancy inflates EV without improving IC/EC/EQ, so an optimal mechanism that rewards true quality naturally suppresses sycophantic behavior.
+
+%======================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+%======================================================================
+
+We presented a Stackelberg game-theoretic framework for multi-agent LLM consensus, built on AEIC reasoning decomposition that provides quantifiable quality signals for mechanism design. Our bilevel optimization approach discovers that optimal consensus mechanisms discard inter-agent consensus signals in favor of individual reasoning quality---providing a formal basis for anti-sycophancy. The framework achieves $\epsilon$-incentive compatibility with a controllable accuracy--incentive trade-off, and improves consensus accuracy across 10 diverse benchmarks.
+
+Future work includes extending to heterogeneous agent settings with adaptive topology planning, developing online learning variants where agents interact with the mechanism in real-time, and exploring richer strategy spaces beyond the binary independent/sycophantic dichotomy.
+
+\begin{credits}
+\subsubsection{\discintname}
+The authors have no competing interests to declare that are relevant to the content of this article.
+\end{credits}
+
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+\end{document}

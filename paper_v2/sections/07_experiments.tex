@@ -1,0 +1,128 @@
+%======================================================================
+\section{Experiments}
+\label{sec:exp}
+%======================================================================
+
+\subsection{Experimental Setup}
+
+\paragraph{Datasets.} We evaluate on three diverse reasoning benchmarks: MMLU-Hard (graduate-level knowledge), StrategyQA (commonsense with implicit reasoning), and TruthfulQA (factual accuracy under adversarial framing). Each dataset contributes 300 questions, yielding 900 questions total.
+
+\paragraph{Agent Configuration.} We deploy $n=5$ DeepSeek-V3 instances under each of five communication topologies (parallel, sequential, star, debate, hierarchical), generating 22{,}500 AEIC-structured responses (5 agents $\times$ 900 questions $\times$ 5 topologies).
+
+\paragraph{Signal Computation.} Quality signals are computed using sentence embeddings (paraphrase-multilingual-MiniLM-L12-v2). The topology-aware adjacency matrix $W$ determines neighbor sets for EV and agreement computation.
+
+\paragraph{Optimization.} Per-topology $\theta^*_T$ is optimized via differential evolution (population 10, 100 generations) on the full signal data. Router evaluation uses 5-fold stratified cross-validation with multiple seeds for stability estimation.
+
+\paragraph{Baselines.}
+\begin{itemize}
+    \item \textbf{Single Agent}: Agent 0's conclusion without aggregation.
+    \item \textbf{ChatEval}~\cite{chan2023chateval}: Majority voting on parallel topology (our reimplementation).
+    \item \textbf{Multi-round Debate}~\cite{du2024improving}: Majority voting after 3 rounds of debate (our reimplementation).
+    \item \textbf{AgentVerse}~\cite{chen2023agentverse}: Solver--reviewer pattern with central decision (our reimplementation, 200 questions per dataset).
+    \item \textbf{MajVote}: Simple majority voting on each topology (5 variants).
+    \item \textbf{Weighted Vote}: IC-weighted and agreement-weighted voting without Stackelberg.
+    \item \textbf{AEIC+SG}: Stackelberg-weighted voting with per-topology $\theta^*$ (5 variants).
+\end{itemize}
+
+All baselines use the same LLM backend (DeepSeek-V3) and the same cached responses, ensuring fair comparison. $\dagger$~=~our reimplementation.
+
+\subsection{Main Results}
+
+Table~\ref{tab:main} presents the complete comparison. Figure~\ref{fig:main_results} provides a visual summary.
+
+\begin{table}[t]
+\caption{Consensus accuracy (\%) across three datasets (300 questions each, except AgentVerse which uses 200). Best fixed-topology in \textit{italic}, overall best in \textbf{bold}.}\label{tab:main}
+\centering\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Method & MMLU-Hard & StrategyQA & TruthfulQA & Average \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Single-agent and voting baselines}} \\
+Single Agent ($N{=}1$) & 65.3 & 79.0 & 80.0 & 74.8 \\
+MajVote (parallel)$^\dagger$ & 69.7 & 81.7 & 81.3 & 77.6 \\
+MajVote (sequential) & 79.0 & 71.0 & 72.7 & 74.2 \\
+MajVote (star) & \textit{85.7} & 80.3 & \textit{82.0} & \textit{82.7} \\
+MajVote (debate)$^\dagger$ & 83.7 & 72.3 & 75.3 & 77.1 \\
+MajVote (hierarchical) & 82.0 & 74.7 & 75.0 & 77.2 \\
+AgentVerse$^\dagger$ & 74.0 & 63.5 & 70.0 & 69.2 \\
+Weighted Vote (IC) & 70.0 & 80.3 & 81.0 & 77.1 \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{AEIC-Stackelberg (per-topology $\theta^*_T$)}} \\
+AEIC+SG (parallel) & 71.7 & 78.0 & 78.7 & 76.1 \\
+AEIC+SG (sequential) & 74.7 & 69.0 & 70.0 & 71.2 \\
+AEIC+SG (star) & 84.3 & 79.3 & 82.0 & 81.9 \\
+AEIC+SG (debate) & 80.0 & 72.3 & 72.0 & 74.8 \\
+AEIC+SG (hierarchical) & \textit{84.7} & 76.3 & 77.0 & 79.3 \\
+AEIC+SG (best per dataset) & 84.7 & 79.3 & 82.0 & 82.0 \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Adaptive routing (ours)}} \\
+Neural Router (shared) & --- & --- & --- & 88.5\tiny{$\pm$0.4} \\
+Neural Router (per-dataset) & --- & --- & --- & 89.4\tiny{$\pm$0.5} \\
+Neural Router (top-2) & --- & --- & --- & \textbf{92.4}\tiny{$\pm$0.2} \\
+\midrule
+Oracle (any of 5 topologies) & 99.7 & 91.3 & 96.7 & 95.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/fig_main_results.pdf}
+\caption{Accuracy comparison across three datasets. The adaptive router (top-2) substantially outperforms all fixed-topology methods.}\label{fig:main_results}
+\end{figure}
+
+Key observations: (1)~MajVote~(star) is the best fixed-topology method at 82.7\%, outperforming all AEIC+SG variants. (2)~The adaptive router achieves 92.4\%, +9.7pp over the best fixed topology. (3)~The oracle gap is only 3.5pp.
+
+\subsection{AEIC-Weighted Voting vs.\ Majority Voting}
+
+Figure~\ref{fig:topo_comparison} reveals a surprising finding: majority voting outperforms AEIC+SG weighted voting on 4 of 5 topologies.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/fig_topo_comparison.pdf}
+\caption{Per-topology comparison averaged over three datasets. AEIC+$\theta^*$ only outperforms majority voting on hierarchical topology.}\label{fig:topo_comparison}
+\end{figure}
+
+Across 15 dataset--topology cells, MajVote wins in 9, AEIC+$\theta^*$ wins in 4 (all on hierarchical plus one parallel cell), and 2 are tied. AEIC signals measure \emph{reasoning process quality, not answer correctness}: a coherent wrong answer scores as highly as a correct one. Majority voting is more robust when agents are equally capable.
+
+The exception is hierarchical topology (+2.1pp for AEIC+$\theta^*$), where multi-level aggregation benefits from quality-weighted coordination. This motivates using AEIC signals for \emph{meta-level topology selection} rather than direct vote weighting.
+
+\subsection{Learned Parameter Analysis}
+
+Figure~\ref{fig:theta} shows the optimized $\theta^*$ parameters across five topologies.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\linewidth]{figures/fig_theta_heatmap.pdf}
+\caption{Optimized $\theta^*$ parameters across five topologies (row-normalized). Star and debate learn near-zero $w_{\text{EV}}$ (anti-sycophancy). Hierarchical learns high $\lambda$ and elevated signal weights.}\label{fig:theta}
+\end{figure}
+
+Three patterns emerge: (1)~\textbf{Anti-sycophancy}: Star and debate learn $w_{\text{EV}} \approx 0.01$, discarding cross-agent consensus where agents observe others' outputs, making EV a proxy for conformity. (2)~\textbf{High consensus pressure on chains}: Sequential ($\lambda = 4.80$) and hierarchical ($\lambda = 4.69$) enforce strong agreement to counteract directional information flow. (3)~\textbf{Elevated weights on hierarchical}: All signal weights are substantially higher (0.45--0.90 vs.\ 0.01--0.36 elsewhere), reflecting multi-level aggregation where every quality dimension helps identify reliable intermediaries.
+
+\subsection{Router Performance Progression}
+
+Figure~\ref{fig:router} shows the accuracy progression from single-agent to oracle.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\linewidth]{figures/fig_router_progression.pdf}
+\caption{Accuracy progression from single-agent to oracle. Top-2 router closes 74.8\% of the gap between best fixed topology and oracle.}\label{fig:router}
+\end{figure}
+
+The shared router (88.5\%) improves substantially over any fixed topology. Per-dataset specialization adds +0.9pp, and top-2 selection adds +3.0pp more (92.4\%), closing 74.8\% of the oracle gap.
+
+\subsection{Signal Ablation}
+
+Figure~\ref{fig:ablation} shows the contribution of each quality signal to AEIC+SG under star topology.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/fig_ablation.pdf}
+\caption{Signal ablation under star topology. EC is the most critical signal ($-1.15$pp). Removing EQ slightly improves accuracy, consistent with its low optimized weight.}\label{fig:ablation}
+\end{figure}
+
+EC is the most critical signal ($-1.15$pp). IC and EV each contribute ${\sim}0.5$pp. Removing EQ \emph{improves} accuracy by 0.40pp---evidence quality assessment introduces noise in some domains.
+
+\subsection{Accuracy--Incentive Trade-off}
+
+Varying $\lambda$ in Eq.~\eqref{eq:upper} confirms the Pareto frontier (Theorem~\ref{thm:ic}): $\lambda{=}0$ yields 81.9\% accuracy with IC${=}11.5\%$; $\lambda{=}1$ achieves 79.2\% accuracy with IC${=}66.5\%$; $\lambda{=}2$ reaches IC${=}83.5\%$ at 79.0\% accuracy. Moderate IC regularization ($\lambda{=}1$) achieves near-optimal accuracy with substantially improved incentive compatibility, suggesting IC constraints act as beneficial regularization.

@@ -6,12 +6,11 @@
 
 Usage:
   python experiments/optimize_consensus.py \
-      --signals results/signals_StrategyQA_3a.json
+      --signals results/signals/StrategyQA.json
 
-  # 在adaptive缓存上微调
+  # 多数据集联合训练
   python experiments/optimize_consensus.py \
-      --signals results/signals_adaptive_7a.json \
-      --init results/optimized_config.json
+      --signals results/signals/MMLU-Hard.json results/signals/StrategyQA.json
 """
 from __future__ import annotations
 
@@ -30,19 +29,18 @@ from core.stackelberg import AgentBid, StackelbergGame
 from core.trust import extract_stance
 
 
-def consensus_from_signals(signals: Dict, config: ConsensusConfig,
-                           n_agents: int) -> str:
-    """从预计算信号 + config参数 → Stackelberg → 决策。"""
+def compute_weights(signals: Dict, config: ConsensusConfig,
+                    n_agents: int) -> np.ndarray:
+    """从信号 + config → Stackelberg → 归一化权重向量。"""
     ic = signals["ic"]
     ec = signals["ec"]
     eq = signals["eq"]
     ev = signals["ev"]
-    stances = signals["stances"]
     agreement = signals["agreement"]
     n = len(ic)
 
     if n < 2:
-        return stances[0] if stances else "neutral"
+        return np.ones(1) * 0.5
 
     W_game = np.ones((n, n)) - np.eye(n)
     W_game /= max(n - 1, 1)
@@ -76,15 +74,24 @@ def consensus_from_signals(signals: Dict, config: ConsensusConfig,
     theta = np.array(history[-1]["theta"])
 
     if theta.max() > theta.min():
-        theta_norm = (theta - theta.min()) / (theta.max() - theta.min())
-    else:
-        theta_norm = np.ones(n) * 0.5
+        return (theta - theta.min()) / (theta.max() - theta.min())
+    return np.ones(n) * 0.5
+
+
+def consensus_from_signals(signals: Dict, config: ConsensusConfig,
+                           n_agents: int) -> str:
+    """从预计算信号 + config参数 → Stackelberg → 决策。"""
+    stances = signals["stances"]
+    if len(signals["ic"]) < 2:
+        return stances[0] if stances else "neutral"
+
+    weights = compute_weights(signals, config, n_agents)
 
     vote_scores = {}
-    for i in range(n):
+    for i in range(len(stances)):
         if stances[i] != "neutral":
             vote_scores[stances[i]] = vote_scores.get(stances[i], 0.0) + \
-                                      theta_norm[i]
+                                      weights[i]
 
     if not vote_scores:
         return "neutral"
@@ -107,16 +114,50 @@ def evaluate_config(questions: List[Dict], config: ConsensusConfig,
     return {"accuracy": acc, "correct": correct, "total": total}
 
 
-def objective(params_vec, questions, n_agents):
-    """scipy优化目标: 负准确率。"""
+def compute_ic_metric(questions: List[Dict], config: ConsensusConfig,
+                      n_agents: int) -> float:
+    """IC(θ): 高质量agent组权重 > 低质量agent组的比例。
+
+    对每道题，按推理质量(IC·EC·EQ均值，不含EV)将agent分为
+    top-2组(H)和bottom-2组(L)，计算H平均权重>L平均权重的比例。
+    """
+    ic_count = 0
+    total = 0
+    for q in questions:
+        if "signals" not in q:
+            continue
+        s = q["signals"]
+        n = len(s["ic"])
+        if n < 4:
+            continue
+
+        quality = [(s["ic"][i] + s["ec"][i] + s["eq"][i]) / 3.0
+                   for i in range(n)]
+        weights = compute_weights(s, config, n_agents)
+
+        ranked = sorted(range(n), key=lambda i: quality[i], reverse=True)
+        h = ranked[:2]
+        l = ranked[-2:]
+        avg_h = sum(weights[i] for i in h) / 2.0
+        avg_l = sum(weights[j] for j in l) / 2.0
+        if avg_h > avg_l:
+            ic_count += 1
+        total += 1
+    return ic_count / max(total, 1)
+
+
+def objective(params_vec, questions, n_agents, lambda_ic=0.0):
+    """scipy优化目标: -(accuracy + λ·IC)。"""
     config = ConsensusConfig.from_vector(params_vec)
     result = evaluate_config(questions, config, n_agents)
+    if lambda_ic > 0:
+        ic = compute_ic_metric(questions, config, n_agents)
+        return -(result["accuracy"] + lambda_ic * ic)
     return -result["accuracy"]
 
 
 def optimize(signals_paths, init_config_path: str = None,
-             out_path: str = None,
-             method: str = "differential_evolution"):
+             out_path: str = None, lambda_ic: float = 0.0):
     """全局优化共识参数。支持多signals文件合并训练。"""
     from scipy.optimize import differential_evolution
 
@@ -138,27 +179,26 @@ def optimize(signals_paths, init_config_path: str = None,
     # Baseline: default config
     default_cfg = ConsensusConfig()
     default_result = evaluate_config(questions, default_cfg, n_agents)
-    print(f"Default config:  {default_result['accuracy']:.1%} "
-          f"({default_result['correct']}/{default_result['total']})")
+    default_ic = compute_ic_metric(questions, default_cfg, n_agents)
+    print(f"Default config:  acc={default_result['accuracy']:.1%}  "
+          f"IC={default_ic:.1%}  ({default_result['correct']}/{default_result['total']})")
 
-    # Init from file if provided (for fine-tuning)
+    # Init from file if provided
     if init_config_path:
         init_cfg = ConsensusConfig.load(init_config_path)
         init_result = evaluate_config(questions, init_cfg, n_agents)
-        print(f"Init config:     {init_result['accuracy']:.1%} "
-              f"({init_result['correct']}/{init_result['total']})")
-        x0 = init_cfg.to_vector()
-    else:
-        x0 = default_cfg.to_vector()
+        init_ic = compute_ic_metric(questions, init_cfg, n_agents)
+        print(f"Init config:     acc={init_result['accuracy']:.1%}  IC={init_ic:.1%}")
 
     bounds = ConsensusConfig.bounds()
 
+    obj_desc = f"accuracy + {lambda_ic}·IC" if lambda_ic > 0 else "accuracy"
     print(f"\nOptimizing {len(ConsensusConfig.param_names())} parameters "
-          f"on {len(questions)} questions...")
+          f"on {len(questions)} questions (objective: {obj_desc})...")
 
     result = differential_evolution(
         objective, bounds,
-        args=(questions, n_agents),
+        args=(questions, n_agents, lambda_ic),
         seed=42,
         maxiter=100,
         popsize=10,
@@ -171,11 +211,13 @@ def optimize(signals_paths, init_config_path: str = None,
 
     best_cfg = ConsensusConfig.from_vector(result.x)
     best_result = evaluate_config(questions, best_cfg, n_agents)
+    best_ic = compute_ic_metric(questions, best_cfg, n_agents)
 
-    print(f"\nOptimized config: {best_result['accuracy']:.1%} "
+    print(f"\nOptimized config: acc={best_result['accuracy']:.1%}  IC={best_ic:.1%}  "
           f"({best_result['correct']}/{best_result['total']})")
     delta = best_result["accuracy"] - default_result["accuracy"]
-    print(f"Improvement:      {delta:+.1%}")
+    print(f"Acc improvement:  {delta:+.1%}")
+    print(f"IC  improvement:  {best_ic - default_ic:+.1%}")
 
     # Print parameter comparison
     print(f"\n{'Parameter':<16} {'Default':>10} {'Optimized':>10} {'Change':>10}")
@@ -190,8 +232,7 @@ def optimize(signals_paths, init_config_path: str = None,
 
     # Save
     if out_path is None:
-        out_dir = os.path.dirname(signals_paths[0]) or "results"
-        out_path = os.path.join(out_dir, "optimized_config.json")
+        out_path = os.path.join("results", "configs", "optimized_config.json")
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     best_cfg.save(out_path)
     print(f"\nSaved to {out_path}")
@@ -199,8 +240,10 @@ def optimize(signals_paths, init_config_path: str = None,
     return best_cfg, {
         "train_datasets": train_datasets,
         "train_accuracy": best_result["accuracy"],
+        "train_ic": best_ic,
         "default_accuracy": default_result["accuracy"],
-        "improvement": best_result["accuracy"] - default_result["accuracy"],
+        "default_ic": default_ic,
+        "lambda_ic": lambda_ic,
         "config_path": out_path,
     }
 
@@ -213,10 +256,12 @@ def main():
     parser.add_argument("--init", default=None,
                         help="Init config JSON for fine-tuning")
     parser.add_argument("--out", default=None,
-                        help="Output config path (default: results/optimized_config.json)")
+                        help="Output config path (default: results/configs/optimized_config.json)")
+    parser.add_argument("--lambda_ic", type=float, default=0.0,
+                        help="IC incentive weight (0=pure accuracy, >0=accuracy+λ·IC)")
     args = parser.parse_args()
 
-    optimize(args.signals, args.init, args.out)
+    optimize(args.signals, args.init, args.out, args.lambda_ic)
 
 
 if __name__ == "__main__":

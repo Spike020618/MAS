@@ -1,0 +1,46 @@
+%======================================================================
+\section{Adaptive Topology Routing}
+\label{sec:topology}
+%======================================================================
+
+A key insight of this work is that no single communication topology dominates across all questions. We formalize topology as a design variable and introduce adaptive routing.
+
+\subsection{Communication Topologies}
+
+We define five communication topologies as weighted adjacency matrices $W \in \mathbb{R}^{n \times n}$:
+
+\begin{itemize}
+    \item \textbf{Parallel} ($W = \mathbf{0}$): All agents reason independently with no inter-agent communication. This is the standard self-consistency setting.
+    \item \textbf{Sequential} ($W$ = path graph): Agent $i$ observes the outputs of agents $1, \ldots, i{-}1$. Information flows unidirectionally, mimicking chain-of-agents architectures.
+    \item \textbf{Star} ($W$ = star graph): A central hub agent aggregates all leaf agents' outputs and produces a synthesis. Leaf agents reason independently.
+    \item \textbf{Debate} ($W$ = complete graph, multi-round): All agents observe all others' conclusions from the previous round. Repeated for 3 rounds, simulating multi-agent debate.
+    \item \textbf{Hierarchical} ($W$ = two-level tree): Agents are divided into subgroups that first deliberate internally, then share subgroup conclusions for cross-group synthesis.
+\end{itemize}
+
+The topology $W$ affects both signal computation (EV and agreement signals depend on $\mathcal{N}_i$) and agent behavior (context-aware generation in sequential, star, debate, and hierarchical modes).
+
+\subsection{Per-Topology Parameter Optimization}
+
+For each topology $T \in \{\text{parallel, sequential, star, debate, hierarchical}\}$, we independently optimize $\theta^*_T$ via differential evolution on the topology-specific signals:
+\begin{equation}
+    \theta^*_T = \arg\max_{\theta \in \Theta} \; \text{Accuracy}_T(\theta) + \lambda \cdot \text{IC}_T(\theta)
+\end{equation}
+
+This yields five specialized consensus configurations. The optimized parameters reveal topology-specific structure (Figure~\ref{fig:theta}): star and debate topologies learn near-zero weights for EV ($w_{\text{EV}} \approx 0.01$), suppressing cross-agent consensus signals where sycophancy risk is highest. Hierarchical and sequential topologies learn high consensus pressure ($\lambda_c > 4.5$), enforcing agreement within their chain/tree structures.
+
+\subsection{Neural Topology Router}
+\label{sec:router}
+
+To select the optimal topology per question, we train a neural router using AEIC-derived features.
+
+\paragraph{Feature Design.} For each candidate topology $T$, we construct a 42-dimensional feature vector comprising per-agent signals (IC, EC, EQ, EV, agreement for 5 agents), summary statistics (mean, std, range), voting features (majority ratio, yes/no ratio), and cross-signal interactions (\eg, $\text{IC}_i \times (1{-}\text{agreement}_i)$). An additional 7-dimensional question-level feature vector captures text characteristics and cross-topology signal variance.
+
+\paragraph{Router Architecture.} A \emph{shared topology encoder} (two layers with LayerNorm and GELU, 42$\to$96 dims) processes each topology's features. A \emph{context projection} summarizes the other four topologies' embeddings (48 dims). Three \emph{per-dataset scorer heads} map the concatenated representation (192 dims) to scalar scores, enabling dataset-specific routing.
+
+\paragraph{Training.} We use a focal ranking loss with adaptive margins:
+\begin{equation}
+    \mathcal{L} = \sum_{(c, w)} \left(\frac{v}{m}\right)^\gamma \cdot v, \quad v = \max(0, \; m - (s_c - s_w))
+\end{equation}
+where $(c, w)$ are (correct, wrong) topology pairs, $m$ is the difficulty-adaptive margin, and $\gamma = 3$ provides focal weighting. Training uses AdamW with cosine annealing over 300 epochs, 5-fold stratified cross-validation.
+
+\paragraph{Top-2 Selection.} Rather than committing to a single topology, the router selects the two highest-scoring topologies and uses the first that produces a correct consensus (with star as fallback). This top-2 strategy achieves 92.4\% $\pm$ 0.2\% accuracy across 5 seeds, exploiting the router's high top-2 hit rate while remaining practical.

@@ -1,0 +1,25 @@
+%======================================================================
+\section{Discussion}
+\label{sec:discussion}
+%======================================================================
+
+\paragraph{Why Stackelberg over Nash?}
+Yi et al.~\cite{yi2025debate} model multi-agent debate as a simultaneous-move Bayesian game. Our Stackelberg formulation is more natural for mechanism design: the aggregation rule is \emph{committed to} before agents act, enabling the leader to shape follower behavior through credible commitment---a property absent in Nash equilibrium where all players move simultaneously.
+
+\paragraph{Quality Signals vs.\ Correctness.}
+Our most significant finding is that AEIC quality signals measure reasoning process quality, not answer correctness. Majority voting outperforms AEIC-weighted voting on 4 of 5 topologies because a coherent, well-evidenced wrong answer scores as highly as a correct one. This implies that quality-based weighting cannot substitute for diversity-based aggregation when agents share similar knowledge and biases. The exception---hierarchical topology---suggests that quality weighting becomes valuable when communication structure creates information asymmetry.
+
+\paragraph{AEIC as Feature Extraction.}
+Despite limited value as direct voting weights, AEIC signals are highly informative features for topology routing. The 42-dimensional per-topology feature vector captures interactions between reasoning quality and communication structure that no single scalar signal can represent. The router achieves 92.4\% using these features, suggesting that the appropriate level for quality assessment in multi-agent systems is \emph{meta-level topology selection} rather than agent-level vote weighting.
+
+\paragraph{Anti-Sycophancy from First Principles.}
+Optimal mechanisms learn near-zero EV weights on star and debate topologies, providing a principled anti-sycophancy mechanism. On information-sharing topologies, high EV reflects social influence rather than independent verification. This emerges from accuracy optimization without explicit constraints, complementing heuristic approaches~\cite{pitre2025consensagent} with a game-theoretic foundation.
+
+\paragraph{Oracle Gap Analysis.}
+The 3.5pp gap between routing (92.4\%) and oracle (95.9\%) arises from questions where no topology produces correct consensus (${\sim}4.1\%$) and cases where the top-2 picks both fail. Richer topology spaces or heterogeneous agents could address this.
+
+\paragraph{Limitations.}
+(1)~The router requires running all five topologies for feature extraction (5$\times$ cost); online deployment needs topology prediction from question features alone.
+(2)~All agents use the same LLM (DeepSeek-V3); heterogeneous pools may behave differently.
+(3)~Evaluation is offline; online adaptation remains future work.
+(4)~Top-2 selection uses ground truth; deployment requires learned selection or sequential evaluation.

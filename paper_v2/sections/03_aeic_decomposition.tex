@@ -1,0 +1,55 @@
+%======================================================================
+\section{AEIC Decomposition and Quality Signals}
+\label{sec:aeic}
+%======================================================================
+
+We introduce the AEIC decomposition that provides auditable reasoning quality signals for both mechanism design and topology routing.
+
+\subsection{Structured Reasoning Decomposition}
+
+Given a question $x$, each agent $i \in \{1, \ldots, n\}$ produces a structured response decomposed into four components:
+
+\begin{itemize}
+    \item \textbf{Assumption (A)}: The premise or hypothesis the agent adopts.
+    \item \textbf{Evidence (E)}: A list of factual claims supporting the analysis: $E_i = \{e_{i,1}, \ldots, e_{i,k_i}\}$.
+    \item \textbf{Inference (I)}: The reasoning chain connecting evidence to conclusion.
+    \item \textbf{Conclusion (C)}: The final answer with justification.
+\end{itemize}
+
+This decomposition is enforced through prompt engineering and serves two purposes: (1)~it structures the reasoning process to improve output quality, and (2)~it provides separable components whose quality can be independently assessed by the consensus mechanism.
+
+\subsection{Four-Dimensional Quality Signals}
+
+From each agent's AEIC output, we compute four quality signals using embedding-based similarity:
+
+\begin{definition}[Quality Signals]
+Let $\mathrm{sim}(\cdot, \cdot)$ denote cosine similarity in a sentence embedding space. For agent~$i$:
+\begin{align}
+    \mathrm{IC}_i &= \mathrm{sim}(I_i, C_i) \\
+    \mathrm{EC}_i &= \tfrac{1}{|E_i|}\textstyle\sum_{e \in E_i} \mathrm{sim}(e, C_i) \\
+    \mathrm{EQ}_i &= f_{\mathrm{quality}}(E_i) \\
+    \mathrm{EV}_i &= \tfrac{1}{|\mathcal{N}_i|}\textstyle\sum_{j \in \mathcal{N}_i} \mathrm{sim}(E_i, E_j)
+\end{align}
+where IC measures Inference--Conclusion consistency, EC measures Evidence--Conclusion support, EQ assesses evidence quality, and EV captures cross-agent evidence consensus.
+\end{definition}
+
+Here $\mathcal{N}_i$ denotes the neighbors of agent $i$ in the communication topology graph, and $f_{\text{quality}}$ assesses evidence coverage and specificity. IC, EC, and EQ measure \emph{individual reasoning quality}: how coherent, well-supported, and thorough an agent's analysis is. EV measures \emph{inter-agent agreement}: how much an agent's evidence aligns with its neighbors'. This distinction is critical for incentive design---EV can be inflated by sycophantic behavior, while IC/EC/EQ require genuine reasoning effort.
+
+\subsection{Agent Type Space}
+\label{sec:type}
+
+Following Saig et al.~\cite{saig2024incentivizing}, we model each agent through an observable \emph{type}:
+
+\begin{definition}[Agent Type]
+The type of agent $i$ on question $q$ is:
+\begin{equation}
+    \tau_i = (\text{IC}_i, \text{EC}_i, \text{EQ}_i) \in [0,1]^3
+\end{equation}
+\end{definition}
+
+EV is deliberately excluded from the type. It measures consensus rather than reasoning quality---a sycophantic agent can achieve high EV by mimicking neighbors without genuine reasoning. The type captures what the mechanism should reward: the quality of individual reasoning effort.
+
+\subsection{AEIC as Feature Extraction}
+\label{sec:aeic_features}
+
+Beyond mechanism design, AEIC signals serve as feature representations for topology routing. For each question--topology pair, we construct a 42-dimensional vector from per-agent signals, summary statistics, and cross-signal interactions. The same agents produce different signal profiles under different topologies, enabling a learned router to identify optimal communication structures (Section~\ref{sec:topology}).

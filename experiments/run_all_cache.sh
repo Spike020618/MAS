@@ -10,13 +10,15 @@ N_SAMPLES=200
 N_AGENTS=5
 OUT_DIR=results
 
+mkdir -p "$OUT_DIR/cache" "$OUT_DIR/signals"
+
 for ds in "${DATASETS[@]}"; do
     echo "=========================================="
     echo "  Dataset: $ds"
     echo "=========================================="
 
-    cache_file="$OUT_DIR/aeic_cache_${ds}_${N_AGENTS}a.json"
-    signals_file="$OUT_DIR/signals_${ds}_${N_AGENTS}a.json"
+    cache_file="$OUT_DIR/cache/${ds}.json"
+    signals_file="$OUT_DIR/signals/${ds}.json"
 
     # Phase 1: 收集AEIC（跳过已完成的）
     if [ -f "$cache_file" ]; then
@@ -49,4 +51,4 @@ done
 echo "=========================================="
 echo "  ALL DATASETS COMPLETE"
 echo "=========================================="
-ls -lh $OUT_DIR/signals_*_${N_AGENTS}a.json
+ls -lh $OUT_DIR/signals/*.json
