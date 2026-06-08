@@ -7,11 +7,11 @@
 
 \paragraph{Datasets.} We evaluate on three diverse reasoning benchmarks: MMLU-Hard (graduate-level knowledge), StrategyQA (commonsense with implicit reasoning), and TruthfulQA (factual accuracy under adversarial framing). Each dataset contributes 300 questions, yielding 900 questions total.
 
-\paragraph{Agent Configuration.} We deploy $n=5$ DeepSeek-V3 instances under each of five communication topologies (parallel, sequential, star, debate, hierarchical), generating 22{,}500 AEIC-structured responses (5 agents $\times$ 900 questions $\times$ 5 topologies).
+\paragraph{Agent Configuration.} We deploy $n=5$ DeepSeek-V3~\cite{deepseek2024v3} instances under each of five communication topologies (parallel, sequential, star, debate, hierarchical), generating 22{,}500 AEIC-structured responses (5 agents $\times$ 900 questions $\times$ 5 topologies). Since question sets were sampled independently per topology, 633 of 900 questions overlap across all five topologies (161/300/172 for MMLU-Hard/StrategyQA/TruthfulQA). Cross-topology comparisons (router, oracle) use this intersection; per-topology baselines use the full 300 questions.
 
 \paragraph{Signal Computation.} Quality signals are computed using sentence embeddings (paraphrase-multilingual-MiniLM-L12-v2). The topology-aware adjacency matrix $W$ determines neighbor sets for EV and agreement computation.
 
-\paragraph{Optimization.} Per-topology $\theta^*_T$ is optimized via differential evolution (population 10, 100 generations) on the full signal data. Router evaluation uses 5-fold stratified cross-validation with multiple seeds for stability estimation.
+\paragraph{Optimization.} Per-topology $\theta^*_T$ is optimized via differential evolution (16 parameters, population 16, 30 generations) and evaluated using 5-fold stratified cross-validation to report honest held-out accuracy (preventing train/test leakage). Router evaluation also uses 5-fold CV with five random seeds for stability estimation.
 
 \paragraph{Baselines.}
 \begin{itemize}
@@ -31,7 +31,7 @@ All baselines use the same LLM backend (DeepSeek-V3) and the same cached respons
 Table~\ref{tab:main} presents the complete comparison. Figure~\ref{fig:main_results} provides a visual summary.
 
 \begin{table}[t]
-\caption{Consensus accuracy (\%) across three datasets (300 questions each, except AgentVerse which uses 200). Best fixed-topology in \textit{italic}, overall best in \textbf{bold}.}\label{tab:main}
+\caption{Consensus accuracy (\%) across three datasets. Per-topology baselines use 300 questions each; router and oracle are evaluated on 633 questions common to all topologies (161/300/172 for MMLU-Hard/StrategyQA/TruthfulQA). Best fixed-topology in \textit{italic}, overall best in \textbf{bold}.}\label{tab:main}
 \centering\small
 \begin{tabular}{@{}lcccc@{}}
 \toprule
@@ -41,37 +41,37 @@ Method & MMLU-Hard & StrategyQA & TruthfulQA & Average \\
 Single Agent ($N{=}1$) & 65.3 & 79.0 & 80.0 & 74.8 \\
 MajVote (parallel)$^\dagger$ & 69.7 & 81.7 & 81.3 & 77.6 \\
 MajVote (sequential) & 79.0 & 71.0 & 72.7 & 74.2 \\
-MajVote (star) & \textit{85.7} & 80.3 & \textit{82.0} & \textit{82.7} \\
+MajVote (star) & \textit{85.7} & \textit{80.3} & \textit{82.0} & \textit{82.7} \\
 MajVote (debate)$^\dagger$ & 83.7 & 72.3 & 75.3 & 77.1 \\
 MajVote (hierarchical) & 82.0 & 74.7 & 75.0 & 77.2 \\
 AgentVerse$^\dagger$ & 74.0 & 63.5 & 70.0 & 69.2 \\
 Weighted Vote (IC) & 70.0 & 80.3 & 81.0 & 77.1 \\
 \midrule
 \multicolumn{5}{@{}l}{\textit{AEIC-Stackelberg (per-topology $\theta^*_T$)}} \\
-AEIC+SG (parallel) & 71.7 & 78.0 & 78.7 & 76.1 \\
-AEIC+SG (sequential) & 74.7 & 69.0 & 70.0 & 71.2 \\
-AEIC+SG (star) & 84.3 & 79.3 & 82.0 & 81.9 \\
-AEIC+SG (debate) & 80.0 & 72.3 & 72.0 & 74.8 \\
-AEIC+SG (hierarchical) & \textit{84.7} & 76.3 & 77.0 & 79.3 \\
-AEIC+SG (best per dataset) & 84.7 & 79.3 & 82.0 & 82.0 \\
+AEIC+SG (parallel) & 71.7 & 78.0 & 78.7 & 77.8\tiny{$\pm$5.6}$^\ddagger$ \\
+AEIC+SG (sequential) & 74.7 & 69.0 & 70.0 & 75.3\tiny{$\pm$2.5}$^\ddagger$ \\
+AEIC+SG (star) & 84.3 & 79.3 & 82.0 & 81.7\tiny{$\pm$3.4}$^\ddagger$ \\
+AEIC+SG (debate) & 80.0 & 72.3 & 72.0 & 76.3\tiny{$\pm$3.0}$^\ddagger$ \\
+AEIC+SG (hierarchical) & 84.7 & 76.3 & 77.0 & 77.3\tiny{$\pm$3.5}$^\ddagger$ \\
 \midrule
-\multicolumn{5}{@{}l}{\textit{Adaptive routing (ours)}} \\
-Neural Router (shared) & --- & --- & --- & 88.5\tiny{$\pm$0.4} \\
-Neural Router (per-dataset) & --- & --- & --- & 89.4\tiny{$\pm$0.5} \\
-Neural Router (top-2) & --- & --- & --- & \textbf{92.4}\tiny{$\pm$0.2} \\
+\multicolumn{5}{@{}l}{\textit{Adaptive routing (ours, 5-fold CV)}} \\
+Neural Router (shared) & 91.3 & 86.0 & 84.3 & 86.9\tiny{$\pm$0.5} \\
+Neural Router (per-dataset) & \textbf{92.5} & \textbf{86.2} & \textbf{85.6} & \textbf{87.6}\tiny{$\pm$0.3} \\
 \midrule
-Oracle (any of 5 topologies) & 99.7 & 91.3 & 96.7 & 95.9 \\
+Oracle (any of 5 topologies) & 97.5 & 91.0 & 91.9 & 92.9 \\
 \bottomrule
 \end{tabular}
+\\[2pt]
+{\footnotesize $\dagger$~Our reimplementation using DeepSeek-V3. $\ddagger$~Average column reports 5-fold CV test accuracy $\pm$ std; per-dataset columns use full-data $\theta^*$.}
 \end{table}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/fig_main_results.pdf}
-\caption{Accuracy comparison across three datasets. The adaptive router (top-2) substantially outperforms all fixed-topology methods.}\label{fig:main_results}
+\caption{Accuracy comparison across three datasets. The adaptive router outperforms all fixed-topology methods.}\label{fig:main_results}
 \end{figure}
 
-Key observations: (1)~MajVote~(star) is the best fixed-topology method at 82.7\%, outperforming all AEIC+SG variants. (2)~The adaptive router achieves 92.4\%, +9.7pp over the best fixed topology. (3)~The oracle gap is only 3.5pp.
+Key observations: (1)~MajVote~(star) is the best fixed-topology method at 82.7\%, outperforming all AEIC+SG variants even after cross-validation (best AEIC+SG is star at 81.7\%). (2)~The adaptive router achieves 87.6\%, +4.5pp over the best fixed topology on aligned questions. (3)~The oracle ceiling is 92.9\%, with a remaining 5.3pp gap. (4)~Per-dataset analysis reveals that AEIC+SG underperforms MajVote most on commonsense reasoning: on StrategyQA, AEIC+SG star achieves 79.3\% vs.\ MajVote~star's 80.3\%, while the gap is smallest on knowledge-intensive MMLU-Hard (84.3\% vs.\ 85.7\%). (5)~AEIC+SG CV test accuracy closely matches MajVote across topologies (within 1pp on 4 of 5), confirming that quality-weighted voting offers limited advantage over simple majority voting when agents share the same LLM backend.
 
 \subsection{AEIC-Weighted Voting vs.\ Majority Voting}
 
@@ -83,9 +83,9 @@ Figure~\ref{fig:topo_comparison} reveals a surprising finding: majority voting o
 \caption{Per-topology comparison averaged over three datasets. AEIC+$\theta^*$ only outperforms majority voting on hierarchical topology.}\label{fig:topo_comparison}
 \end{figure}
 
-Across 15 dataset--topology cells, MajVote wins in 9, AEIC+$\theta^*$ wins in 4 (all on hierarchical plus one parallel cell), and 2 are tied. AEIC signals measure \emph{reasoning process quality, not answer correctness}: a coherent wrong answer scores as highly as a correct one. Majority voting is more robust when agents are equally capable.
+With honest cross-validated evaluation, AEIC+SG performs comparably to MajVote: parallel 77.8\% vs.\ 77.6\%, sequential 75.3\% vs.\ 74.2\%, star 81.7\% vs.\ 82.7\%, debate 76.3\% vs.\ 77.1\%, hierarchical 77.3\% vs.\ 77.2\%. McNemar tests on the full 900 questions (per-topology $\theta^*$ trained on all data) confirm that AEIC+SG is not significantly better than MajVote on any topology except hierarchical ($p{=}0.017$), and is in fact significantly worse on parallel ($p{=}0.010$), sequential ($p{=}0.004$), and debate ($p{=}0.003$). This confirms that AEIC signals measure \emph{reasoning process quality, not answer correctness}: a coherent wrong answer scores as highly as a correct one.
 
-The exception is hierarchical topology (+2.1pp for AEIC+$\theta^*$), where multi-level aggregation benefits from quality-weighted coordination. This motivates using AEIC signals for \emph{meta-level topology selection} rather than direct vote weighting.
+This motivates using AEIC signals for \emph{meta-level topology selection} rather than direct vote weighting---they capture topology-question interactions that are invisible to single-scalar quality scores.
 
 \subsection{Learned Parameter Analysis}
 
@@ -106,10 +106,38 @@ Figure~\ref{fig:router} shows the accuracy progression from single-agent to orac
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.8\linewidth]{figures/fig_router_progression.pdf}
-\caption{Accuracy progression from single-agent to oracle. Top-2 router closes 74.8\% of the gap between best fixed topology and oracle.}\label{fig:router}
+\caption{Accuracy progression from single-agent to oracle. The per-dataset router closes 46.5\% of the gap between best fixed topology and oracle.}\label{fig:router}
 \end{figure}
 
-The shared router (88.5\%) improves substantially over any fixed topology. Per-dataset specialization adds +0.9pp, and top-2 selection adds +3.0pp more (92.4\%), closing 74.8\% of the oracle gap.
+The shared router (86.9\%) improves substantially over the best fixed topology on aligned questions (star, 83.1\%). Per-dataset specialization adds +0.7pp (87.6\%), closing 46.5\% of the gap to the oracle ceiling (92.9\%). All router numbers use top-1 selection with 5-fold cross-validation.
+
+\paragraph{Per-dataset analysis.} The router's advantage varies across datasets: on MMLU-Hard, the per-dataset router achieves 92.5\% vs.\ star's 90.1\% (+2.4pp); on StrategyQA, 86.2\% vs.\ parallel's 81.7\% (+4.5pp); on TruthfulQA, 85.6\% vs.\ star's 81.4\% (+4.2pp). The largest improvement on StrategyQA reflects that commonsense reasoning benefits most from adaptive topology selection, as the gap between best and worst fixed topology is largest (81.7\% parallel vs.\ 71.0\% sequential).
+
+\paragraph{Why routing helps.} Figure~\ref{fig:topo_spec} shows the per-topology accuracy heatmap on aligned questions. No single topology dominates: star leads on MMLU-Hard (90.1\%) and TruthfulQA (81.4\%), but parallel is best for StrategyQA (81.7\%). The oracle ceiling (${\sim}93\%$) requires selecting different topologies for different questions---exactly what the router learns to do.
+
+\paragraph{Topology agreement.} On the 633 aligned questions, 55.1\% are answered correctly by all five topologies and 7.0\% by none---routing has no impact on these 62.1\%. The router's value comes from the remaining 37.9\% where topologies disagree, particularly the 9.0\% of ``hard'' questions where only 1--2 topologies succeed (Figure~\ref{fig:topo_agreement}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.65\linewidth]{figures/fig_topo_agreement.pdf}
+\caption{Distribution of correct topologies per question (633 aligned). The router's impact concentrates on the 37.9\% where topologies disagree (1--4 correct).}\label{fig:topo_agreement}
+\end{figure}
+
+\paragraph{Routing error analysis.} The shared router selects each topology with roughly balanced frequency (16--29\%), with star most frequently selected (28.6\%). Of 83 router errors (13.1\%), 44 occur on questions where \emph{no} topology produces correct consensus---inevitable misses. Only 39 errors (6.2\%) are routing mistakes where a correct topology existed but was not selected.
+
+\paragraph{Router feature importance.} Feature group ablation (zeroing each group and measuring accuracy change, Figure~\ref{fig:feature_imp}) reveals that \emph{voting features} (majority ratio, yes/no distribution) are the most important for routing ($-2.1$pp when ablated), followed by per-agent EV signals ($-0.3$pp). Interestingly, removing EQ-related features (per-agent EQ and EQ/EV summary statistics) \emph{improves} router accuracy by up to 1.6pp, paralleling the AEIC+SG ablation finding. This suggests that evidence quality is noisy across both direct weighting and meta-level routing.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.7\linewidth]{figures/fig_feature_importance.pdf}
+\caption{Router feature group importance via leave-one-out ablation. Positive drop means accuracy decreases when ablated (feature is useful). Voting features are most important; EQ features are harmful.}\label{fig:feature_imp}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.65\linewidth]{figures/fig_topo_specialization.pdf}
+\caption{MajVote accuracy by topology and dataset on aligned questions. No single topology dominates, motivating adaptive routing.}\label{fig:topo_spec}
+\end{figure}
 
 \subsection{Signal Ablation}
 
@@ -123,6 +151,33 @@ Figure~\ref{fig:ablation} shows the contribution of each quality signal to AEIC+
 
 EC is the most critical signal ($-1.15$pp). IC and EV each contribute ${\sim}0.5$pp. Removing EQ \emph{improves} accuracy by 0.40pp---evidence quality assessment introduces noise in some domains.
 
+\subsection{Online Stackelberg Feedback}
+\label{sec:online_exp}
+
+We evaluate the online Stackelberg mechanism (Section~\ref{sec:online_sg}) on debate and hierarchical topologies, comparing standard execution against online feedback where quality signals are injected between rounds. Table~\ref{tab:online} shows results on 30 questions per dataset.
+
+\begin{table}[t]
+\caption{Online vs.\ offline Stackelberg feedback (MajVote accuracy, \%, 30 questions per dataset). Online mode injects quality signals between rounds/phases.}\label{tab:online}
+\centering\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Condition & MMLU-Hard & StrategyQA & TruthfulQA & Average \\
+\midrule
+Debate (offline) & 80.0 & 76.7 & 83.3 & 80.0 \\
+Debate (online) & \textbf{86.7} & 76.7 & 76.7 & 80.0 \\
+$\Delta$ (online$-$offline) & +6.7 & 0.0 & $-$6.7 & 0.0 \\
+\midrule
+Hierarchical (offline) & 76.7 & 80.0 & 83.3 & 80.0 \\
+Hierarchical (online) & 76.7 & 73.3 & 76.7 & 75.6 \\
+$\Delta$ (online$-$offline) & 0.0 & $-$6.7 & $-$6.7 & $-$4.4 \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+{\footnotesize Offline uses cached responses; online uses live DeepSeek-V3 calls with inter-round quality feedback.}
+\end{table}
+
+The results reveal a nuanced picture: online feedback produces a large improvement on MMLU-Hard debate (+6.7pp), where the iterative debate structure allows agents to incorporate quality assessments and refine their reasoning. However, the effect is mixed on other dataset--topology combinations, with no overall improvement on debate (80.0\% both) and a decline on hierarchical ($-4.4$pp). Expanded validation with larger matched samples ($n{=}41$--$74$) confirms the pattern: debate benefits on MMLU-Hard (+5.4pp, $n{=}74$) and StrategyQA (+2.4pp, $n{=}41$), but degrades on TruthfulQA ($-6.7$pp); hierarchical never improves ($-5.4$pp average). The degradation on TruthfulQA suggests that quality feedback may encourage over-confidence on adversarially framed questions. These results highlight that online incentive shaping is most effective when the topology supports genuine iterative refinement (debate) rather than one-directional information flow (hierarchical), and when the task rewards deeper reasoning (MMLU-Hard) rather than resisting misleading cues (TruthfulQA).
+
 \subsection{Accuracy--Incentive Trade-off}
 
-Varying $\lambda$ in Eq.~\eqref{eq:upper} confirms the Pareto frontier (Theorem~\ref{thm:ic}): $\lambda{=}0$ yields 81.9\% accuracy with IC${=}11.5\%$; $\lambda{=}1$ achieves 79.2\% accuracy with IC${=}66.5\%$; $\lambda{=}2$ reaches IC${=}83.5\%$ at 79.0\% accuracy. Moderate IC regularization ($\lambda{=}1$) achieves near-optimal accuracy with substantially improved incentive compatibility, suggesting IC constraints act as beneficial regularization.
+The optimized $\theta^*$ configurations naturally achieve high incentive compatibility without explicit IC constraints: IC rates of 98.9\% (parallel), 94.0\% (sequential), 98.4\% (star), and 100.0\% (debate). Hierarchical is the exception at 24.2\%, reflecting its elevated signal weights that prioritize multi-level aggregation over strict quality ordering. This suggests that accuracy optimization alone produces near-IC mechanisms---the Stackelberg weight structure inherently rewards higher-quality reasoning. The $\lambda$ term (Theorem~\ref{thm:ic}) provides a formal guarantee for adversarial settings but is largely redundant when agents share the same LLM backend.

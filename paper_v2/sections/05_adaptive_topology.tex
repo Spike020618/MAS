@@ -43,4 +43,4 @@ To select the optimal topology per question, we train a neural router using AEIC
 \end{equation}
 where $(c, w)$ are (correct, wrong) topology pairs, $m$ is the difficulty-adaptive margin, and $\gamma = 3$ provides focal weighting. Training uses AdamW with cosine annealing over 300 epochs, 5-fold stratified cross-validation.
 
-\paragraph{Top-2 Selection.} Rather than committing to a single topology, the router selects the two highest-scoring topologies and uses the first that produces a correct consensus (with star as fallback). This top-2 strategy achieves 92.4\% $\pm$ 0.2\% accuracy across 5 seeds, exploiting the router's high top-2 hit rate while remaining practical.
+\paragraph{Top-1 Selection.} The router selects the highest-scoring topology per question as the consensus topology. With per-dataset specialized scoring heads, this achieves 87.6\% $\pm$ 0.3\% accuracy across 5 seeds (5-fold cross-validation), compared to 83.1\% for the best fixed topology (star). Correctness labels for training use majority vote outcomes rather than Stackelberg-weighted decisions, avoiding contamination from optimized $\theta^*$ parameters.

@@ -18,7 +18,7 @@ class ConsensusConfig:
     # alignment_willingness = max(aw_floor, ic^aw_ic_exp * eq^aw_eq_exp * (aw_ev_base + aw_ev_scale*ev))
     aw_floor: float = 0.05
     aw_ic_exp: float = 1.0
-    aw_eq_exp: float = 1.0
+    aw_eq_exp: float = 0.0
     aw_ev_base: float = 0.5
     aw_ev_scale: float = 0.5
 
@@ -33,7 +33,7 @@ class ConsensusConfig:
     # historical_alignment = ha_ic*ic + ha_ec*ec + ha_eq*eq + ha_ev*ev
     ha_ic: float = 0.25
     ha_ec: float = 0.25
-    ha_eq: float = 0.25
+    ha_eq: float = 0.0
     ha_ev: float = 0.25
 
     # Stackelberg game

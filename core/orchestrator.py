@@ -46,6 +46,37 @@ DEBATE_CONTEXT = """这是第{round_num}轮讨论。上一轮各方的结论如�
 请在考虑这些不同观点后，重新进行AEIC推理。
 你可以维持或修正你的立场，但需在Inference中给出理由。"""
 
+DEBATE_CONTEXT_ONLINE = """这是第{round_num}轮讨论。上一轮各方的结论如下：
+{other_conclusions}
+你上一轮的结论是: {my_prev_conclusion}
+
+机制评估反馈（上轮表现）：
+{quality_feedback}
+高质量推理（证据具体、逻辑严密）将获得更高的共识权重。
+
+请在考虑这些不同观点后，重新进行AEIC推理。
+你可以维持或修正你的立场，但需在Inference中给出理由。"""
+
+HIERARCHICAL_SUBGROUP_ONLINE = """你所在的讨论小组中，其他成员的初步结论如下：
+{group_conclusions}
+
+机制评估反馈（独立阶段表现）：
+{quality_feedback}
+高质量推理将获得更高权重，请确保证据具体且推理链完整。
+
+请在考虑小组成员的观点后，重新进行AEIC推理。
+注意综合你的独立判断和小组讨论的启发，给出修正后的结论。"""
+
+HIERARCHICAL_SYNTHESIS_ONLINE = """各讨论小组已完成分组讨论，以下是各小组的代表性结论：
+{subgroup_summaries}
+
+机制评估反馈（分组讨论表现）：
+{quality_feedback}
+在最终综合中，推理质量更高的分析将获得更大影响力。
+
+请综合所有小组的观点，进行最终的AEIC推理。
+在Inference中权衡不同小组的分歧与共识，给出你的最终Conclusion。"""
+
 # ── Self-Correction (Paper 2 baseline) ─────────────────────────
 SELFCORRECT_CONTEXT = """这是第{round_num}轮自我修正。你上一轮的分析如下：
 
@@ -114,6 +145,22 @@ class Orchestrator:
         if self._multi:
             return self.llm.generate_aeic_with_context(question, context, persona_id=persona_id, agent_id=agent_id)
         return self.llm.generate_aeic_with_context(question, context, persona_id=persona_id)
+
+    def _compute_online_feedback(self, nodes, W, config=None):
+        """Compute interim AEIC signals and format quality feedback for injection."""
+        result = evaluate_and_decide(nodes, W, self.sim_calc,
+                                      mode="parallel",
+                                      use_stackelberg=True, config=config)
+        lines = []
+        for i in range(len(nodes)):
+            ic_i = result["ic"][i]
+            ec_i = result["ec"][i]
+            theta_i = result["theta"][i]
+            lines.append(
+                f"- 分析师{i+1}: 推理一致性={ic_i:.0%}, "
+                f"证据支持度={ec_i:.0%}, 当前权重={theta_i:.0%}"
+            )
+        return "\n".join(lines), result
 
     def run(self, question: str, mode: str, topology_W: np.ndarray,
             use_stackelberg: bool = True, **kwargs) -> Dict:
@@ -215,11 +262,11 @@ class Orchestrator:
                 leaf_nodes[idx] = aeic
                 agent_times[idx + 1] = elapsed
 
-        # Compute leaf trust to inform hub
+        # Compute leaf trust to inform hub (online Stackelberg)
         leaf_W = W[1:, 1:]
         leaf_result = evaluate_and_decide(leaf_nodes, leaf_W, self.sim_calc,
                                           mode="parallel",
-                                          use_stackelberg=False)
+                                          use_stackelberg=use_stackelberg)
         leaf_trust = leaf_result["trust"]
 
         # Phase 2: Hub receives leaf conclusions + trust scores
@@ -252,10 +299,16 @@ class Orchestrator:
     def _run_debate(self, question: str, W: np.ndarray,
                     use_stackelberg: bool,
                     max_rounds: int = 3, **kwargs) -> Dict:
-        """P4: 多轮辩论 (σ: {C_j^(t-1)} → A_i^(t))"""
+        """P4: 多轮辩论 (σ: {C_j^(t-1)} → A_i^(t))
+
+        When online=True, computes interim AEIC signals between rounds and
+        injects quality feedback into agent prompts (online Stackelberg).
+        """
         max_rounds = kwargs.get("max_rounds", max_rounds)
+        online = kwargs.get("online", False)
         all_rounds = []
         all_agent_times = []
+        online_feedback_history = []
 
         # Round 1: Independent (parallel)
         nodes = [None] * self.n_agents
@@ -276,13 +329,22 @@ class Orchestrator:
         all_rounds.append(nodes)
         all_agent_times.append(round_times)
 
-        # Rounds 2+: 拓扑约束
+        # Rounds 2+: 拓扑约束 (with optional online feedback)
         for t in range(2, max_rounds + 1):
             prev_nodes = all_rounds[-1]
+
+            # Online Stackelberg: compute interim signals and quality feedback
+            quality_feedback_text = ""
+            if online:
+                quality_feedback_text, interim_result = \
+                    self._compute_online_feedback(prev_nodes, W)
+                online_feedback_history.append(interim_result)
+
             new_nodes = [None] * self.n_agents
             rt = [0.0] * self.n_agents
 
-            def _gen_debate(i, _prev=prev_nodes, _t=t, _W=W):
+            def _gen_debate(i, _prev=prev_nodes, _t=t, _W=W,
+                            _online=online, _fb=quality_feedback_text):
                 persona_id = i % len(AGENT_PERSONAS)
                 t0 = _time.time()
                 other_lines = []
@@ -294,11 +356,20 @@ class Orchestrator:
                     other_lines.append("（无可见邻居结论）")
                 other_text = "\n".join(other_lines)
                 my_prev_c = _prev[i].get("C", "")
-                context = DEBATE_CONTEXT.format(
-                    round_num=_t,
-                    other_conclusions=other_text,
-                    my_prev_conclusion=my_prev_c,
-                )
+
+                if _online and _fb:
+                    context = DEBATE_CONTEXT_ONLINE.format(
+                        round_num=_t,
+                        other_conclusions=other_text,
+                        my_prev_conclusion=my_prev_c,
+                        quality_feedback=_fb,
+                    )
+                else:
+                    context = DEBATE_CONTEXT.format(
+                        round_num=_t,
+                        other_conclusions=other_text,
+                        my_prev_conclusion=my_prev_c,
+                    )
                 aeic = self._generate_aeic_ctx(question, context, persona_id=persona_id, agent_id=i)
                 return i, aeic, _time.time() - t0
 
@@ -318,7 +389,6 @@ class Orchestrator:
             if prev_stances == cur_stances:
                 break
 
-        # Aggregate agent_times: sum across rounds per agent
         agent_times = [0.0] * self.n_agents
         for rt in all_agent_times:
             for i in range(self.n_agents):
@@ -333,12 +403,20 @@ class Orchestrator:
         result["num_rounds"] = len(all_rounds)
         result["all_rounds"] = all_rounds
         result["agent_times"] = agent_times
+        if online:
+            result["online_feedback_history"] = online_feedback_history
         return result
 
     def _run_hierarchical(self, question: str, W: np.ndarray,
                           use_stackelberg: bool, **kwargs) -> Dict:
-        """P5: 总分总 — 独立→分组讨论→全局综合"""
+        """P5: 总分总 — 独立→分组讨论→全局综合
+
+        When online=True, computes interim signals between phases and injects
+        quality feedback into agent prompts (online Stackelberg).
+        """
+        online = kwargs.get("online", False)
         all_agent_times = [[0.0] * self.n_agents for _ in range(3)]
+        online_feedback_history = []
 
         # Phase 1 (总): All agents independently generate AEIC
         phase1_nodes = [None] * self.n_agents
@@ -356,12 +434,19 @@ class Orchestrator:
                 phase1_nodes[idx] = aeic
                 all_agent_times[0][idx] = elapsed
 
+        # Online feedback after Phase 1
+        p1_feedback_text = ""
+        if online:
+            p1_feedback_text, p1_interim = \
+                self._compute_online_feedback(phase1_nodes, W)
+            online_feedback_history.append(p1_interim)
+
         # Phase 2 (分): Split into subgroups for focused discussion
         mid = self.n_agents // 2
         groups = [list(range(mid)), list(range(mid, self.n_agents))]
         phase2_nodes = [None] * self.n_agents
 
-        def _gen_subgroup(i, group_members):
+        def _gen_subgroup(i, group_members, _online=online, _fb=p1_feedback_text):
             persona_id = i % len(AGENT_PERSONAS)
             t0 = _time.time()
             other_lines = []
@@ -369,8 +454,14 @@ class Orchestrator:
                 if j != i:
                     c = phase1_nodes[j].get("C", "")
                     other_lines.append(f"- 成员{j+1}: {c}")
-            context = HIERARCHICAL_SUBGROUP_CONTEXT.format(
-                group_conclusions="\n".join(other_lines))
+
+            if _online and _fb:
+                context = HIERARCHICAL_SUBGROUP_ONLINE.format(
+                    group_conclusions="\n".join(other_lines),
+                    quality_feedback=_fb)
+            else:
+                context = HIERARCHICAL_SUBGROUP_CONTEXT.format(
+                    group_conclusions="\n".join(other_lines))
             aeic = self._generate_aeic_ctx(question, context, persona_id=persona_id, agent_id=i)
             return i, aeic, _time.time() - t0
 
@@ -384,6 +475,13 @@ class Orchestrator:
                 phase2_nodes[idx] = aeic
                 all_agent_times[1][idx] = elapsed
 
+        # Online feedback after Phase 2
+        p2_feedback_text = ""
+        if online:
+            p2_feedback_text, p2_interim = \
+                self._compute_online_feedback(phase2_nodes, W)
+            online_feedback_history.append(p2_interim)
+
         # Phase 3 (总): All agents see subgroup summaries and synthesize
         subgroup_lines = []
         for g_idx, group in enumerate(groups):
@@ -394,11 +492,16 @@ class Orchestrator:
 
         phase3_nodes = [None] * self.n_agents
 
-        def _gen_synthesis(i):
+        def _gen_synthesis(i, _online=online, _fb=p2_feedback_text):
             persona_id = i % len(AGENT_PERSONAS)
             t0 = _time.time()
-            context = HIERARCHICAL_SYNTHESIS_CONTEXT.format(
-                subgroup_summaries=subgroup_text)
+            if _online and _fb:
+                context = HIERARCHICAL_SYNTHESIS_ONLINE.format(
+                    subgroup_summaries=subgroup_text,
+                    quality_feedback=_fb)
+            else:
+                context = HIERARCHICAL_SYNTHESIS_CONTEXT.format(
+                    subgroup_summaries=subgroup_text)
             aeic = self._generate_aeic_ctx(question, context, persona_id=persona_id, agent_id=i)
             return i, aeic, _time.time() - t0
 
@@ -419,6 +522,8 @@ class Orchestrator:
         result["mode"] = "hierarchical"
         result["phases"] = [phase1_nodes, phase2_nodes, phase3_nodes]
         result["agent_times"] = agent_times
+        if online:
+            result["online_feedback_history"] = online_feedback_history
         return result
 
     def _run_selfcorrect(self, question: str, W: np.ndarray,

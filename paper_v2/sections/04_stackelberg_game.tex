@@ -76,4 +76,13 @@ The Stackelberg game is solved via bilevel optimization:
     \textbf{Lower (Followers):} \quad & w_i = f(\tau_i; \theta) \quad \forall i \label{eq:lower}
 \end{align}
 
-The lower-level problem is deterministic given $\theta$ (agents' AEIC outputs are fixed offline), reducing to single-level optimization implementable via differential evolution~\cite{storn1997differential} with population size 10 and 100 generations.
+The lower-level problem is deterministic given $\theta$ (agents' AEIC outputs are fixed offline), reducing to single-level optimization implementable via differential evolution~\cite{storn1997differential}. Per-topology $\theta^*_T$ is optimized with population size 16 (1$\times$ the number of parameters) and 30 generations, then evaluated via 5-fold stratified cross-validation to prevent train/test leakage.
+
+\subsection{Online Stackelberg Extension}
+\label{sec:online_sg}
+
+In multi-round topologies (debate, hierarchical), the mechanism operates \emph{online}: between rounds $t$ and $t{+}1$, it computes interim AEIC signals from round-$t$ outputs, runs the Stackelberg game to obtain current weights $w_i^{(t)}$, and injects quality feedback into agent prompts:
+\begin{equation}
+    \text{context}_i^{(t+1)} = \text{context}_i^{(t+1)} \cup \{(\text{IC}_i^{(t)}, \text{EC}_i^{(t)}, w_i^{(t)})\}
+\end{equation}
+This transforms the game from post-hoc reweighting to real-time incentive shaping: agents observe their current quality assessment and can adjust reasoning effort accordingly. The star topology is inherently online---leaf trust scores computed via Stackelberg are injected into the hub's synthesis context.

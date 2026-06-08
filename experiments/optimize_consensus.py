@@ -176,14 +176,12 @@ def optimize(signals_paths, init_config_path: str = None,
 
     questions = all_questions
 
-    # Baseline: default config
     default_cfg = ConsensusConfig()
     default_result = evaluate_config(questions, default_cfg, n_agents)
     default_ic = compute_ic_metric(questions, default_cfg, n_agents)
     print(f"Default config:  acc={default_result['accuracy']:.1%}  "
           f"IC={default_ic:.1%}  ({default_result['correct']}/{default_result['total']})")
 
-    # Init from file if provided
     if init_config_path:
         init_cfg = ConsensusConfig.load(init_config_path)
         init_result = evaluate_config(questions, init_cfg, n_agents)
@@ -219,7 +217,6 @@ def optimize(signals_paths, init_config_path: str = None,
     print(f"Acc improvement:  {delta:+.1%}")
     print(f"IC  improvement:  {best_ic - default_ic:+.1%}")
 
-    # Print parameter comparison
     print(f"\n{'Parameter':<16} {'Default':>10} {'Optimized':>10} {'Change':>10}")
     print(f"{'-'*46}")
     for name, d_val, o_val in zip(
@@ -230,7 +227,6 @@ def optimize(signals_paths, init_config_path: str = None,
         ch = o_val - d_val
         print(f"{name:<16} {d_val:>10.4f} {o_val:>10.4f} {ch:>+10.4f}")
 
-    # Save
     if out_path is None:
         out_path = os.path.join("results", "configs", "optimized_config.json")
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
@@ -248,6 +244,139 @@ def optimize(signals_paths, init_config_path: str = None,
     }
 
 
+def optimize_cv(signals_paths, out_path: str = None,
+                lambda_ic: float = 0.0, n_folds: int = 5, seed: int = 42):
+    """Cross-validated θ* optimization. Reports held-out test accuracy."""
+    from sklearn.model_selection import StratifiedKFold
+    from scipy.optimize import differential_evolution
+
+    if isinstance(signals_paths, str):
+        signals_paths = [signals_paths]
+
+    all_questions = []
+    n_agents = None
+    train_datasets = []
+    for sp in signals_paths:
+        with open(sp, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        all_questions.extend(data["questions"])
+        n_agents = data["meta"]["n_agents"]
+        train_datasets.append(data["meta"]["dataset"])
+
+    questions = all_questions
+    labels = [q["ground_truth"] for q in questions]
+
+    default_cfg = ConsensusConfig()
+    default_result = evaluate_config(questions, default_cfg, n_agents)
+    print(f"Default config (all data): acc={default_result['accuracy']:.1%}")
+
+    skf = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=seed)
+    bounds = ConsensusConfig.bounds()
+
+    fold_results = []
+    fold_configs = []
+
+    for fold_i, (train_idx, test_idx) in enumerate(skf.split(questions, labels)):
+        train_q = [questions[i] for i in train_idx]
+        test_q = [questions[i] for i in test_idx]
+
+        print(f"\n{'='*50}")
+        print(f"Fold {fold_i+1}/{n_folds}: train={len(train_q)}, test={len(test_q)}")
+
+        result = differential_evolution(
+            objective, bounds,
+            args=(train_q, n_agents, lambda_ic),
+            seed=seed + fold_i,
+            maxiter=50,
+            popsize=8,
+            tol=1e-3,
+            polish=False,
+            init="latinhypercube",
+            workers=1,
+            disp=False,
+        )
+
+        fold_cfg = ConsensusConfig.from_vector(result.x)
+        fold_configs.append(fold_cfg)
+
+        train_res = evaluate_config(train_q, fold_cfg, n_agents)
+        test_res = evaluate_config(test_q, fold_cfg, n_agents)
+        train_ic = compute_ic_metric(train_q, fold_cfg, n_agents)
+        test_ic = compute_ic_metric(test_q, fold_cfg, n_agents)
+
+        print(f"  Train: acc={train_res['accuracy']:.1%}  IC={train_ic:.1%}")
+        print(f"  Test:  acc={test_res['accuracy']:.1%}  IC={test_ic:.1%}")
+
+        fold_results.append({
+            "fold": fold_i + 1,
+            "train_acc": train_res["accuracy"],
+            "test_acc": test_res["accuracy"],
+            "train_ic": train_ic,
+            "test_ic": test_ic,
+            "train_size": len(train_q),
+            "test_size": len(test_q),
+        })
+
+    avg_train = np.mean([r["train_acc"] for r in fold_results])
+    avg_test = np.mean([r["test_acc"] for r in fold_results])
+    std_test = np.std([r["test_acc"] for r in fold_results])
+    avg_train_ic = np.mean([r["train_ic"] for r in fold_results])
+    avg_test_ic = np.mean([r["test_ic"] for r in fold_results])
+
+    print(f"\n{'='*50}")
+    print(f"CV Summary ({n_folds}-fold):")
+    print(f"  Train acc: {avg_train:.1%}")
+    print(f"  Test  acc: {avg_test:.1%} ± {std_test:.1%}")
+    print(f"  Train IC:  {avg_train_ic:.1%}")
+    print(f"  Test  IC:  {avg_test_ic:.1%}")
+    print(f"  Overfit gap: {avg_train - avg_test:+.1%}")
+
+    print(f"\nTraining final model on all {len(questions)} questions...")
+    result_full = differential_evolution(
+        objective, bounds,
+        args=(questions, n_agents, lambda_ic),
+        seed=seed,
+        maxiter=60,
+        popsize=8,
+        tol=1e-3,
+        polish=False,
+        init="latinhypercube",
+        workers=1,
+        disp=False,
+    )
+    final_cfg = ConsensusConfig.from_vector(result_full.x)
+    final_result = evaluate_config(questions, final_cfg, n_agents)
+
+    if out_path is None:
+        out_path = os.path.join("results", "configs", "optimized_config.json")
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    final_cfg.save(out_path)
+
+    summary = {
+        "train_datasets": train_datasets,
+        "n_folds": n_folds,
+        "cv_train_acc": avg_train,
+        "cv_test_acc": avg_test,
+        "cv_test_std": std_test,
+        "cv_train_ic": avg_train_ic,
+        "cv_test_ic": avg_test_ic,
+        "overfit_gap": avg_train - avg_test,
+        "full_train_acc": final_result["accuracy"],
+        "default_acc": default_result["accuracy"],
+        "lambda_ic": lambda_ic,
+        "fold_results": fold_results,
+        "config_path": out_path,
+    }
+
+    summary_path = out_path.replace(".json", "_cv_summary.json")
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2)
+    print(f"Saved config to {out_path}")
+    print(f"Saved CV summary to {summary_path}")
+
+    return final_cfg, summary
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Optimize consensus parameters on cached signals")
@@ -259,9 +388,16 @@ def main():
                         help="Output config path (default: results/configs/optimized_config.json)")
     parser.add_argument("--lambda_ic", type=float, default=0.0,
                         help="IC incentive weight (0=pure accuracy, >0=accuracy+λ·IC)")
+    parser.add_argument("--cv", action="store_true",
+                        help="Use cross-validated optimization (reports held-out accuracy)")
+    parser.add_argument("--n_folds", type=int, default=5,
+                        help="Number of CV folds (default: 5)")
     args = parser.parse_args()
 
-    optimize(args.signals, args.init, args.out, args.lambda_ic)
+    if args.cv:
+        optimize_cv(args.signals, args.out, args.lambda_ic, args.n_folds)
+    else:
+        optimize(args.signals, args.init, args.out, args.lambda_ic)
 
 
 if __name__ == "__main__":

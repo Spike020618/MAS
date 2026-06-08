@@ -135,9 +135,14 @@ def aeic_default(questions, n_agents):
     return result["correct"], result["total"]
 
 
-def aeic_optimized(questions, n_agents, topo):
+def aeic_optimized(questions, n_agents, topo, use_cv=True):
     """AEIC + optimized θ* for this topology."""
-    cfg_path = os.path.join(CONFIGS_DIR, f"opt_{topo}.json")
+    if use_cv:
+        cfg_path = os.path.join(CONFIGS_DIR, f"opt_{topo}_cv.json")
+    else:
+        cfg_path = os.path.join(CONFIGS_DIR, f"opt_{topo}.json")
+    if not os.path.exists(cfg_path):
+        cfg_path = os.path.join(CONFIGS_DIR, f"opt_{topo}.json")
     if not os.path.exists(cfg_path):
         return 0, 0
     cfg = ConsensusConfig.load(cfg_path)
@@ -146,37 +151,42 @@ def aeic_optimized(questions, n_agents, topo):
     return result["correct"], result["total"]
 
 
-def oracle_any_topo(all_data, n_q=300):
-    """Oracle: correct if ANY topology gets it right (with optimized θ*)."""
-    correct = total = 0
-    for q_idx in range(n_q):
-        any_correct = False
-        valid = True
-        for topo in TOPOS:
-            if topo not in all_data or all_data[topo] is None:
-                valid = False
-                break
-            questions = all_data[topo]["questions"]
-            if q_idx >= len(questions):
-                valid = False
-                break
-            q = questions[q_idx]
-            if "signals" not in q:
-                valid = False
-                break
+def _question_key(q):
+    """Stable key for matching the same question across topology files."""
+    return q.get("question", "")[:200]
 
-            n_agents = all_data[topo]["meta"]["n_agents"]
-            cfg_path = os.path.join(CONFIGS_DIR, f"opt_{topo}.json")
-            if os.path.exists(cfg_path):
-                cfg = ConsensusConfig.load(cfg_path)
-            else:
-                cfg = ConsensusConfig()
-            res = evaluate_config([q], cfg, n_agents)
-            if res["correct"] > 0:
+
+def oracle_any_topo_majvote(all_data, n_q=300):
+    """Oracle: correct if ANY topology's majority vote is correct.
+    Matches questions across topologies by text content, not by index.
+    """
+    topo_indices = {}
+    for topo in TOPOS:
+        if topo not in all_data or all_data[topo] is None:
+            return 0, 0
+        topo_indices[topo] = {}
+        for i, q in enumerate(all_data[topo]["questions"][:n_q]):
+            if "signals" in q:
+                topo_indices[topo][_question_key(q)] = i
+
+    common_keys = set(topo_indices[TOPOS[0]].keys())
+    for topo in TOPOS[1:]:
+        common_keys &= set(topo_indices[topo].keys())
+
+    correct = total = 0
+    for q_key in sorted(common_keys):
+        any_correct = False
+        par_idx = topo_indices["parallel"][q_key]
+        gt = all_data["parallel"]["questions"][par_idx]["ground_truth"].lower()
+
+        for topo in TOPOS:
+            idx = topo_indices[topo][q_key]
+            q = all_data[topo]["questions"][idx]
+            stances = [s.lower() for s in q["signals"]["stances"]]
+            counts = Counter(stances)
+            if counts and counts.most_common(1)[0][0] == gt:
                 any_correct = True
 
-        if not valid:
-            continue
         if any_correct:
             correct += 1
         total += 1
@@ -281,7 +291,7 @@ def main():
             print(f"  AgentVerse (solver):       {c_av}/{t_av} = {c_av/t_av*100:.1f}%")
 
         # --- 7. Oracle (any topo) ---
-        c, t = oracle_any_topo(all_data)
+        c, t = oracle_any_topo_majvote(all_data)
         results["Oracle_5topo"] = (c, t)
         print(f"  Oracle (5-topo):           {c}/{t} = {c/t*100:.1f}%")
 
