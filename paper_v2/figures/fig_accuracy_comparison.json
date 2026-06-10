@@ -1,0 +1,24 @@
+{
+  "description": "Three-condition accuracy comparison (n=50)",
+  "conditions": [
+    "debate_offline",
+    "debate_online",
+    "debate_dynamic"
+  ],
+  "datasets": [
+    "MMLU-Hard",
+    "StrategyQA",
+    "TruthfulQA"
+  ],
+  "accuracy": {
+    "MMLU-Hard|debate_offline": 86.0,
+    "MMLU-Hard|debate_online": 86.0,
+    "MMLU-Hard|debate_dynamic": 94.0,
+    "StrategyQA|debate_offline": 78.0,
+    "StrategyQA|debate_online": 74.0,
+    "StrategyQA|debate_dynamic": 74.0,
+    "TruthfulQA|debate_offline": 88.0,
+    "TruthfulQA|debate_online": 86.0,
+    "TruthfulQA|debate_dynamic": 86.0
+  }
+}

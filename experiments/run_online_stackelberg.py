@@ -1,18 +1,22 @@
 """
-Online Stackelberg Experiment — Compare debate with and without online quality feedback.
+Online Stackelberg A/B Experiment — Fair comparison with live API calls.
 
-For EFFICIENCY, we only make new API calls for online conditions. Offline
-conditions are computed from existing cached signals (no new API calls needed).
+Both online and offline conditions use fresh API calls to eliminate
+cached-vs-live confounding. The only difference is whether quality
+feedback is injected between rounds.
 
-The comparison is:
-1. debate_offline:   Standard 3-round debate from cached signals → MajVote + SG accuracy
-2. debate_online:    New API calls with quality feedback injected between rounds
-3. hier_offline:     Standard hierarchical from cached signals
-4. hier_online:      New API calls with quality feedback between phases
+Conditions:
+  debate_offline:  3-round debate, no feedback injection (live API)
+  debate_online:   3-round debate, quality feedback between rounds (live API)
+  hier_offline:    3-phase hierarchical, no feedback (live API)
+  hier_online:     3-phase hierarchical, quality feedback between phases (live API)
+
+Resume support: completed entries are tracked by (dataset, condition, question_id).
+Errors are saved but NOT counted as done — they will be retried on re-run.
 
 Usage:
-  python experiments/run_online_stackelberg.py --n_samples 30 --dataset StrategyQA
-  python experiments/run_online_stackelberg.py --n_samples 30 --dataset all
+  python experiments/run_online_stackelberg.py --dataset all --n_samples 50
+  python experiments/run_online_stackelberg.py --dataset MMLU-Hard --conditions debate_online debate_offline
 """
 from __future__ import annotations
 
@@ -21,7 +25,7 @@ import json
 import os
 import sys
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 
 import numpy as np
 
@@ -35,104 +39,71 @@ from core.trust import extract_stance, majority_vote
 from experiments.exp_orchestrator import load_questions
 from experiments.collect_cache_topo import get_topology_W
 
-
 DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
+CONDITIONS = [
+    # (topology, online, dynamic, condition_name)
+    ("debate",       False, False, "debate_offline"),
+    ("debate",       True,  False, "debate_online"),
+    ("debate",       False, True,  "debate_dynamic"),
+    ("hierarchical", False, False, "hier_offline"),
+    ("hierarchical", True,  False, "hier_online"),
+]
 
 
-def compute_offline_accuracy(dataset, topo, n_samples, seed=42):
-    """Compute offline accuracy from cached signals (no API calls)."""
-    signals_path = f"results/signals/{dataset}_{topo}.json"
-    if not os.path.exists(signals_path):
-        print(f"  WARNING: {signals_path} not found, skipping offline")
-        return None
+def _save_results(results, path):
+    tmp = path + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+    os.replace(tmp, path)
 
-    with open(signals_path) as f:
-        data = json.load(f)
 
-    questions = load_questions(dataset, n_samples, seed=seed)
-    q_texts = {q["question"][:200] for q in questions}
+def _load_results(path):
+    if os.path.exists(path):
+        with open(path) as f:
+            return json.load(f)
+    return {"meta": {}, "experiments": []}
 
-    correct_maj = 0
-    total = 0
-    for q in data["questions"][:n_samples]:
-        if "signals" not in q:
-            continue
-        gt = q["ground_truth"].lower()
-        stances = q["signals"]["stances"]
-        counts = Counter(s.lower() for s in stances)
-        maj = counts.most_common(1)[0][0]
-        if maj == gt:
-            correct_maj += 1
-        total += 1
 
-    return {
-        "maj_acc": correct_maj / max(total, 1),
-        "total": total,
-        "correct": correct_maj,
+def _get_done_keys(results):
+    """Return set of (dataset, condition, question_id) for successfully completed entries."""
+    done = set()
+    for exp in results.get("experiments", []):
+        if "error" not in exp:
+            done.add((exp["dataset"], exp["condition"], exp["question_id"]))
+    return done
+
+
+def run_experiment(datasets, conditions, n_samples, n_agents, out_dir, seed=42):
+    os.makedirs(out_dir, exist_ok=True)
+    results_path = os.path.join(out_dir, "online_ab_results.json")
+
+    results = _load_results(results_path)
+    results["meta"] = {
+        "n_agents": n_agents, "seed": seed, "n_samples": n_samples,
+        "design": "A/B with live API calls for all conditions",
     }
 
-
-def run_online_experiment(datasets, n_samples, n_agents, out_dir, seed=42):
-    """Run online-only experiment with real API calls."""
-    os.makedirs(out_dir, exist_ok=True)
-    results_path = os.path.join(out_dir, "online_stackelberg_results.json")
-
-    if os.path.exists(results_path):
-        with open(results_path) as f:
-            all_results = json.load(f)
-    else:
-        all_results = {
-            "meta": {"n_agents": n_agents, "seed": seed, "n_samples": n_samples},
-            "offline": {},
-            "online_experiments": [],
-        }
-
-    done_keys = set()
-    for exp in all_results.get("online_experiments", []):
-        done_keys.add((exp["dataset"], exp["condition"], exp["question_id"]))
-
-    # Phase 1: Compute offline baselines from cached signals (instant)
-    print("="*60)
-    print("Phase 1: Computing offline baselines from cached signals")
-    print("="*60)
-    for dataset in datasets:
-        for topo in ["debate", "hierarchical"]:
-            key = f"{dataset}_{topo}"
-            result = compute_offline_accuracy(dataset, topo, n_samples, seed)
-            if result:
-                all_results["offline"][key] = result
-                print(f"  {key}: MajVote={result['maj_acc']:.1%} ({result['correct']}/{result['total']})")
-
-    _save_results(all_results, results_path)
-
-    # Phase 2: Run online conditions with real API calls
-    print(f"\n{'='*60}")
-    print("Phase 2: Running online experiments with API calls")
-    print(f"{'='*60}")
+    done_keys = _get_done_keys(results)
+    print(f"Loaded {len(done_keys)} completed entries from {results_path}")
 
     pool = MultiLLMPool()
     sim_calc = SimilarityCalculator(method="embedding")
     orch = Orchestrator(pool, sim_calc, n_agents=n_agents)
 
-    online_conditions = [
-        ("debate", True, "debate_online"),
-        ("hierarchical", True, "hierarchical_online"),
-    ]
-
     total_new = 0
     for dataset in datasets:
         questions = load_questions(dataset, n_samples, seed=seed)
 
-        for topo, online, condition in online_conditions:
+        for topo, online, dynamic, condition in conditions:
             n_done = sum(1 for k in done_keys
                          if k[0] == dataset and k[1] == condition)
             n_todo = len(questions) - n_done
             if n_todo <= 0:
-                print(f"\n  {dataset}/{condition}: all done, skipping")
+                print(f"\n  {dataset}/{condition}: all {len(questions)} done, skipping")
                 continue
 
             W = get_topology_W(topo, n_agents)
-            print(f"\n  --- {dataset}/{condition} ({n_done} done, {n_todo} todo) ---")
+            print(f"\n  --- {dataset}/{condition} ({n_done} done, {n_todo} remaining) ---")
 
             for q_idx, q_item in enumerate(questions):
                 if (dataset, condition, q_idx) in done_keys:
@@ -145,8 +116,8 @@ def run_online_experiment(datasets, n_samples, n_agents, out_dir, seed=42):
                     t0 = time.time()
                     result = orch.run(
                         question, mode=topo, topology_W=W,
-                        use_stackelberg=True, online=True,
-                        max_rounds=3,
+                        use_stackelberg=True, online=online,
+                        dynamic=dynamic, max_rounds=3,
                     )
                     elapsed = time.time() - t0
 
@@ -158,6 +129,7 @@ def run_online_experiment(datasets, n_samples, n_agents, out_dir, seed=42):
                     exp_entry = {
                         "dataset": dataset,
                         "condition": condition,
+                        "topology": topo,
                         "question_id": q_idx,
                         "question": question[:200],
                         "ground_truth": gt,
@@ -165,160 +137,151 @@ def run_online_experiment(datasets, n_samples, n_agents, out_dir, seed=42):
                         "maj_decision": maj_decision,
                         "sg_correct": decision == gt,
                         "maj_correct": maj_decision == gt,
+                        "stances": stances,
                         "num_rounds": result.get("num_rounds", 1),
                         "elapsed_s": round(elapsed, 1),
                         "n_feedback_rounds": len(result.get("online_feedback_history", [])),
                     }
+                    if dynamic:
+                        dyn_hist = result.get("dynamics_history", [])
+                        exp_entry["dynamics_history"] = dyn_hist
+                        exp_entry["dynamic_states"] = [
+                            d["state"] for d in dyn_hist]
 
-                    all_results["online_experiments"].append(exp_entry)
+                    results["experiments"].append(exp_entry)
                     done_keys.add((dataset, condition, q_idx))
                     total_new += 1
 
-                    ok = "OK" if decision == gt else "WRONG"
+                    ok = "OK" if maj_decision == gt else "WRONG"
                     print(f"    [{q_idx+1}/{len(questions)}] {ok} "
-                          f"({elapsed:.1f}s) SG={decision} Maj={maj_decision} GT={gt}")
+                          f"({elapsed:.1f}s) Maj={maj_decision} SG={decision} GT={gt}")
 
                 except Exception as e:
                     print(f"    [{q_idx+1}/{len(questions)}] ERROR: {e}")
-                    all_results["online_experiments"].append({
+                    results["experiments"].append({
                         "dataset": dataset,
                         "condition": condition,
+                        "topology": topo,
                         "question_id": q_idx,
                         "question": question[:200],
                         "ground_truth": gt,
                         "error": str(e),
-                        "sg_correct": False,
-                        "maj_correct": False,
                     })
-                    done_keys.add((dataset, condition, q_idx))
                     total_new += 1
 
                 if total_new % 3 == 0:
-                    _save_results(all_results, results_path)
+                    _save_results(results, results_path)
 
     pool.close()
-    _save_results(all_results, results_path)
-    print(f"\nTotal new API experiments: {total_new}")
+    _save_results(results, results_path)
+    print(f"\nTotal new entries: {total_new}")
 
-    print_summary(all_results)
-    return all_results
-
-
-def _save_results(results, path):
-    tmp = path + ".tmp"
-    with open(tmp, "w") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
-    os.replace(tmp, path)
+    print_summary(results)
+    return results
 
 
 def print_summary(results):
-    """Print comparison summary."""
-    print(f"\n{'='*60}")
-    print("SUMMARY: Online vs Offline Stackelberg")
-    print(f"{'='*60}")
+    print(f"\n{'='*70}")
+    print("SUMMARY: Online vs Offline Stackelberg (A/B, live API)")
+    print(f"{'='*70}")
 
-    from collections import defaultdict
-    online_stats = defaultdict(lambda: {"sg_correct": 0, "maj_correct": 0, "total": 0})
-
-    for exp in results.get("online_experiments", []):
+    stats = defaultdict(lambda: {"maj_correct": 0, "sg_correct": 0, "total": 0})
+    for exp in results.get("experiments", []):
         if "error" in exp:
             continue
         key = (exp["dataset"], exp["condition"])
-        online_stats[key]["total"] += 1
-        if exp.get("sg_correct"):
-            online_stats[key]["sg_correct"] += 1
+        stats[key]["total"] += 1
         if exp.get("maj_correct"):
-            online_stats[key]["maj_correct"] += 1
+            stats[key]["maj_correct"] += 1
+        if exp.get("sg_correct"):
+            stats[key]["sg_correct"] += 1
 
-    datasets = sorted(set(k[0] for k in online_stats.keys()) |
-                       set(k.split("_")[0] for k in results.get("offline", {}).keys()))
+    datasets = sorted(set(k[0] for k in stats.keys()))
     if not datasets:
-        datasets = DATASETS
+        print("  No valid results yet.")
+        return
 
     for topo in ["debate", "hierarchical"]:
+        off_cond = f"{topo}_offline" if topo == "debate" else "hier_offline"
+        on_cond = f"{topo}_online" if topo == "debate" else "hier_online"
+        dyn_cond = f"{topo}_dynamic" if topo == "debate" else None
+
         print(f"\n--- {topo.upper()} ---")
-        header = f"{'Metric':<20}"
+        header = f"{'Condition':<20}"
         for ds in datasets:
             header += f" {ds:>12}"
         header += f" {'Average':>10}"
         print(header)
         print("-" * len(header))
 
-        # Offline MajVote
-        line = f"{'Offline MajVote':<20}"
-        off_accs = []
-        for ds in datasets:
-            key = f"{ds}_{topo}"
-            off = results.get("offline", {}).get(key)
-            if off:
-                acc = off["maj_acc"] * 100
-                line += f" {acc:>11.1f}%"
-                off_accs.append(acc)
-            else:
-                line += f" {'---':>12}"
-        if off_accs:
-            line += f" {sum(off_accs)/len(off_accs):>9.1f}%"
-        print(line)
+        cond_labels = [(off_cond, "Offline (no fb)"),
+                       (on_cond, "Online (static)")]
+        if dyn_cond:
+            cond_labels.append((dyn_cond, "Dynamic (adaptive)"))
 
-        # Online MajVote
-        line = f"{'Online MajVote':<20}"
-        on_maj_accs = []
-        for ds in datasets:
-            s = online_stats.get((ds, f"{topo}_online"))
-            if s and s["total"] > 0:
-                acc = s["maj_correct"] / s["total"] * 100
-                line += f" {acc:>11.1f}%"
-                on_maj_accs.append(acc)
-            else:
-                line += f" {'---':>12}"
-        if on_maj_accs:
-            line += f" {sum(on_maj_accs)/len(on_maj_accs):>9.1f}%"
-        print(line)
+        for cond, label in cond_labels:
+            line = f"{label:<20}"
+            accs = []
+            for ds in datasets:
+                s = stats.get((ds, cond))
+                if s and s["total"] > 0:
+                    acc = s["maj_correct"] / s["total"] * 100
+                    line += f" {acc:>10.1f}% "
+                    accs.append(acc)
+                else:
+                    line += f" {'---':>12}"
+            if accs:
+                line += f" {sum(accs)/len(accs):>9.1f}%"
+            print(line)
 
-        # Online SG
-        line = f"{'Online SG-weighted':<20}"
-        on_sg_accs = []
-        for ds in datasets:
-            s = online_stats.get((ds, f"{topo}_online"))
-            if s and s["total"] > 0:
-                acc = s["sg_correct"] / s["total"] * 100
-                line += f" {acc:>11.1f}%"
-                on_sg_accs.append(acc)
-            else:
-                line += f" {'---':>12}"
-        if on_sg_accs:
-            line += f" {sum(on_sg_accs)/len(on_sg_accs):>9.1f}%"
-        print(line)
+        # Deltas
+        for ref_cond, ref_label, cmp_cond, cmp_label in [
+            (off_cond, "off", on_cond, "on"),
+            (off_cond, "off", dyn_cond, "dyn") if dyn_cond else (None,)*4,
+        ]:
+            if ref_cond is None:
+                continue
+            line = f"{'Δ (' + cmp_label + ' - ' + ref_label + ')':<20}"
+            for ds in datasets:
+                s_ref = stats.get((ds, ref_cond))
+                s_cmp = stats.get((ds, cmp_cond))
+                if s_ref and s_cmp and s_ref["total"] > 0 and s_cmp["total"] > 0:
+                    d = (s_cmp["maj_correct"]/s_cmp["total"] - s_ref["maj_correct"]/s_ref["total"]) * 100
+                    line += f" {d:>+10.1f}pp"
+                else:
+                    line += f" {'---':>12}"
+            print(line)
 
-        # Delta (online MajVote - offline MajVote)
-        line = f"{'Δ MajVote (on-off)':<20}"
-        deltas = []
-        for i, ds in enumerate(datasets):
-            if i < len(off_accs) and i < len(on_maj_accs):
-                d = on_maj_accs[i] - off_accs[i]
-                line += f" {d:>+10.1f}pp"
-                deltas.append(d)
-            else:
-                line += f" {'---':>12}"
-        if deltas:
-            line += f" {sum(deltas)/len(deltas):>+8.1f}pp"
-        print(line)
-
+    # Error count
+    n_errors = sum(1 for e in results.get("experiments", []) if "error" in e)
+    if n_errors > 0:
+        print(f"\n  ({n_errors} entries had errors and will be retried on next run)")
     print()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Online Stackelberg Experiment")
-    parser.add_argument("--dataset", default="StrategyQA",
+    parser = argparse.ArgumentParser(description="Online Stackelberg A/B Experiment")
+    parser.add_argument("--dataset", default="all",
                         choices=DATASETS + ["all"])
-    parser.add_argument("--n_samples", type=int, default=30)
+    parser.add_argument("--n_samples", type=int, default=50)
     parser.add_argument("--n_agents", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--out_dir", default="results/online_stackelberg")
+    parser.add_argument("--conditions", nargs="+",
+                        choices=[c[3] for c in CONDITIONS],
+                        default=None,
+                        help="Subset of conditions to run (default: all)")
     args = parser.parse_args()
 
     datasets = DATASETS if args.dataset == "all" else [args.dataset]
-    run_online_experiment(datasets, args.n_samples, args.n_agents, args.out_dir, args.seed)
+
+    if args.conditions:
+        conditions = [c for c in CONDITIONS if c[3] in args.conditions]
+    else:
+        conditions = CONDITIONS
+
+    run_experiment(datasets, conditions, args.n_samples, args.n_agents,
+                   args.out_dir, args.seed)
 
 
 if __name__ == "__main__":

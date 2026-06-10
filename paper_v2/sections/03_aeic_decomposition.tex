@@ -3,7 +3,7 @@
 \label{sec:aeic}
 %======================================================================
 
-We introduce the AEIC decomposition that provides auditable reasoning quality signals for both mechanism design and topology routing.
+We introduce the AEIC decomposition, a structured reasoning protocol that enables reliable conclusion extraction across diverse communication topologies. The quality signals derived from AEIC components additionally serve as a formal interface for Stackelberg mechanism design (Section~\ref{sec:game}).
 
 \subsection{Structured Reasoning Decomposition}
 
@@ -16,7 +16,7 @@ Given a question $x$, each agent $i \in \{1, \ldots, n\}$ produces a structured 
     \item \textbf{Conclusion (C)}: The final answer with justification.
 \end{itemize}
 
-This decomposition is enforced through prompt engineering and serves two purposes: (1)~it structures the reasoning process to improve output quality, and (2)~it provides separable components whose quality can be independently assessed by the consensus mechanism.
+This decomposition is enforced through prompt engineering and serves two purposes: (1)~it structures agent output into parseable components, enabling reliable conclusion extraction and consistent stance identification across all communication topologies---this is the primary empirical value (Section~\ref{sec:exp}); and (2)~it provides separable components from which quality signals can be computed, serving as a formal interface for Stackelberg mechanism design (Section~\ref{sec:game}), though experiments reveal that these signals have limited discriminative power when agents share the same LLM backend (Section~\ref{sec:exp}).
 
 \subsection{Four-Dimensional Quality Signals}
 
@@ -33,7 +33,7 @@ Let $\mathrm{sim}(\cdot, \cdot)$ denote cosine similarity in a sentence embeddin
 where IC measures Inference--Conclusion consistency, EC measures Evidence--Conclusion support, EQ assesses evidence quality, and EV captures cross-agent evidence consensus.
 \end{definition}
 
-Here $\mathcal{N}_i$ denotes the neighbors of agent $i$ in the communication topology graph, and $f_{\text{quality}}$ assesses evidence coverage and specificity. IC, EC, and EQ measure \emph{individual reasoning quality}: how coherent, well-supported, and thorough an agent's analysis is. EV measures \emph{inter-agent agreement}: how much an agent's evidence aligns with its neighbors'. This distinction is critical for incentive design---EV can be inflated by sycophantic behavior, while IC/EC/EQ require genuine reasoning effort.
+Here $\mathcal{N}_i$ denotes the neighbors of agent $i$ in the communication topology graph, and $f_{\text{quality}}$ assesses evidence coverage and specificity. By design, IC, EC, and EQ measure \emph{individual reasoning coherence}: how internally consistent, well-supported, and thorough an agent's analysis is. EV measures \emph{inter-agent agreement}: how much an agent's evidence aligns with its neighbors'. This distinction matters for incentive design---EV can be inflated by sycophantic behavior. However, as our experiments demonstrate (Section~\ref{sec:exp}), these coherence signals cannot distinguish correct from incorrect reasoning when agents share the same LLM: a coherent wrong answer scores as highly as a correct one.
 
 \subsection{Agent Type Space}
 \label{sec:type}
@@ -47,9 +47,9 @@ The type of agent $i$ on question $q$ is:
 \end{equation}
 \end{definition}
 
-EV is deliberately excluded from the type. It measures consensus rather than reasoning quality---a sycophantic agent can achieve high EV by mimicking neighbors without genuine reasoning. The type captures what the mechanism should reward: the quality of individual reasoning effort.
+EV is deliberately excluded from the type. It measures consensus rather than reasoning quality---a sycophantic agent can achieve high EV by mimicking neighbors without genuine reasoning. The type captures what the mechanism is \emph{designed} to reward: individual reasoning effort. In practice, Section~\ref{sec:exp} shows that these type signals have limited discriminative power when all agents share the same LLM backend.
 
 \subsection{AEIC as Feature Extraction}
 \label{sec:aeic_features}
 
-Beyond mechanism design, AEIC signals serve as feature representations for topology routing. For each question--topology pair, we construct a 42-dimensional vector from per-agent signals, summary statistics, and cross-signal interactions. The same agents produce different signal profiles under different topologies, enabling a learned router to identify optimal communication structures (Section~\ref{sec:topology}).
+Beyond mechanism design, AEIC-structured outputs provide the basis for topology routing features. For each question--topology pair, we construct a 42-dimensional feature vector from per-agent quality signals, summary statistics, \emph{voting features} (majority ratio, yes/no distribution extracted from the Conclusion~component), and cross-signal interactions. Feature ablation (Section~\ref{sec:exp}) reveals that the voting features---enabled by reliable conclusion extraction from AEIC structure---are the primary driver of routing accuracy, while quality signals contribute marginally or negatively.

@@ -42,6 +42,12 @@ class ConsensusConfig:
     sg_eta: float = 0.05
     sg_gamma: float = 0.1
 
+    # Dynamic sycophancy regulation
+    dyn_tau_high: float = 0.6
+    dyn_tau_low: float = 0.2
+    dyn_alpha: float = 0.5
+    dyn_beta: float = 0.3
+
     _PARAM_NAMES = [f.name for f in fields(__class__)] if False else None
 
     @classmethod
@@ -76,6 +82,10 @@ class ConsensusConfig:
             "sg_mu": (0.01, 1.0),
             "sg_eta": (0.005, 0.3),
             "sg_gamma": (0.01, 0.5),
+            "dyn_tau_high": (0.3, 0.9),
+            "dyn_tau_low": (0.0, 0.4),
+            "dyn_alpha": (0.1, 0.9),
+            "dyn_beta": (0.1, 0.6),
         }
         return [b[n] for n in cls.param_names()]
 

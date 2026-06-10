@@ -26,6 +26,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.llm import MultiLLMPool, AGENT_PERSONAS
 
 
+def _atomic_save(data, path):
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    os.replace(tmp, path)
+
+
 def collect_aeic(dataset: str, n_samples: int, n_agents: int,
                  out_dir: str, agent_map: dict = None):
     """Phase 1: 独立生成每agent每题的AEIC，增量缓存。"""
@@ -83,15 +90,13 @@ def collect_aeic(dataset: str, n_samples: int, n_agents: int,
         })
 
         if new_calls % (n_agents * 5) == 0:
-            with open(cache_path, "w", encoding="utf-8") as f:
-                json.dump(cache, f, ensure_ascii=False, indent=2)
+            _atomic_save(cache, cache_path)
 
         print(f"  [{q_idx+1}/{len(questions)}] {question[:50]}... "
               f"({new_calls} calls)", flush=True)
 
     cache["meta"]["n_samples"] = len(cache["questions"])
-    with open(cache_path, "w", encoding="utf-8") as f:
-        json.dump(cache, f, ensure_ascii=False, indent=2)
+    _atomic_save(cache, cache_path)
 
     pool.close()
     print(f"\n  Saved {len(cache['questions'])} questions to {cache_path}")

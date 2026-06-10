@@ -31,9 +31,9 @@ This yields five specialized consensus configurations. The optimized parameters 
 \subsection{Neural Topology Router}
 \label{sec:router}
 
-To select the optimal topology per question, we train a neural router using AEIC-derived features.
+To select the optimal topology per question, we train a neural router using features derived from AEIC-structured outputs.
 
-\paragraph{Feature Design.} For each candidate topology $T$, we construct a 42-dimensional feature vector comprising per-agent signals (IC, EC, EQ, EV, agreement for 5 agents), summary statistics (mean, std, range), voting features (majority ratio, yes/no ratio), and cross-signal interactions (\eg, $\text{IC}_i \times (1{-}\text{agreement}_i)$). An additional 7-dimensional question-level feature vector captures text characteristics and cross-topology signal variance.
+\paragraph{Feature Design.} For each candidate topology $T$, we construct a 42-dimensional feature vector comprising per-agent quality signals (IC, EC, EQ, EV, agreement for 5 agents), summary statistics (mean, std, range), \emph{voting features} (majority ratio, yes/no distribution extracted from AEIC conclusions), and cross-signal interactions (\eg, $\text{IC}_i \times (1{-}\text{agreement}_i)$). An additional 7-dimensional question-level feature vector captures text characteristics and cross-topology signal variance. As Section~\ref{sec:exp} shows, the voting features---enabled by AEIC's structured conclusion extraction---are the primary driver of routing accuracy ($+2.1$pp when present), while several quality signal groups contribute marginally or negatively.
 
 \paragraph{Router Architecture.} A \emph{shared topology encoder} (two layers with LayerNorm and GELU, 42$\to$96 dims) processes each topology's features. A \emph{context projection} summarizes the other four topologies' embeddings (48 dims). Three \emph{per-dataset scorer heads} map the concatenated representation (192 dims) to scalar scores, enabling dataset-specific routing.
 
