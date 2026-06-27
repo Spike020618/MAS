@@ -405,11 +405,13 @@ class MultiLLMPool:
         return self.backends[agent_id % len(self.backends)]
 
     def generate_aeic(self, question: str, persona_id: int = 0,
-                      agent_id: int = 0) -> Dict:
+                      agent_id: int = 0,
+                      evidence_hints: List[str] = None) -> Dict:
         """使用分配给该agent的LLM生成AEIC。"""
         client = self.get_client(agent_id)
         temp = self.temperature_map.get(agent_id)
         result = client.generate_aeic(question, persona_id=persona_id,
+                                      evidence_hints=evidence_hints,
                                       temperature_override=temp)
         self._call_count += 1
         return result

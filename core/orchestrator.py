@@ -187,10 +187,15 @@ class Orchestrator:
                 return ConsensusConfig.load(path)
         return ConsensusConfig()
 
-    def _generate_aeic(self, question: str, persona_id: int, agent_id: int):
+    def _generate_aeic(self, question: str, persona_id: int, agent_id: int,
+                       evidence_hints: List[str] = None):
         if self._multi:
-            return self.llm.generate_aeic(question, persona_id=persona_id, agent_id=agent_id)
-        return self.llm.generate_aeic(question, persona_id=persona_id)
+            return self.llm.generate_aeic(
+                question, persona_id=persona_id, agent_id=agent_id,
+                evidence_hints=evidence_hints)
+        return self.llm.generate_aeic(
+            question, persona_id=persona_id,
+            evidence_hints=evidence_hints)
 
     def _generate_aeic_ctx(self, question: str, context: str, persona_id: int, agent_id: int):
         if self._multi:
@@ -308,13 +313,16 @@ class Orchestrator:
     def _run_parallel(self, question: str, W: np.ndarray,
                       use_stackelberg: bool, **kwargs) -> Dict:
         """P1: 独立推理 + 质量驱动共识"""
+        evidence_hints_list = kwargs.get("evidence_hints_list", None)
         nodes = [None] * self.n_agents
         agent_times = [0.0] * self.n_agents
 
         def _gen(i):
             persona_id = i % len(AGENT_PERSONAS)
             t0 = _time.time()
-            aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i)
+            hints = evidence_hints_list[i] if evidence_hints_list else None
+            aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i,
+                                       evidence_hints=hints)
             return i, aeic, _time.time() - t0
 
         with ThreadPoolExecutor(max_workers=self.n_agents) as pool:
@@ -335,13 +343,16 @@ class Orchestrator:
     def _run_sequential(self, question: str, W: np.ndarray,
                         use_stackelberg: bool, **kwargs) -> Dict:
         """P2: 链式传递 (σ: C_{i-1} → A_i)"""
+        evidence_hints_list = kwargs.get("evidence_hints_list", None)
         nodes = []
         agent_times = []
         for i in range(self.n_agents):
             persona_id = i % len(AGENT_PERSONAS)
             t0 = _time.time()
             if i == 0:
-                aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i)
+                hints = evidence_hints_list[0] if evidence_hints_list else None
+                aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i,
+                                           evidence_hints=hints)
             else:
                 prev_c = nodes[i - 1].get("C", "")
                 context = SEQUENTIAL_CONTEXT.format(prev_conclusion=prev_c)
@@ -360,6 +371,7 @@ class Orchestrator:
     def _run_star(self, question: str, W: np.ndarray,
                   use_stackelberg: bool, **kwargs) -> Dict:
         """P3: Leaf并行 → Hub综合 (σ: {C_leaf} → E_hub)"""
+        evidence_hints_list = kwargs.get("evidence_hints_list", None)
         n_leaves = self.n_agents - 1
         agent_times = [0.0] * (n_leaves + 1)  # hub=0, leaves=1..N-1
 
@@ -369,7 +381,10 @@ class Orchestrator:
         def _gen_leaf(i):
             persona_id = (i + 1) % len(AGENT_PERSONAS)
             t0 = _time.time()
-            aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i + 1)
+            idx = i + 1  # actual agent index
+            hints = evidence_hints_list[idx] if evidence_hints_list else None
+            aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=idx,
+                                       evidence_hints=hints)
             return i, aeic, _time.time() - t0
 
         with ThreadPoolExecutor(max_workers=n_leaves) as pool:
@@ -424,7 +439,11 @@ class Orchestrator:
         When dynamic=True (subsumes online), additionally detects sycophancy/
         deadlock dynamics between rounds and adaptively adjusts mechanism
         parameters and prompt templates.
+
+        evidence_hints_list: Optional[List[List[str]]] — per-agent background
+        knowledge injected in Round 1 (for memory-diverse experiments).
         """
+        evidence_hints_list = kwargs.get("evidence_hints_list", None)
         max_rounds = kwargs.get("max_rounds", max_rounds)
         online = kwargs.get("online", False)
         dynamic = kwargs.get("dynamic", False)
@@ -445,7 +464,9 @@ class Orchestrator:
         def _gen_r1(i):
             persona_id = i % len(AGENT_PERSONAS)
             t0 = _time.time()
-            aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i)
+            hints = evidence_hints_list[i] if evidence_hints_list else None
+            aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i,
+                                       evidence_hints=hints)
             return i, aeic, _time.time() - t0
 
         with ThreadPoolExecutor(max_workers=self.n_agents) as pool:
@@ -598,6 +619,7 @@ class Orchestrator:
         When online=True, computes interim signals between phases and injects
         quality feedback into agent prompts (online Stackelberg).
         """
+        evidence_hints_list = kwargs.get("evidence_hints_list", None)
         online = kwargs.get("online", False)
         online_config = kwargs.get("online_config", None)
         if online and online_config is None:
@@ -611,7 +633,9 @@ class Orchestrator:
         def _gen_p1(i):
             persona_id = i % len(AGENT_PERSONAS)
             t0 = _time.time()
-            aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i)
+            hints = evidence_hints_list[i] if evidence_hints_list else None
+            aeic = self._generate_aeic(question, persona_id=persona_id, agent_id=i,
+                                       evidence_hints=hints)
             return i, aeic, _time.time() - t0
 
         with ThreadPoolExecutor(max_workers=self.n_agents) as pool:
