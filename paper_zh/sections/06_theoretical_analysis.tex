@@ -1,0 +1,53 @@
+%======================================================================
+\section{理论分析}
+\label{sec:theory}
+%======================================================================
+
+\begin{theorem}[斯塔克尔伯格均衡的存在性]
+\label{thm:existence}
+AEIC-斯塔克尔伯格博弈 $\mathcal{G}$ 存在一个斯塔克尔伯格均衡 $(\theta^*, s^*)$。
+\end{theorem}
+
+\begin{proof}
+跟随者的策略空间 $\{s^{\text{ind}}, s^{\text{syc}}\}$ 是有限的，因此对于任何 $\theta$ 都存在最优响应。参数空间 $\Theta$ 是紧致的（有界的）。领导者的目标函数 $\text{Accuracy}(\theta) + \lambda \cdot \text{IC}(\theta)$ 在 $\Theta$ 上是有界的。由魏尔斯特拉斯极值定理可知，该最大值在某个 $\theta^* \in \Theta$ 处取得。结合跟随者的最优响应，这就构成了一个斯塔克尔伯格均衡。
+\end{proof}
+
+\begin{theorem}[$\epsilon$-激励相容性]
+\label{thm:ic}
+对于任意 $\epsilon \in (0,1)$，在公式~\eqref{eq:leader_obj} 中设置 $\lambda \geq \frac{1}{1-\epsilon}$，可以保证 $\text{IC}(\theta^*) \geq \epsilon$。
+\end{theorem}
+
+\begin{proof}
+我们首先证明可行性：存在 $\theta_0 \in \Theta$ 使得 $\text{IC}(\theta_0) = 1$（设置较大的 IC/EQ 指数，同伴压力 $\gamma = 0$，使得权重与质量严格单调相关）。
+
+根据 $\theta^*$ 的最优性：
+\begin{equation}
+    \text{Acc}(\theta^*) + \lambda \cdot \text{IC}(\theta^*) \geq \text{Acc}(\theta_0) + \lambda \cdot 1
+\end{equation}
+
+重排并代入 $\text{Acc}(\theta_0) - \text{Acc}(\theta^*) \geq -1$：
+\begin{equation}
+    \text{IC}(\theta^*) \geq 1 - \frac{1}{\lambda}
+\end{equation}
+
+设置 $\lambda \geq \frac{1}{1-\epsilon}$，可得 $\text{IC}(\theta^*) \geq \epsilon$。
+\end{proof}
+
+\begin{theorem}[个体理性与福利]
+\label{thm:ir}
+(a) 在 $\theta^*$ 下，当 $R \geq C_{\text{ind}} / \min_i w_i$ 时，所有智能体均可获得非负效用。 \\
+(b) 对于足够小的 $\lambda$，$\text{Accuracy}(\theta^*) \geq \text{Accuracy}(\theta_{\text{uniform}})$。
+\end{theorem}
+
+\begin{proof}
+(a) 由于 $w_i \in [0,1]$ 且 $C(s_i) \leq C_{\text{ind}}$，选择 $R \geq C_{\text{ind}} / \min_i w_i$ 可以确保 $U_i \geq 0$。
+
+(b) 均匀投票对应于 $\theta_{\text{unif}} \in \Theta$。根据最优性可知：$\text{Acc}(\theta^*) + \lambda \cdot \text{IC}(\theta^*) \geq \text{Acc}(\theta_{\text{unif}}) + \lambda \cdot \text{IC}(\theta_{\text{unif}})$。当 $\lambda \to 0$ 时，直接得出 $\text{Acc}(\theta^*) \geq \text{Acc}(\theta_{\text{unif}})$。
+\end{proof}
+
+\paragraph{分布式共识的收敛性。}
+在具有同伴压力 $\gamma > 0$ 和通信拓扑 $W$ 的斯塔克尔伯格动力学下，共识能量 $E(t) = \sum_{(i,j) \in \mathcal{E}} (\theta_i(t) - \theta_j(t))^2$ 满足：
+\begin{equation}
+    E(t) \leq E(0) \cdot \exp\!\left(-\frac{2\gamma t}{n-1}\right)
+\end{equation}
+这保证了指数级收敛到共识状态，其速率由 $W$ 的代数连通度和同伴压力系数 $\gamma$ 决定。

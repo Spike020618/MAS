@@ -1,0 +1,48 @@
+%======================================================================
+\section{相关工作}
+\label{sec:related}
+%======================================================================
+
+\paragraph{多智能体大语言模型共识。}
+对多个大语言模型（LLM）输出的聚合研究已经过几种范式的探索。自洽性（Self-consistency）~\cite{wang2023selfconsistency} 对多条推理路径进行采样，并选择频率最高的答案。多智能体辩论（Multi-agent debate）~\cite{du2024improving,choi2025debate} 将此扩展为多个模型实例之间的迭代讨论。ChatEval~\cite{chan2023chateval} 将此应用于评估任务。Zhao 等人~\cite{zhao2024electoral} 基于社会选择理论提出了基数投票机制。Li 等人~\cite{li2025dynamic} 引入了动态权重。
+
+这些系统中的一个关键故障模式是\emph{阿谀奉承（sycophancy）}——智能体在没有进行真正推理的情况下采纳多数派立场。Bertalani\v{c} 和 Fortuna~\cite{bertalanic2026cost} 提供了迄今为止最全面的实证描述，记录了同构多智能体辩论（$n{=}10$）中的三种故障路径：谄媚的从众行为（高达 85.5% 的模式采纳）、语境脆弱性（高达 70% 原本正确的智能体被同伴的理由动摇），以及共识崩溃（多数决投票丢弃正确答案的预言机差距高达 32.3 个百分点）。他们的核心发现——没有结构化角色的同构团队无法从无指导的同伴交流中获益——直接激发了我们通过 AEIC 分解进行结构化角色强制执行，以及通过斯塔克尔伯格机制（Stackelberg mechanisms）进行行为规范的工作。Liu 等人~\cite{liu2025memorycurse} 进一步表明，扩展的智能体内存在博弈论设置中可能会\emph{降低}合作水平，在 28 种模型-博弈配置中，有 18 种更长的回忆会减少合作意图——这一发现与我们的结果一致，即即使智能体可以访问差异化信息，质量信号也无法可靠地区分正确和误导性的知识。
+
+Pitre 等人~\cite{pitre2025consensagent} 通过 ConsensAgent 解决了阿谀奉承问题，该机制根据智能体交互动态微调提示以减轻羊群效应。ConsensAgent 在单一辩论拓扑内的提示层面上运行。我们的动态调节有根本的不同：我们不为单个智能体优化提示，而是监控跨轮次的\emph{集体行为动态}（立场变化率、多数比率、收敛速度），并针对检测到的特定病理特征（阿谀奉承与僵局）应用差异化干预——参数调整\emph{和}提示修改。Swamy 等人~\cite{swamy2025peacemaker} 为多智能体辩论中的阿谀奉承提供了正式指标；他们关于阿谀奉承水平在不同智能体角色中存在显著差异的发现，为我们基于立场变化的检测提供了依据。最近，Kumarappan 等人~\cite{kumarappan2026alignment} 证明，多智能体的阿谀奉承是结构性的（存在于基础模型中，而不仅仅是基于人类反馈的强化学习（RLHF）工件），缓解措施应该在“管道层面针对结构化异议”进行——这正是我们的斯塔克尔伯格动态调节通过行为状态检测和自适应 EV 权重抑制所实现的。
+
+\paragraph{结构化推理分解。}
+思维链（Chain-of-Thought）提示~\cite{wei2022chain} 引发逐步推理，思维树（Tree-of-Thoughts）~\cite{yao2024tree} 将此扩展到推理路径的结构化探索。ReAct~\cite{yao2023react} 交错进行推理与行动。这些方法对推理进行分解以提高\emph{个体}答案的质量。我们的 AEIC 分解服务于不同的目的：它将智能体的输出结构化为四个可解析的字段（假设、证据、推论、结论），以实现\emph{跨智能体}的操作——从明确的结论（Conclusion）字段进行可靠的立场提取（比非结构化提取高出 28 个百分点）、用于自适应路由的跨拓扑投票模式比较，以及用于动态调节机制的群体级行为动态监控（见第 \ref{sec:dynamic} 节）。该分解并非旨在改进每个智能体的推理；其设计目的是使集体行为具有可观察性和可调节性。
+
+\paragraph{多智能体系统中的通信拓扑。}
+通信结构对多智能体性能的影响已在多种语境中进行了探讨。Chen 等人~\cite{chen2023agentverse} 使用了集中式评估器（星型拓扑）。顺序架构出现在智能体链（chain-of-agents）设计中~\cite{hong2023metagpt}。Du 等人~\cite{du2024improving} 研究了辩论拓扑（完全图）。Chen 等人~\cite{chen2024reconcile} 在不同的大语言模型中引入了带有置信度加权投票的圆桌会议。最近，RUMAD~\cite{wang2026rumad} 应用强化学习在单一拓扑类型内自适应地控制辩论轮次和智能体选择。我们的方法在三个方面有所不同：我们在五种根本不同的通信结构（并行、顺序、星型、辩论、分层）中进行选择，使用可解释的投票模式特征而不是不透明的 RL 策略，并将我们的机制建立在博弈论的激励兼容性保证上。
+
+\paragraph{多智能体系统中的内存。}
+近期的几项工作研究了智能体内存在如何影响多智能体动态。EquiMem~\cite{meng2026equimem} 将多智能体辩论中的共享内存公式化为一种零信任内存博弈，其中均衡状态校准了最佳的内存信任度——这与我们的博弈论方法类似，但侧重于内存完整性而非共识激励。Liu 等人~\cite{liu2025memorycurse} 证明了一种矛盾的“内存诅咒”，即在基于大语言模型的社会困境中，扩大回忆能力会降低合作意图（在 28 个模型-博弈配置中有 18 个出现此情况），这表明更多的历史信息并不能提高集体决策质量。这补充了我们的发现（第 \ref{sec:exp} 节），即源自 AEIC 结构的质量信号无法区分正确与误导性的知识：这两个结果都表明，当智能体共享同一个底层大语言模型时，更丰富的个人信息——无论是历史内存还是质量得分——都不一定会改善共识。我们的动态调节机制（第 \ref{sec:dynamic} 节）通过对可观察的集体行为进行操作，而不是根据每个智能体的质量或内存内容进行操作，从而解决了这个问题，这使得它对信号限制和内存质量变化都具有鲁棒性。
+
+\paragraph{博弈论与大语言模型。}
+Sun 等人~\cite{sun2025gametheory} 提供了大语言模型应用的博弈论分类体系。Yi 等人~\cite{yi2025debate} 将多智能体辩论建模为具有纳什均衡的贝叶斯博弈。Rauba 等人~\cite{rauba2025principal} 主张对大语言模型系统进行委托-代理（principal-agent）建模。Liu 等人~\cite{liu2025interpretable} 使用大语言模型进行自动机制设计。最近，Meng 等人~\cite{meng2026equimem} 将多智能体辩论中的共享内存构建为一个零信任内存博弈，在该博弈中，均衡会校准最佳的内存信任度，而不假设智能体是诚实的；Anand 等人~\cite{anand2026resilient} 将大语言模型智能体协议定为一个拜占庭共识博弈，证明了受提示引导的智能体在经典理论保证收敛的地方无法达成一致。我们的斯塔克尔伯格（Stackelberg）公式与同时移动均衡和拜占庭共识方法不同，它将机制设计者建模为一个领导者，他在智能体行动之前\emph{承诺}采用某种聚合规则——这非常适合于旨在通过可信的承诺来塑造追随者行为的机制设计，并且与智能体诚实假设或容错保证无关。
+
+\paragraph{分布式系统中的斯塔克尔伯格博弈。}
+斯塔克尔伯格激励机制在联邦学习（federated learning）~\cite{fu2024stackelberg,guo2023incentive}和众包（crowdsourcing）~\cite{wang2024incentive}中已建立。Saig 等人~\cite{saig2024incentivizing} 应用契约理论（contract theory）来激励大语言模型生成高质量的文本。Xu 等人~\cite{xu2026rcbsf} 将斯塔克尔伯格博弈应用于多智能体合同修订。据我们所知，先前没有任何工作将斯塔克尔伯格机制设计应用于带有自适应拓扑路由的多智能体大语言模型共识。
+
+\paragraph{与最相关工作的定位。}
+表~\ref{tab:related} 将我们的框架与四个最相关的方法进行了对比。
+
+\begin{table}[t]
+\caption{与最相关工作的比较。}\label{tab:related}
+\centering\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+& \makebox[1.8cm]{\shortstack{正式\\激励}} & \makebox[1.6cm]{\shortstack{拓扑\\选择}} & \makebox[1.6cm]{\shortstack{阿谀奉承\\解决方案}} & \makebox[1.5cm]{\shortstack{结构化\\输出}} & \makebox[1.5cm]{\shortstack{行为\\规范}} \\
+\midrule
+标准辩论（Standard Debate）~\cite{du2024improving} & --- & --- & --- & --- & --- \\
+ConsensAgent~\cite{pitre2025consensagent} & --- & --- & 提示层级 & --- & --- \\
+RUMAD~\cite{wang2026rumad} & --- & \checkmark$^\dagger$ & --- & --- & --- \\
+Bertalani\v{c} 等人~\cite{bertalanic2026cost} & --- & --- & 仅限分析 & --- & --- \\
+\midrule
+\textbf{本项研究} & \checkmark$^\ddagger$ & \checkmark & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+{\footnotesize $^\dagger$仅限拓扑内部（改变辩论轮次/参与度）。$^\ddagger$斯塔克尔伯格 $\epsilon$-激励兼容性（定理~\ref{thm:ic}）。}
+\end{table}

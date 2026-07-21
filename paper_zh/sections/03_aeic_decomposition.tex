@@ -1,0 +1,55 @@
+%======================================================================
+\section{AEIC分解与质量信号}
+\label{sec:aeic}
+%======================================================================
+
+我们引入了 AEIC 分解，这是一种结构化推理协议，可在不同通信拓扑结构中实现可靠的结论提取。从 AEIC 组件导出的质量信号同时用作斯塔克尔伯格机制设计的形式化接口（第 \ref{sec:game} 节）。
+
+\subsection{结构化推理分解}
+
+给定一个问题 $x$，每个智能体 $i \in \{1, \ldots, n\}$ 生成一个结构化响应，将其分解为四个组件：
+
+\begin{itemize}
+    \item \textbf{假设 (A)}：智能体采纳的前提或假说。
+    \item \textbf{证据 (E)}：支持其分析的事实主张列表：$E_i = \{e_{i,1}, \ldots, e_{i,k_i}\}$。
+    \item \textbf{推理 (I)}：将证据与结论连接起来的推理链。
+    \item \textbf{结论 (C)}：附有理由的最终答案。
+\end{itemize}
+
+这种分解通过提示工程（prompt engineering）来强制执行，并服务于两个目的：(1)~将智能体输出结构化为可解析的组件，从而在所有通信拓扑中实现可靠的结论提取和一致的立场识别——这是其主要经验价值（第 \ref{sec:exp} 节）；(2)~它提供了可分离的组件，借此计算质量信号，充当斯塔克尔伯格机制设计的形式化接口（第 \ref{sec:game} 节），尽管实验表明，当智能体共享同一底层大语言模型（LLM backend）时，这些信号的判别能力有限（第 \ref{sec:exp} 节）。
+
+\subsection{四维质量信号}
+
+根据每个智能体的 AEIC 输出，我们利用基于嵌入相似性的方法计算四个质量信号：
+
+\begin{definition}[质量信号]
+令 $\mathrm{sim}(\cdot, \cdot)$ 表示句子嵌入空间中的余弦相似度。对于智能体 $i$：
+\begin{align}
+    \mathrm{IC}_i &= \mathrm{sim}(I_i, C_i) \\
+    \mathrm{EC}_i &= \tfrac{1}{|E_i|}\textstyle\sum_{e \in E_i} \mathrm{sim}(e, C_i) \\
+    \mathrm{EQ}_i &= f_{\mathrm{quality}}(E_i) \\
+    \mathrm{EV}_i &= \tfrac{1}{|\mathcal{N}_i|}\textstyle\sum_{j \in \mathcal{N}_i} \mathrm{sim}(E_i, E_j)
+\end{align}
+其中，IC 衡量推理与结论（Inference--Conclusion）的一致性，EC 衡量证据与结论（Evidence--Conclusion）的支撑力度，EQ 评估证据质量，EV 捕捉跨智能体的证据共识。
+\end{definition}
+
+此处 $\mathcal{N}_i$ 表示通信拓扑图中智能体 $i$ 的邻居，而 $f_{\text{quality}}$ 评估证据覆盖率和具体程度。按照设计，IC、EC 和 EQ 衡量的是\emph{个体推理一致性}：智能体的分析在内部一致、支持度充分且周密的程度。EV 衡量的是\emph{跨智能体共识}：某个智能体的证据与其邻居的一致性程度。这种区别对激励设计而言很重要——因为通过阿谀奉承行为可以夸大 EV 的数值。但是，正如我们的实验所展示的（第 \ref{sec:exp} 节），当智能体共享同一底层大语言模型时，这些衡量连贯性的信号无法区分正确和错误的推理：连贯的错误答案与正确答案的得分一样高。
+
+\subsection{智能体类型空间}
+\label{sec:type}
+
+借鉴 Saig 等人的做法~\cite{saig2024incentivizing}，我们通过一种可观察的\emph{类型}对每个智能体进行建模：
+
+\begin{definition}[智能体类型]
+针对问题 $q$，智能体 $i$ 的类型为：
+\begin{equation}
+    \tau_i = (\text{IC}_i, \text{EC}_i, \text{EQ}_i) \in [0,1]^3
+\end{equation}
+\end{definition}
+
+EV 刻意从类型中剔除了。它衡量的是共识而非推理质量——一个有阿谀倾向的智能体可以通过无实际推理地模仿邻居来获得较高的 EV。该类型捕获的是该机制\emph{设计上}意图去奖励的东西：个人推理的努力程度。在实践中，第 \ref{sec:exp} 节表明，当所有智能体都共享同一个大语言模型后端时，这些类型信号的鉴别能力非常有限。
+
+\subsection{AEIC 作为特征提取}
+\label{sec:aeic_features}
+
+除了机制设计外，以 AEIC 为结构的输出还为拓扑路由特征提供了基础。针对每一个问题-拓扑对，我们利用每个智能体的质量信号、摘要统计数据、\emph{投票特征}（从结论组件中提取多数比例，以及赞成/反对分布）和交叉信号相互作用来构建一个 42 维的特征向量。特征剥离（第 \ref{sec:exp} 节）表明，由于能够从 AEIC 结构中可靠地提取结论而实现的投票特征，是促成较高路由准确率的主要驱动因素，而质量信号仅起到了微弱甚至负面的作用。
