@@ -28,6 +28,13 @@ For each topology $T \in \{\text{parallel, sequential, star, debate, hierarchica
 
 This yields five specialized consensus configurations. The optimized parameters reveal topology-specific structure (Figure~\ref{fig:theta}): star and debate topologies learn near-zero weights for EV ($w_{\text{EV}} \approx 0.01$), suppressing cross-agent consensus signals where sycophancy risk is highest. Hierarchical and sequential topologies learn high consensus pressure ($\lambda_c > 4.5$), enforcing agreement within their chain/tree structures.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\columnwidth]{figures/fig_theta_heatmap.pdf}
+\caption{Optimized per-topology parameters $\theta^*_T$ (QA-domain validation). Star and debate learn near-zero EV weights---an emergent anti-sycophancy configuration; hierarchical and sequential learn high consensus pressure $\lambda_c$.}
+\label{fig:theta}
+\end{figure}
+
 \subsection{Neural Topology Router}
 \label{sec:router}
 

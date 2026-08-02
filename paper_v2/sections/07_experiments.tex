@@ -3,237 +3,122 @@
 \label{sec:exp}
 %======================================================================
 
+We validate the framework on automated scholarly review through a diagnose-then-intervene design: Study~1 establishes the pathologies of LLM review panels (Section~\ref{sec:study1}) and their cross-model generality (Section~\ref{sec:crossmodel}); Study~2 applies the framework's three layers as targeted interventions (Sections~\ref{sec:study2a}--\ref{sec:study2c}).
+
 \subsection{Experimental Setup}
+\label{sec:setup}
 
-\paragraph{Datasets.} We evaluate on three diverse reasoning benchmarks: MMLU-Hard (graduate-level knowledge), StrategyQA (commonsense with implicit reasoning), and TruthfulQA (factual accuracy under adversarial framing). Each dataset contributes 300 questions, yielding 900 questions total.
+\paragraph{Dataset.}
+We assemble 300 papers from the ICLR~2024 conference on OpenReview~\cite{openreview2024iclr}, stratified into three tiers of 100 by official decision and mean reviewer score: \emph{clear-accept} (Oral/Spotlight), \emph{borderline} (poster with mean score nearest to the acceptance boundary), and \emph{clear-reject} (lowest-scoring rejections). Each paper contributes its title, abstract, keywords, official decision, and human reviewer scores. The official decision serves as a noisy ground truth; we therefore treat decision agreement as a \emph{safety} endpoint and behavioral health as the \emph{primary} endpoint (below).
 
-\paragraph{Agent Configuration.} We deploy $n=5$ DeepSeek-V3~\cite{deepseek2024v3} instances under each of five communication topologies (parallel, sequential, star, debate, hierarchical), generating 22{,}500 AEIC-structured responses (5 agents $\times$ 900 questions $\times$ 5 topologies). Since question sets were sampled independently per topology, 633 of 900 questions overlap across all five topologies (161/300/172 for MMLU-Hard/StrategyQA/TruthfulQA). Cross-topology comparisons (router, oracle) use this intersection; per-topology baselines use the full 300 questions.
+\paragraph{AEIC-Review protocol.}
+Each reviewer agent produces a structured review instantiating the AEIC decomposition (Section~\ref{sec:aeic}): Assumption (the paper's claimed contributions), Evidence (a list of $(+)$/$(-)$-tagged strengths and weaknesses anchored to the paper), Inference (overall reasoning), and Conclusion (a stance prefix \texttt{Accept}/\texttt{Weak Accept}/\texttt{Weak Reject}/\texttt{Reject} plus a 1--10 rating). The explicit Conclusion field makes stance and rating extraction reliable across models; reviewer personas differ only in decoding temperature. This field is the measurement basis for every behavioral metric in this paper: stances and ratings are read off structured fields, never inferred from free text.
 
-\paragraph{Signal Computation.} Quality signals are computed using sentence embeddings (paraphrase-multilingual-MiniLM-L12-v2). The topology-aware adjacency matrix $W$ determines neighbor sets for EV and agreement computation.
+\paragraph{Conditions.}
+Each paper is reviewed by a homogeneous panel of 5 reviewer agents under three conditions: \textbf{parallel} (independent reviews, single round), \textbf{debate} (three rounds; after round~1 each reviewer observes anonymized peer positions and may revise), and \textbf{star} (independent reviews plus a meta-reviewer synthesis). Study~2 adds \textbf{debate-regulated} (Section~\ref{sec:study2b}). Default panels use DeepSeek-V3~\cite{deepseek2024v3}; cross-model panels use GLM-4-Flash~\cite{glm2024chatglm} and DeepSeek-R1~\cite{deepseekai2025r1} on a matched 150-paper subset (first 50 per stratum).
 
-\paragraph{Optimization.} Per-topology $\theta^*_T$ is optimized via differential evolution (21 parameters, population 21, 30 generations) and evaluated using 5-fold stratified cross-validation to report honest held-out accuracy (preventing train/test leakage). Router evaluation also uses 5-fold CV with five random seeds for stability estimation.
+\paragraph{Metrics.}
+\emph{Behavioral health} (primary): minority elimination rate and flip direction (an r1 minority reviewer is \emph{eliminated} if their final stance equals the r1 majority; otherwise they \emph{persist}); rating variance collapse ($1 - \bar{\sigma}_{r3}/\bar{\sigma}_{r1}$); mean rating drift. \emph{Decision quality} (safety): agreement of panel decisions with the official outcome, overall and per stratum. \emph{Calibration}: MAE of panel mean rating vs.\ human mean score. Statistics: exact binomial test (flip direction), Wilcoxon signed-rank (paired continuous), McNemar (paired decisions), Wilson 95\% CIs.
 
-\paragraph{Baselines.}
-\begin{itemize}
-    \item \textbf{Single Agent}: Agent 0's conclusion without aggregation.
-    \item \textbf{ChatEval}~\cite{chan2023chateval}: Majority voting on parallel topology (our reimplementation).
-    \item \textbf{Multi-round Debate}~\cite{du2024improving}: Majority voting after 3 rounds of debate (our reimplementation).
-    \item \textbf{AgentVerse}~\cite{chen2023agentverse}: Solver--reviewer pattern with central decision (our reimplementation, 200 questions per dataset).
-    \item \textbf{MajVote}: Simple majority voting on each topology (5 variants).
-    \item \textbf{Weighted Vote}: IC-weighted and agreement-weighted voting without Stackelberg.
-    \item \textbf{AEIC+SG}: Stackelberg-weighted voting with per-topology $\theta^*$ (5 variants).
-\end{itemize}
+\subsection{Study 1: Diagnosis of LLM Review Panels}
+\label{sec:study1}
 
-All baselines use the same LLM backend (DeepSeek-V3) and the same cached responses, ensuring fair comparison. $\dagger$~=~our reimplementation.
-
-\subsection{Main Results}
-
-Table~\ref{tab:main} presents the complete comparison. Figure~\ref{fig:main_results} provides a visual summary.
-
-\begin{table}[t]
-\caption{Consensus accuracy (\%) across three datasets. Per-topology baselines use 300 questions each; router and oracle are evaluated on 633 questions common to all topologies (161/300/172 for MMLU-Hard/StrategyQA/TruthfulQA). Best fixed-topology in \textit{italic}, overall best in \textbf{bold}.}\label{tab:main}
-\centering\small
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-Method & MMLU-Hard & StrategyQA & TruthfulQA & Average \\
-\midrule
-\multicolumn{5}{@{}l}{\textit{Single-agent and voting baselines}} \\
-Single Agent ($N{=}1$) & 65.3 & 79.0 & 80.0 & 74.8 \\
-MajVote (parallel)$^\dagger$ & 69.7 & 81.7 & 81.3 & 77.6 \\
-MajVote (sequential) & 79.0 & 71.0 & 72.7 & 74.2 \\
-MajVote (star) & \textit{85.7} & \textit{80.3} & \textit{82.0} & \textit{82.7} \\
-MajVote (debate)$^\dagger$ & 83.7 & 72.3 & 75.3 & 77.1 \\
-MajVote (hierarchical) & 82.0 & 74.7 & 75.0 & 77.2 \\
-AgentVerse$^\dagger$ & 74.0 & 63.5 & 70.0 & 69.2 \\
-Weighted Vote (IC) & 70.0 & 80.3 & 81.0 & 77.1 \\
-\midrule
-\multicolumn{5}{@{}l}{\textit{AEIC-Stackelberg (per-topology $\theta^*_T$)}} \\
-AEIC+SG (parallel) & 71.7 & 78.0 & 78.7 & 77.8\tiny{$\pm$5.6}$^\ddagger$ \\
-AEIC+SG (sequential) & 74.7 & 69.0 & 70.0 & 75.3\tiny{$\pm$2.5}$^\ddagger$ \\
-AEIC+SG (star) & 84.3 & 79.3 & 82.0 & 81.7\tiny{$\pm$3.4}$^\ddagger$ \\
-AEIC+SG (debate) & 80.0 & 72.3 & 72.0 & 76.3\tiny{$\pm$3.0}$^\ddagger$ \\
-AEIC+SG (hierarchical) & 84.7 & 76.3 & 77.0 & 77.3\tiny{$\pm$3.5}$^\ddagger$ \\
-\midrule
-\multicolumn{5}{@{}l}{\textit{Adaptive routing (ours, 5-fold CV)}} \\
-Neural Router (shared) & 91.3 & 86.0 & 84.3 & 86.9\tiny{$\pm$0.5} \\
-Neural Router (per-dataset) & \textbf{92.5} & \textbf{86.2} & \textbf{85.6} & \textbf{87.6}\tiny{$\pm$0.3} \\
-\midrule
-Oracle (any of 5 topologies) & 97.5 & 91.0 & 91.9 & 92.9 \\
-\bottomrule
-\end{tabular}
-\\[2pt]
-{\footnotesize $\dagger$~Our reimplementation using DeepSeek-V3. $\ddagger$~Average column reports 5-fold CV test accuracy $\pm$ std; per-dataset columns use full-data $\theta^*$.}
-\end{table}
+\paragraph{Independent reviews carry a systematic reject bias.}
+On clear-accept papers (officially Oral/Spotlight), independent DeepSeek-V3 reviewers accept only 14.4\% of the time; the borderline and clear-reject strata sit at 9.9\% and 4.0\% (Figure~\ref{fig:s1}). The bias is a property of the single-agent prior, not of aggregation---and it is exactly the pathology that Study~2a's calibrated layer targets.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.95\linewidth]{figures/fig_main_results.pdf}
-\caption{Accuracy comparison across three datasets. The adaptive router outperforms all fixed-topology methods.}\label{fig:main_results}
+\includegraphics[width=0.49\columnwidth]{figures/fig_s1_negativity_bias.pdf}\hfill
+\includegraphics[width=0.49\columnwidth]{figures/fig_s1_minority_fate.pdf}
+\caption{Study~1 diagnosis. Left: independent accept rate per stratum vs.\ the official base rate---a systematic reject bias. Right: fate of round-1 minority positions after three discussion rounds: flips run 96:0 toward rejection.}
+\label{fig:s1}
 \end{figure}
 
-Key observations: (1)~MajVote~(star) is the best fixed-topology method at 82.7\%, outperforming all AEIC+SG variants even after cross-validation (best AEIC+SG is star at 81.7\%). (2)~The adaptive router achieves 87.6\%, +4.5pp over the best fixed topology on aligned questions. (3)~The oracle ceiling is 92.9\%, with a remaining 5.3pp gap. (4)~Per-dataset analysis reveals that AEIC+SG underperforms MajVote most on commonsense reasoning: on StrategyQA, AEIC+SG star achieves 79.3\% vs.\ MajVote~star's 80.3\%, while the gap is smallest on knowledge-intensive MMLU-Hard (84.3\% vs.\ 85.7\%). (5)~AEIC+SG CV test accuracy closely matches MajVote across topologies (within 1pp on 4 of 5), confirming that quality-weighted voting offers limited advantage over simple majority voting when agents share the same LLM backend.
+\paragraph{Discussion triggers a negative ratchet.}
+Across the 90 panels with a non-unanimous first round, minority positions are eliminated at 78.0\% (Wilson 95\% CI $[69.9, 84.5]$), and flips are entirely one-directional: 96 toward rejection, 0 toward acceptance, 27 persist (binomial $p{=}2.5{\times}10^{-29}$). Panel rating variance collapses by 51.1\% (Wilcoxon $p{=}3.9{\times}10^{-32}$) and mean ratings drift by $-0.25$ points ($p{=}1.0{\times}10^{-32}$). Roughly 70\% of panels are already unanimous after round~1, so discussion predominantly compresses---it rarely deliberates.
 
-\subsection{AEIC-Weighted Voting vs.\ Majority Voting}
-
-Figure~\ref{fig:topo_comparison} reveals a surprising finding: majority voting outperforms AEIC+SG weighted voting on 4 of 5 topologies.
+\paragraph{Discussion yields no decision benefit.}
+Decision agreement with the official outcome is statistically flat across conditions: parallel 61.7\%, debate r1 61.3\%, debate r3 59.7\%, star meta-review 60.7\% (all pairwise McNemar $p{>}0.05$). Three rounds of discussion thus destroy diversity without buying decision quality---the signature pathology that Study~2c's routing layer exploits. Figure~\ref{fig:s1b} summarizes the collapse and the flat decision profile.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.95\linewidth]{figures/fig_topo_comparison.pdf}
-\caption{Per-topology comparison averaged over three datasets. AEIC+$\theta^*$ only outperforms majority voting on hierarchical topology.}\label{fig:topo_comparison}
+\includegraphics[width=0.49\columnwidth]{figures/fig_s1_variance_collapse.pdf}\hfill
+\includegraphics[width=0.49\columnwidth]{figures/fig_s1_decision_accuracy.pdf}
+\caption{Left: per-paper rating std, round 1 vs.\ round 3---variance collapses by 51\%. Right: decision agreement by condition---discussion and meta-review add nothing over independent aggregation.}
+\label{fig:s1b}
 \end{figure}
 
-With honest cross-validated evaluation, AEIC+SG performs comparably to MajVote: parallel 77.8\% vs.\ 77.6\%, sequential 75.3\% vs.\ 74.2\%, star 81.7\% vs.\ 82.7\%, debate 76.3\% vs.\ 77.1\%, hierarchical 77.3\% vs.\ 77.2\%. McNemar tests on the full 900 questions (per-topology $\theta^*$ trained on all data) reveal mixed results: AEIC+SG is not significantly better than MajVote on parallel ($p{=}0.633$), sequential ($p{=}0.110$), or star ($p{=}0.258$); it is marginally worse on debate ($p{=}0.027$); and it is significantly better on hierarchical ($p{=}0.001$). The significant advantage on hierarchical is consistent with this topology's multi-level aggregation where weighted signals provide incremental value, while the lack of significant difference on parallel, sequential, and star---where agents either answer independently or share directionally---confirms that quality-weighted voting offers no systematic benefit over simple majority when agents share the same LLM backend. This confirms that AEIC quality signals measure \emph{reasoning coherence, not answer correctness}: a coherent wrong answer scores as highly as a correct one.
+\subsection{Cross-Model Generality: Opposite Pathological Attractors}
+\label{sec:crossmodel}
 
-Combined with the structured output ablation (Section~\ref{sec:structured_ablation}) and feature ablation results below, this reveals that AEIC's primary value lies in its \emph{structured decomposition}: by imposing parseable output format, it enables reliable conclusion extraction and consistent majority voting across all five topologies, which in turn produces the voting-pattern features that make adaptive routing possible.
+We replicate the debate condition on a matched 150-paper subset with homogeneous panels of GLM-4-Flash and DeepSeek-R1 (Figure~\ref{fig:s2}). Herding is universal---every model eliminates $\geq$83\% of minorities---but its \emph{direction} is model-dependent. DeepSeek-V3 and R1 panels ratchet toward rejection (100\% and 90\% of flips; accept baserates $\leq$19\%), whereas GLM-4-Flash panels ratchet toward \emph{acceptance} (0\% of flips toward rejection; accept baserate $\geq$97.6\%; 94.4\% of conclusions written as hedged ``Accept/Reject'' forms whose stance must be derived from the rating). Most strikingly, the strongest reasoner does not herd least: R1 achieves the best decision agreement (67.3\%) yet the largest variance collapse (76.4\%), versus 54.0\% for V3 and 12.3\% for GLM (whose panels begin near-unanimous). Capability does not protect against herding; it merely selects the attractor. GLM's near-total conformity also caps its decision quality at 38.7\%, 28.6pp below R1.
 
-\subsection{Value of Structured Output}
-\label{sec:structured_ablation}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_s2_crossmodel.pdf}
+\caption{Cross-model replication on the matched 150-paper subset. (a)~Independent accept rate per stratum: V3 and R1 are reject-biased, GLM is accept-biased. (b)~Minority elimination is universal ($\geq$83\%), but flip direction is model-dependent. (c)~The strongest reasoner (R1) suffers the largest variance collapse.}
+\label{fig:s2}
+\end{figure}
 
-To directly quantify the contribution of AEIC's structured format, we compare majority voting accuracy when stances are extracted from the structured Conclusion~(C) field versus the unstructured Inference~(I) field. The C-field is designed for extraction (e.g., ``Yes: [justification]''), while the I-field contains free-form reasoning chains without explicit answer markers.
+\subsection{Study 2a: Calibrated Aggregation Repairs the Reject Bias}
+\label{sec:study2a}
+
+The static Stackelberg layer optimizes aggregation parameters $\theta$ on a stratified train split (150 papers): per-reviewer weights $w_i$, signal weights on evidence specificity and $(+)$/$(-)$ balance, a calibration bias $\tau$, and a decision threshold, maximizing agreement minus $\lambda{\times}$calibration MAE (differential evolution; test-only reporting on the held-out 150). Learned $\theta^*$ exhibits a strong positive calibration $\tau{=}+1.04$---the optimizer's direct answer to the diagnosed reject bias---and upweights evidence-specific reviews ($\gamma_1{=}+1.09$).
 
 \begin{table}[t]
-\caption{Majority voting accuracy (\%) by extraction source. C-field: structured Conclusion with explicit answer prefix. I-field: unstructured Inference reasoning chain. Neutral rate: fraction of agent outputs where no stance could be extracted. Averages across all five topologies.}\label{tab:structured}
+\caption{Test-set decision agreement with official outcomes ($n{=}150$). $\theta^*$ repairs the clear-accept stratum from near-zero; most of the gain is already captured by re-thresholding the plain mean (trained threshold). MAE vs.\ human mean score.}
+\label{tab:study2a}
 \centering\small
 \begin{tabular}{@{}lccccc@{}}
 \toprule
-Dataset & C-field Acc & I-field Acc & $\Delta$ & C-neutral & I-neutral \\
+Method & Overall & Clear-acc. & Borderline & Clear-rej. & MAE \\
 \midrule
-MMLU-Hard & 79.8 & 46.7 & +33.1 & 12.2\% & 61.3\% \\
-StrategyQA & 74.5 & 51.1 & +23.4 & 12.5\% & 72.6\% \\
-TruthfulQA & 76.4 & 48.9 & +27.4 & 13.4\% & 65.2\% \\
-\midrule
-Average & 76.9 & 48.9 & +28.0 & 12.7\% & 66.4\% \\
+Majority vote & 60.0\% & 2.0\% & 78.0\% & 100\% & --- \\
+Mean threshold & 66.7\% & 44.0\% & 70.0\% & 86.0\% & 1.18 \\
+Meta-review (star) & 60.0\% & --- & --- & --- & --- \\
+$\theta^*$ aggregation & 64.7\% & 38.0\% & 68.0\% & 88.0\% & 1.14 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:structured} reveals a dramatic gap: C-field extraction achieves 76.9\% accuracy averaged across datasets and topologies, while I-field extraction yields only 48.9\%---near random for binary questions. The difference is driven by extraction reliability: the I-field produces unparseable (neutral) stances 66.4\% of the time versus 12.7\% for the C-field. When stances cannot be extracted, majority voting degrades to effectively random selection among the parseable subset. This confirms that AEIC's primary empirical contribution is not the quality signals but the structured format itself: the explicit Conclusion field with answer-prefixed format enables reliable cross-topology stance extraction, which is the prerequisite for both consistent majority voting and the voting-pattern features that drive adaptive routing.
+Table~\ref{tab:study2a} shows the result. Against majority vote, $\theta^*$ lifts clear-accept agreement from 2.0\% to 38.0\% and overall agreement by +4.7pp (McNemar $b{=}20$, $c{=}13$, $p{=}0.30$). A honest baseline check tempers the claim: re-thresholding the plain mean reaches 66.7\% overall. In a \emph{homogeneous} pool, calibration---in any form---is necessary and nearly sufficient; reviewer- and signal-level weighting adds little, consistent with the QA-domain finding that quality signals carry little discriminative power when agents share one backend.
 
-\subsection{Learned Parameter Analysis}
+\subsection{Study 2b: Prompt-Level Regulation Cannot Break the Ratchet}
+\label{sec:study2b}
 
-Figure~\ref{fig:theta} shows the optimized $\theta^*$ parameters across five topologies.
+The dynamic layer instantiates direction-neutral, evidence-anchored regulation: whenever a panel is non-unanimous, minority reviewers are instructed to change position only if peers rebut specific Evidence items (and to cite the rebutting evidence if they do), while majority reviewers must ground persuasion in specific rebuttals rather than headcounts. On the 89 of 300 panels where the intervention fires (173 minority injections), elimination drops only 78.0\%$\to$71.0\%, variance collapse is unchanged (51.1\%$\to$52.4\%), and intervened minorities persist at 29\% versus 28\% for matched unregulated controls; flips still run 87:1 toward rejection. Decision agreement is preserved (59.7\%$\to$60.7\%)---the safety endpoint holds. On GLM panels the intervention fires rarely (7\% of panels, since round-1 unanimity is near-total) and never rescues a minority (0/7). We report this as a negative result with a clear implication: \emph{rhetorical} anchoring cannot overcome capability-driven conformity; effective regulation must act on the aggregation mechanism or the deliberation structure, not on phrasing.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.8\linewidth]{figures/fig_theta_heatmap.pdf}
-\caption{Optimized $\theta^*$ parameters across five topologies (row-normalized). Star and debate learn near-zero $w_{\text{EV}}$ (anti-sycophancy). Hierarchical learns high $\lambda$ and elevated signal weights.}\label{fig:theta}
-\end{figure}
+\subsection{Study 2c: Routing Demotes Discussion to an On-Demand Resource}
+\label{sec:study2c}
 
-Three patterns emerge: (1)~\textbf{Anti-sycophancy}: Star and debate learn $w_{\text{EV}} \approx 0.01$, discarding cross-agent consensus where agents observe others' outputs, making EV a proxy for conformity. (2)~\textbf{High consensus pressure on chains}: Sequential ($\lambda = 4.80$) and hierarchical ($\lambda = 4.69$) enforce strong agreement to counteract directional information flow. (3)~\textbf{Elevated weights on hierarchical}: All signal weights are substantially higher (0.45--0.90 vs.\ 0.01--0.36 elsewhere), reflecting multi-level aggregation where every quality dimension helps identify reliable intermediaries.
-
-\subsection{Router Performance Progression}
-
-Figure~\ref{fig:router} shows the accuracy progression from single-agent to oracle.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.8\linewidth]{figures/fig_router_progression.pdf}
-\caption{Accuracy progression from single-agent to oracle. The per-dataset router closes 46.5\% of the gap between best fixed topology and oracle.}\label{fig:router}
-\end{figure}
-
-The shared router (86.9\%) improves substantially over the best fixed topology on aligned questions (star, 83.1\%). Per-dataset specialization adds +0.7pp (87.6\%), closing 46.5\% of the gap to the oracle ceiling (92.9\%). All router numbers use top-1 selection with 5-fold cross-validation.
-
-\paragraph{Per-dataset analysis.} The router's advantage varies across datasets: on MMLU-Hard, the per-dataset router achieves 92.5\% vs.\ star's 90.1\% (+2.4pp); on StrategyQA, 86.2\% vs.\ parallel's 81.7\% (+4.5pp); on TruthfulQA, 85.6\% vs.\ star's 81.4\% (+4.2pp). The largest improvement on StrategyQA reflects that commonsense reasoning benefits most from adaptive topology selection, as the gap between best and worst fixed topology is largest (81.7\% parallel vs.\ 71.0\% sequential).
-
-\paragraph{Why routing helps.} Figure~\ref{fig:topo_spec} shows the per-topology accuracy heatmap on aligned questions. No single topology dominates: star leads on MMLU-Hard (90.1\%) and TruthfulQA (81.4\%), but parallel is best for StrategyQA (81.7\%). The oracle ceiling (${\sim}93\%$) requires selecting different topologies for different questions---exactly what the router learns to do.
-
-\paragraph{Topology agreement.} On the 633 aligned questions, 55.1\% are answered correctly by all five topologies and 7.0\% by none---routing has no impact on these 62.1\%. The router's value comes from the remaining 37.9\% where topologies disagree, particularly the 9.0\% of ``hard'' questions where only 1--2 topologies succeed (Figure~\ref{fig:topo_agreement}).
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.65\linewidth]{figures/fig_topo_agreement.pdf}
-\caption{Distribution of correct topologies per question (633 aligned). The router's impact concentrates on the 37.9\% where topologies disagree (1--4 correct).}\label{fig:topo_agreement}
-\end{figure}
-
-\paragraph{Routing error analysis.} The shared router selects each topology with roughly balanced frequency (16--29\%), with star most frequently selected (28.6\%). Of 83 router errors (13.1\%), 44 occur on questions where \emph{no} topology produces correct consensus---inevitable misses. Only 39 errors (6.2\%) are routing mistakes where a correct topology existed but was not selected.
-
-\paragraph{Router feature importance.} Feature group ablation (zeroing each group and measuring accuracy change, Figure~\ref{fig:feature_imp}) reveals that \emph{voting features} (majority ratio, yes/no distribution) are the most important for routing ($-2.1$pp when ablated), followed by per-agent EV signals ($-0.3$pp). Removing EQ-related features \emph{improves} accuracy by up to 1.6pp. To control for feature interaction effects, we also retrain the router with feature subsets: voting-only features achieve 86.3\%$\pm$0.4\%, quality-only features achieve 86.1\%$\pm$0.3\%, and question-only features achieve 80.7\%$\pm$0.0\%, compared to full features at 86.9\%$\pm$0.5\%. The voting and quality features provide nearly identical routing accuracy independently (+5.6pp and +5.4pp over question-only), but combining them adds only +0.6pp, indicating high redundancy. This is consistent with the structured output analysis (Section~\ref{sec:structured_ablation}): the voting features---which require reliable stance extraction from AEIC-structured conclusions---capture the same topology-question interaction patterns that quality signals attempt to measure, but more directly.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.7\linewidth]{figures/fig_feature_importance.pdf}
-\caption{Router feature group importance via leave-one-out ablation. Positive drop means accuracy decreases when ablated (feature is useful). Voting features are most important; EQ features are harmful.}\label{fig:feature_imp}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.65\linewidth]{figures/fig_topo_specialization.pdf}
-\caption{MajVote accuracy by topology and dataset on aligned questions. No single topology dominates, motivating adaptive routing.}\label{fig:topo_spec}
-\end{figure}
-
-\subsection{Signal Ablation}
-
-Figure~\ref{fig:ablation} shows the contribution of each quality signal to AEIC+SG under star topology.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/fig_ablation.pdf}
-\caption{Signal ablation under star topology. EC is the most critical signal ($-1.15$pp). Removing EQ slightly improves accuracy, consistent with its low optimized weight.}\label{fig:ablation}
-\end{figure}
-
-EC is the most critical signal ($-1.15$pp). IC and EV each contribute ${\sim}0.5$pp. Removing EQ \emph{improves} accuracy by 0.40pp---evidence quality assessment introduces noise in some domains.
-
-\subsection{Online Stackelberg Feedback}
-\label{sec:online_exp}
-
-We evaluate the online Stackelberg mechanism (Section~\ref{sec:online_sg}) on debate and hierarchical topologies, comparing standard execution against online feedback where quality signals are injected between rounds. Table~\ref{tab:online} shows results on 30 questions per dataset.
+Since ${\sim}$70\% of panels are unanimous after round~1, deliberation is wasted on most papers. The routing layer selects per paper among four protocols---$\theta^*$ independent aggregation (5 calls), unregulated debate (15), regulated debate (15), meta-review (6)---using round-1-prospective features (stance entropy, rating mean/std, evidence specificity, evidence balance, inference length) with per-action logistic scorers estimating P(correct) on the train split.
 
 \begin{table}[t]
-\caption{Online vs.\ offline Stackelberg feedback (MajVote accuracy, \%, 30 questions per dataset). Online mode injects quality signals between rounds/phases.}\label{tab:online}
+\caption{Test-set routing vs.\ fixed protocols ($n{=}150$). The router matches the best fixed protocol at less than half the deliberation cost; the oracle shows headroom that round-1 features do not unlock.}
+\label{tab:study2c}
 \centering\small
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-Condition & MMLU-Hard & StrategyQA & TruthfulQA & Average \\
+Policy & Agreement & Avg.\ calls/paper \\
 \midrule
-Debate (offline) & 80.0 & 76.7 & 83.3 & 80.0 \\
-Debate (online) & \textbf{86.7} & 76.7 & 76.7 & 80.0 \\
-$\Delta$ (online$-$offline) & +6.7 & 0.0 & $-$6.7 & 0.0 \\
+Fixed $\theta^*$ independent & 64.7\% & 5.0 \\
+Fixed debate & 58.7\% & 15.0 \\
+Fixed debate-regulated & 60.7\% & 15.0 \\
+Fixed meta-review & 60.0\% & 6.0 \\
+Rule baseline (unanimous$\to$independent) & 60.0\% & 6.0 \\
 \midrule
-Hierarchical (offline) & 76.7 & 80.0 & 83.3 & 80.0 \\
-Hierarchical (online) & 76.7 & 73.3 & 76.7 & 75.6 \\
-$\Delta$ (online$-$offline) & 0.0 & $-$6.7 & $-$6.7 & $-$4.4 \\
+Router (argmax) & 64.7\% & 6.6 \\
+Router (cost-sensitive) & 64.7\% & 5.3 \\
+Oracle & 74.7\% & 5.3 \\
 \bottomrule
 \end{tabular}
-\\[2pt]
-{\footnotesize Offline uses cached responses; online uses live DeepSeek-V3 calls with inter-round quality feedback.}
 \end{table}
 
-The results reveal a nuanced picture: online feedback produces a large improvement on MMLU-Hard debate (+6.7pp), where the iterative debate structure allows agents to incorporate quality assessments and refine their reasoning. However, the effect is mixed on other dataset--topology combinations, with no overall improvement on debate (80.0\% both) and a decline on hierarchical ($-4.4$pp). The degradation on TruthfulQA suggests that quality feedback may encourage over-confidence on adversarially framed questions. These results motivate the dynamic regulation mechanism of Section~\ref{sec:dynamic}, which adaptively modulates feedback based on collective behavioral state rather than applying uniform quality exposure.
+Table~\ref{tab:study2c} shows that the router ties the best fixed protocol (64.7\%) at 6.6 calls per paper---a 56\% cost reduction versus always discussing (13.4$\times$ fewer calls than the 15-call protocols on 83\% of papers)---and its action mix (124/150 $\theta^*$-independent, 22 regulated-debate, 4 others) directly reflects the Study~1 finding that discussion rarely adds decision value. The 10pp oracle gap indicates headroom that round-1 features cannot yet unlock, a direction for richer prospective signals. Figure~\ref{fig:s3} summarizes all three interventions.
 
-\subsection{Dynamic Sycophancy Regulation}
-\label{sec:dynamic_exp}
-
-We evaluate the dynamic sycophancy regulation mechanism (Section~\ref{sec:dynamic}) on debate topology with $n{=}50$ matched questions per dataset, comparing three conditions: \emph{baseline} (no inter-round feedback), \emph{static} (uniform quality feedback as in Section~\ref{sec:online_exp}), and \emph{dynamic} (adaptive behavioral regulation with state detection and differentiated prompts). All conditions use live DeepSeek-V3 API calls on the same question sets to ensure fair comparison.
-
-\begin{table}[t]
-\caption{Dynamic sycophancy regulation on debate topology (MajVote accuracy, \%, $n{=}50$ per dataset). All conditions use live API calls with matched question sets.}\label{tab:dynamic}
-\centering\small
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-Condition & MMLU-Hard & StrategyQA & TruthfulQA & Average \\
-\midrule
-Baseline (no feedback) & 86.0 & 78.0 & 88.0 & 84.0 \\
-Static (online) & 86.0 & 74.0 & 86.0 & 82.0 \\
-Dynamic (adaptive) & \textbf{94.0} & 74.0 & 86.0 & 84.7 \\
-\midrule
-$\Delta$ (static $-$ baseline) & 0.0 & $-$4.0 & $-$2.0 & $-$2.0 \\
-$\Delta$ (dynamic $-$ baseline) & \textbf{+8.0} & $-$4.0 & $-$2.0 & +0.7 \\
-$\Delta$ (dynamic $-$ static) & \textbf{+8.0} & 0.0 & 0.0 & +2.7 \\
-\bottomrule
-\end{tabular}
-\\[2pt]
-{\footnotesize All conditions use $n{=}50$ matched questions per dataset with live API calls.}
-\end{table}
-
-The primary finding is that dynamic regulation produces a substantial improvement over both baseline and static feedback on MMLU-Hard (+8.0pp), but does not improve on StrategyQA or TruthfulQA. The MMLU-Hard result---the dataset with the most complex, knowledge-intensive reasoning requirements---confirms the mechanism's value: detecting and counteracting sycophantic convergence during multi-agent deliberation on difficult mathematical and scientific questions. Bootstrap analysis gives a 95\% CI of $[-4, +20]$pp for this difference at $n{=}50$, indicating marginal significance that warrants larger-scale validation.
-
-On StrategyQA and TruthfulQA, dynamic regulation neither helps nor hurts relative to baseline, while static feedback consistently degrades performance by 2--4pp. This suggests that simply exposing quality assessments between rounds (static) introduces noise that agents struggle to interpret on commonsense and factual questions, whereas dynamic regulation's selective intervention avoids this pitfall.
-
-Analyzing the behavioral dynamics across 256 inter-round transitions (50 questions $\times$ approximately 3 rounds $\times$ 2 transitions): 75.4\% were classified as \emph{healthy} (no intervention), 7.8\% as \emph{sycophantic} (anti-sycophancy prompt and EV suppression), and 16.8\% as \emph{deadlock} (exchange encouragement). The sycophantic state is rare but consequential: transitions with SCR $\geq 0.6$ are associated with only 55.0\% question-level accuracy versus 88.9\% for SCR $< 0.2$, confirming that high stance-change rates correlate with incorrect consensus. Deadlock transitions are more common and moderately associated with lower accuracy (74.4\% with intervention vs.\ 87.6\% healthy).
-
-Grid search over detection thresholds (Section~\ref{sec:dynamic}) using the recorded dynamics data indicates that $\tau_h = 0.45$, $\tau_l = 0.05$ would maximize accuracy separation between intervened and non-intervened transitions---suggesting that the current thresholds ($\tau_h = 0.6$, $\tau_l = 0.2$) are conservative. Future bilevel optimization over all 21 parameters (Section~\ref{sec:bilevel}) is expected to discover more effective configurations, particularly for task-specific threshold tuning.
-
-\subsection{Accuracy--Incentive Trade-off}
-
-The optimized $\theta^*$ configurations naturally achieve high incentive compatibility without explicit IC constraints: IC rates of 98.9\% (parallel), 94.0\% (sequential), 98.4\% (star), and 100.0\% (debate). Hierarchical is the exception at 24.2\%, reflecting its elevated signal weights that prioritize multi-level aggregation over strict quality ordering. This suggests that accuracy optimization alone produces near-IC mechanisms---the Stackelberg weight structure inherently rewards higher-quality reasoning. The $\lambda$ term (Theorem~\ref{thm:ic}) provides a formal guarantee for adversarial settings but is largely redundant when agents share the same LLM backend.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_s3_interventions.pdf}
+\caption{Study~2 interventions. (a)~Calibrated aggregation repairs the clear-accept stratum. (b)~Prompt-level behavioral regulation barely moves minority elimination while preserving decision agreement. (c)~Routing matches the best fixed protocol at the cost frontier.}
+\label{fig:s3}
+\end{figure}

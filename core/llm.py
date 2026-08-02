@@ -42,12 +42,66 @@ ZHIPU_MODEL = os.environ.get("ZHIPU_MODEL", "glm-4-flash")
 ALI_API_KEY = os.environ.get("ALI_API_KEY", "")
 ALI_BASE_URL = os.environ.get("ALI_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
 ALI_EMBED_MODEL = os.environ.get("ALI_EMBED_MODEL", "text-embedding-v3")
+ALI_CHAT_MODEL = os.environ.get("ALI_CHAT_MODEL", "qwen-plus")
 
 # 多LLM后端配置
 LLM_BACKENDS = {
     "deepseek": {"api_key": DEEPSEEK_API_KEY, "base_url": DEEPSEEK_BASE_URL, "model": DEEPSEEK_MODEL},
+    "deepseek_reasoner": {"api_key": DEEPSEEK_API_KEY, "base_url": DEEPSEEK_BASE_URL, "model": "deepseek-reasoner"},
     "zhipu_flash": {"api_key": ZHIPU_API_KEY, "base_url": ZHIPU_BASE_URL, "model": ZHIPU_MODEL},
+    "ali_qwen": {"api_key": ALI_API_KEY, "base_url": ALI_BASE_URL, "model": ALI_CHAT_MODEL},
 }
+
+
+def install_dns_fallback(hostname: str, dns_server: str = "223.5.5.5") -> bool:
+    """系统 DNS 解析失败时，给 socket.getaddrinfo 打补丁（公共 DNS）。
+
+    解析顺序：1) dig @公共DNS（UDP）；2) AliDNS DoH（HTTPS，UDP 被断时用）。
+    补丁只影响 TCP 连接目标，TLS SNI 与证书校验仍用原域名，安全语义不变。
+    """
+    import socket
+    import subprocess
+    try:
+        socket.getaddrinfo(hostname, 443)
+        return False  # 系统 DNS 正常，无需补丁
+    except socket.gaierror:
+        pass
+    import re as _re
+    _ipv4 = _re.compile(r"^\d{1,3}(\.\d{1,3}){3}$")
+    ips: list = []
+    try:
+        out = subprocess.run(
+            ["dig", "+short", f"@{dns_server}", hostname],
+            capture_output=True, text=True, timeout=10).stdout
+        ips = [ln.strip() for ln in out.splitlines()
+               if _ipv4.match(ln.strip())]
+    except Exception:
+        ips = []
+    if not ips:
+        # DoH 回退：UDP 53 被断时走 HTTPS（223.5.5.5 是 IP，免 DNS）
+        try:
+            resp = requests.get(
+                f"https://{dns_server}/resolve",
+                params={"name": hostname, "type": "A"}, timeout=10,
+                verify=False)
+            data = resp.json()
+            ips = [a["data"] for a in data.get("Answer", [])
+                   if a.get("type") == 1 and _ipv4.match(a.get("data", ""))]
+        except Exception:
+            ips = []
+    if not ips:
+        return False
+    ip = ips[0]
+    orig = socket.getaddrinfo
+
+    def patched(host, *args, **kwargs):
+        if host == hostname:
+            host = ip
+        return orig(host, *args, **kwargs)
+
+    socket.getaddrinfo = patched
+    print(f"  [dns_fallback] {hostname} -> {ip}")
+    return True
 
 
 # ── Agent Personas ───────────────────────────────────────────
@@ -192,16 +246,22 @@ class LLMClient:
             url = f"{self.base_url}/chat/completions"
         else:
             url = f"{self.base_url}/v1/chat/completions"
+        model = kwargs.get("model", self.model)
         payload = {
-            "model": kwargs.get("model", self.model),
+            "model": model,
             "messages": messages,
             "temperature": temperature,
             "max_tokens": kwargs.get("max_tokens", self.max_tokens),
         }
+        # deepseek-reasoner 不支持 temperature 等采样参数
+        reasoner = "reasoner" in str(model).lower()
+        if reasoner:
+            payload.pop("temperature", None)
+        req_timeout = 180 if reasoner else 90
 
         for attempt in range(5):
             try:
-                resp = self.session.post(url, json=payload, timeout=90)
+                resp = self.session.post(url, json=payload, timeout=req_timeout)
                 resp.raise_for_status()
                 data = resp.json()
                 self._call_count += 1

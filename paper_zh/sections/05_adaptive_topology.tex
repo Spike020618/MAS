@@ -26,7 +26,14 @@
     \theta^*_T = \arg\max_{\theta \in \Theta} \; \text{Accuracy}_T(\theta) + \lambda \cdot \text{IC}_T(\theta)
 \end{equation}
 
-这产生了五种专门的共识配置。优化后的参数揭示了特定拓扑的结构特性（图~\ref{fig:theta}）：星形和辩论拓扑为 EV 学习到了接近于零的权重（$w_{\text{EV}} \approx 0.01$），抑制了阿谀奉承风险最高的跨智能体共识信号。分层和顺序拓扑则学习到了较高的共识压力（$\lambda_c > 4.5$），强制在其链式/树状结构内达成一致。
+这产生了五种专门的共识配置。优化后的参数揭 示了特定拓扑的结构特性（图~\ref{fig:theta}）：星形和辩论拓扑为 EV 学习到了接近于零的权重（$w_{\text{EV}} \approx 0.01$），抑制了阿谀奉承风险最高的跨智能体共识信号。分层和顺序拓扑则学习到了较高的共识压力（$\lambda_c > 4.5$），强制在其链式/树状结构内达成一致。
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\columnwidth]{figures/fig_theta_heatmap.pdf}
+\caption{逐拓扑优化参数 $\theta^*_T$（问答领域验证）。星型与辩论拓扑学到接近零的 EV 权重——涌现出的反谄媚配置；层级与顺序拓扑学到高共识压力 $\lambda_c$。}
+\label{fig:theta}
+\end{figure}
 
 \subsection{神经拓扑路由器}
 \label{sec:router}
