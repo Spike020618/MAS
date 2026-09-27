@@ -1,0 +1,68 @@
+{
+  "manifest_version": "1.0",
+  "schema_version": "aeic-md.v1",
+  "status": "pilot_locked",
+  "seed": 42,
+  "research_name": "AEIC-MD",
+  "datasets": ["StrategyQA", "MMLU-Hard", "TruthfulQA"],
+  "pilot_samples_per_dataset": 50,
+  "formal_samples_per_dataset": 150,
+  "n_agents": 5,
+  "n_rounds": 3,
+  "mechanism_similarity": "paraphrase-multilingual-MiniLM-L12-v2 cosine",
+  "pilot_reward_scale_levels": [0.05, 0.2, 0.5],
+  "actions": ["low_effort", "aeic_effort", "verify", "defer_imitate"],
+  "behavior_conditions": [
+    "independent",
+    "evidence_update",
+    "social_only",
+    "copy_pressure",
+    "counterevidence"
+  ],
+  "mechanism_conditions": [
+    "no_mechanism",
+    "outcome_only",
+    "static_aeic",
+    "aeic_contract",
+    "adaptive_stackelberg"
+  ],
+  "primary_endpoints": [
+    "high_effort_choice_rate",
+    "unsupported_flip_rate",
+    "evidence_novelty",
+    "decision_quality",
+    "total_utility"
+  ],
+  "secondary_endpoints": [
+    "evidence_conditioned_flip_rate",
+    "copy_score",
+    "token_cost",
+    "latency_s",
+    "diversity_retention"
+  ],
+  "noninferiority_margin_decision_quality_pp": 2.0,
+  "pilot_gates": {
+    "min_action_share": 0.10,
+    "max_action_share": 0.90,
+    "min_parse_rate": 0.95,
+    "max_api_failure_rate": 0.05,
+    "min_cost_log_completeness": 0.99,
+    "require_monotonic_manipulation_response": true,
+    "max_pilot_revisions": 2
+  },
+  "analysis": {
+    "binary": "paired_mcnemar_or_mixed_logistic",
+    "continuous": "paired_wilcoxon_and_mixed_effects",
+    "interval": "wilson_95",
+    "multiplicity": "holm",
+    "report_effect_sizes": true,
+    "report_raw_counts": true
+  },
+  "leakage_prohibitions": [
+    "ground_truth_as_router_feature",
+    "official_review_stratum_as_feature",
+    "post_outcome_features_for_routing",
+    "test_set_hyperparameter_selection",
+    "ground_truth_settlement_before_final_round"
+  ]
+}

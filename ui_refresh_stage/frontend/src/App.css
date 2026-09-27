@@ -1,0 +1,53 @@
+/* 基础样式 */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: #e1f2f8;
+}
+
+.app {
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 视频网格 */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 一行5列 */
+  gap: 16px; /* 卡片间距 */
+  padding: 18px; /* 内边距，卡片与容器间距 */
+  background: linear-gradient(180deg, #ffffff, #fbfdff); /* 与页面微弱区分 */
+  border-radius: 12px; /* 圆角让容器更柔和 */
+  box-shadow: 0 6px 20px rgba(2,6,23,0.04);
+  margin: 12px; /* 与界面边缘保持细微间距 */
+}
+/* 响应式调整（小屏幕时减少列数） */
+@media (max-width: 1200px) {
+  .video-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .video-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .video-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}

@@ -1,0 +1,31 @@
+{
+  "matrix_version": "fixed-backend-control-v12.0",
+  "purpose": "Minimal same-backend control for the contract effect without GLM/Reasoner routing confounding",
+  "decision_source": "docs/deep_project_audit_2026-09-06.md#p0-1正式质量增益被模型后端路由混杂",
+  "defaults": {
+    "split": "test",
+    "n_samples": 50,
+    "behavior": "independent",
+    "reward_scale": 0.2,
+    "n_agents": 3,
+    "n_rounds": 1,
+    "seed": 20260907,
+    "max_attempts": 3,
+    "backends": ["deepseek"],
+    "resource_tiered": false,
+    "similarity": "lexical",
+    "experiment_id": "aeic-md-v12-fixed-backend-control",
+    "out": "results/mechanism/control/fixed_backend_control_v12.jsonl"
+  },
+  "planned_contrasts": [
+    {"name": "static_vs_none_fixed_backend", "left": "independent__no_mechanism@0.2", "right": "independent__static_aeic@0.2"}
+  ],
+  "jobs": [
+    {"dataset": "StrategyQA", "mechanism": "no_mechanism"},
+    {"dataset": "StrategyQA", "mechanism": "static_aeic"},
+    {"dataset": "MMLU-Hard", "mechanism": "no_mechanism"},
+    {"dataset": "MMLU-Hard", "mechanism": "static_aeic"},
+    {"dataset": "TruthfulQA", "mechanism": "no_mechanism"},
+    {"dataset": "TruthfulQA", "mechanism": "static_aeic"}
+  ]
+}

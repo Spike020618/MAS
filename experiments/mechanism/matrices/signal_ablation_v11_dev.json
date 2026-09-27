@@ -1,0 +1,46 @@
+{
+  "matrix_version": "signal-ablation-v11.0-dev",
+  "purpose": "E6 component-wise StaticAEIC signal ablation with a decomposed full-mask control",
+  "defaults": {
+    "split": "dev",
+    "n_samples": 50,
+    "behavior": "independent",
+    "mechanism": "static_aeic",
+    "reward_scale": 0.2,
+    "cost_scale": 1.0,
+    "n_agents": 5,
+    "n_rounds": 3,
+    "seed": 42,
+    "max_attempts": 3,
+    "backends": ["deepseek"],
+    "resource_tiered": true,
+    "similarity": "embedding",
+    "experiment_id": "aeic-md-v11-signal-ablation-dev",
+    "out": "results/mechanism/pilot/signal_ablation_v11_dev.jsonl"
+  },
+  "contrasts": [
+    {"name": "minus_A_vs_full", "left": "independent__static_aeic@0.2__signals@AEIC", "right": "independent__static_aeic@0.2__signals@EIC"},
+    {"name": "minus_E_vs_full", "left": "independent__static_aeic@0.2__signals@AEIC", "right": "independent__static_aeic@0.2__signals@AIC"},
+    {"name": "minus_I_vs_full", "left": "independent__static_aeic@0.2__signals@AEIC", "right": "independent__static_aeic@0.2__signals@AEC"},
+    {"name": "minus_C_vs_full", "left": "independent__static_aeic@0.2__signals@AEIC", "right": "independent__static_aeic@0.2__signals@AEI"}
+  ],
+  "jobs": [
+    {"dataset": "StrategyQA", "signal_mask": "AEIC", "label": "full"},
+    {"dataset": "StrategyQA", "signal_mask": "EIC", "label": "minus_A"},
+    {"dataset": "StrategyQA", "signal_mask": "AIC", "label": "minus_E"},
+    {"dataset": "StrategyQA", "signal_mask": "AEC", "label": "minus_I"},
+    {"dataset": "StrategyQA", "signal_mask": "AEI", "label": "minus_C"},
+
+    {"dataset": "MMLU-Hard", "signal_mask": "AEIC", "label": "full"},
+    {"dataset": "MMLU-Hard", "signal_mask": "EIC", "label": "minus_A"},
+    {"dataset": "MMLU-Hard", "signal_mask": "AIC", "label": "minus_E"},
+    {"dataset": "MMLU-Hard", "signal_mask": "AEC", "label": "minus_I"},
+    {"dataset": "MMLU-Hard", "signal_mask": "AEI", "label": "minus_C"},
+
+    {"dataset": "TruthfulQA", "signal_mask": "AEIC", "label": "full"},
+    {"dataset": "TruthfulQA", "signal_mask": "EIC", "label": "minus_A"},
+    {"dataset": "TruthfulQA", "signal_mask": "AIC", "label": "minus_E"},
+    {"dataset": "TruthfulQA", "signal_mask": "AEC", "label": "minus_I"},
+    {"dataset": "TruthfulQA", "signal_mask": "AEI", "label": "minus_C"}
+  ]
+}

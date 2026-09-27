@@ -1,0 +1,41 @@
+{
+  "matrix_version": "boundary-v11.0-dev",
+  "purpose": "E3 one-factor-at-a-time incentive/cost response curves; center point reuses v10 static AEIC dev50",
+  "defaults": {
+    "split": "dev",
+    "n_samples": 50,
+    "behavior": "independent",
+    "mechanism": "static_aeic",
+    "reward_scale": 0.2,
+    "cost_scale": 1.0,
+    "n_agents": 5,
+    "n_rounds": 3,
+    "seed": 42,
+    "max_attempts": 3,
+    "backends": ["deepseek"],
+    "resource_tiered": true,
+    "similarity": "embedding",
+    "experiment_id": "aeic-md-v11-boundary-dev",
+    "out": "results/mechanism/pilot/boundary_v11_dev.jsonl"
+  },
+  "contrasts": [
+    {"name": "reward_high_vs_low", "left": "independent__static_aeic@0.05", "right": "independent__static_aeic@0.5"},
+    {"name": "cost_high_vs_low", "left": "independent__static_aeic@0.2__cost@0.5", "right": "independent__static_aeic@0.2__cost@1.5"}
+  ],
+  "jobs": [
+    {"dataset": "StrategyQA", "reward_scale": 0.05, "label": "reward_low"},
+    {"dataset": "StrategyQA", "reward_scale": 0.5, "label": "reward_high"},
+    {"dataset": "StrategyQA", "cost_scale": 0.5, "label": "cost_low"},
+    {"dataset": "StrategyQA", "cost_scale": 1.5, "label": "cost_high"},
+
+    {"dataset": "MMLU-Hard", "reward_scale": 0.05, "label": "reward_low"},
+    {"dataset": "MMLU-Hard", "reward_scale": 0.5, "label": "reward_high"},
+    {"dataset": "MMLU-Hard", "cost_scale": 0.5, "label": "cost_low"},
+    {"dataset": "MMLU-Hard", "cost_scale": 1.5, "label": "cost_high"},
+
+    {"dataset": "TruthfulQA", "reward_scale": 0.05, "label": "reward_low"},
+    {"dataset": "TruthfulQA", "reward_scale": 0.5, "label": "reward_high"},
+    {"dataset": "TruthfulQA", "cost_scale": 0.5, "label": "cost_low"},
+    {"dataset": "TruthfulQA", "cost_scale": 1.5, "label": "cost_high"}
+  ]
+}

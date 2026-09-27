@@ -1,0 +1,31 @@
+{
+  "matrix_version": "heldout-glm-v11.0-dev",
+  "purpose": "E6 held-out follower-policy generalization; GLM chooses actions while resource tiers remain fixed",
+  "defaults": {
+    "split": "dev",
+    "n_samples": 50,
+    "behavior": "independent",
+    "reward_scale": 0.2,
+    "cost_scale": 1.0,
+    "n_agents": 5,
+    "n_rounds": 3,
+    "seed": 42,
+    "max_attempts": 3,
+    "backends": ["zhipu_flash"],
+    "resource_tiered": true,
+    "similarity": "embedding",
+    "experiment_id": "aeic-md-v11-heldout-glm-dev",
+    "out": "results/mechanism/pilot/heldout_glm_v11_dev.jsonl"
+  },
+  "contrasts": [
+    {"name": "heldout_static_vs_none", "left": "independent__no_mechanism@0.2", "right": "independent__static_aeic@0.2"}
+  ],
+  "jobs": [
+    {"dataset": "StrategyQA", "mechanism": "no_mechanism"},
+    {"dataset": "StrategyQA", "mechanism": "static_aeic"},
+    {"dataset": "MMLU-Hard", "mechanism": "no_mechanism"},
+    {"dataset": "MMLU-Hard", "mechanism": "static_aeic"},
+    {"dataset": "TruthfulQA", "mechanism": "no_mechanism"},
+    {"dataset": "TruthfulQA", "mechanism": "static_aeic"}
+  ]
+}

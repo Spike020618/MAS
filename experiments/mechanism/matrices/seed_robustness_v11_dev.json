@@ -1,0 +1,38 @@
+{
+  "matrix_version": "seed-robustness-v11.0-dev",
+  "purpose": "E6 paired robustness replication at seeds 7 and 99; seed 42 is supplied by v10",
+  "defaults": {
+    "split": "dev",
+    "n_samples": 50,
+    "behavior": "independent",
+    "reward_scale": 0.2,
+    "cost_scale": 1.0,
+    "n_agents": 5,
+    "n_rounds": 3,
+    "max_attempts": 3,
+    "backends": ["deepseek"],
+    "resource_tiered": true,
+    "similarity": "embedding",
+    "experiment_id": "aeic-md-v11-seed-robustness-dev",
+    "out": "results/mechanism/pilot/seed_robustness_v11_dev.jsonl"
+  },
+  "contrasts": [
+    {"name": "static_vs_none_pooled_seeds", "left": "independent__no_mechanism@0.2", "right": "independent__static_aeic@0.2"}
+  ],
+  "jobs": [
+    {"dataset": "StrategyQA", "mechanism": "no_mechanism", "seed": 7, "label": "no_seed7"},
+    {"dataset": "StrategyQA", "mechanism": "static_aeic", "seed": 7, "label": "static_seed7"},
+    {"dataset": "StrategyQA", "mechanism": "no_mechanism", "seed": 99, "label": "no_seed99"},
+    {"dataset": "StrategyQA", "mechanism": "static_aeic", "seed": 99, "label": "static_seed99"},
+
+    {"dataset": "MMLU-Hard", "mechanism": "no_mechanism", "seed": 7, "label": "no_seed7"},
+    {"dataset": "MMLU-Hard", "mechanism": "static_aeic", "seed": 7, "label": "static_seed7"},
+    {"dataset": "MMLU-Hard", "mechanism": "no_mechanism", "seed": 99, "label": "no_seed99"},
+    {"dataset": "MMLU-Hard", "mechanism": "static_aeic", "seed": 99, "label": "static_seed99"},
+
+    {"dataset": "TruthfulQA", "mechanism": "no_mechanism", "seed": 7, "label": "no_seed7"},
+    {"dataset": "TruthfulQA", "mechanism": "static_aeic", "seed": 7, "label": "static_seed7"},
+    {"dataset": "TruthfulQA", "mechanism": "no_mechanism", "seed": 99, "label": "no_seed99"},
+    {"dataset": "TruthfulQA", "mechanism": "static_aeic", "seed": 99, "label": "static_seed99"}
+  ]
+}

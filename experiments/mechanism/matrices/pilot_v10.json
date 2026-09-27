@@ -1,0 +1,36 @@
+{
+  "matrix_version": "pilot-v10.1",
+  "purpose": "Three-domain real follower-response dev pilot; no test access",
+  "defaults": {
+    "split": "dev",
+    "n_samples": 50,
+    "behavior": "independent",
+    "reward_scale": 0.2,
+    "n_agents": 5,
+    "n_rounds": 3,
+    "seed": 42,
+    "max_attempts": 3,
+    "backends": ["deepseek"],
+    "resource_tiered": true,
+    "similarity": "embedding",
+    "experiment_id": "aeic-md-v10-resource-pilot",
+    "out": "results/mechanism/pilot/pilot_v10_three_domain_dev50.jsonl"
+  },
+  "jobs": [
+    {"dataset": "StrategyQA", "mechanism": "no_mechanism"},
+    {"dataset": "StrategyQA", "mechanism": "outcome_only"},
+    {"dataset": "StrategyQA", "mechanism": "static_aeic"},
+    {"dataset": "StrategyQA", "mechanism": "aeic_contract"},
+    {"dataset": "StrategyQA", "mechanism": "adaptive_stackelberg"},
+    {"dataset": "MMLU-Hard", "mechanism": "no_mechanism"},
+    {"dataset": "MMLU-Hard", "mechanism": "outcome_only"},
+    {"dataset": "MMLU-Hard", "mechanism": "static_aeic"},
+    {"dataset": "MMLU-Hard", "mechanism": "aeic_contract"},
+    {"dataset": "MMLU-Hard", "mechanism": "adaptive_stackelberg"},
+    {"dataset": "TruthfulQA", "mechanism": "no_mechanism"},
+    {"dataset": "TruthfulQA", "mechanism": "outcome_only"},
+    {"dataset": "TruthfulQA", "mechanism": "static_aeic"},
+    {"dataset": "TruthfulQA", "mechanism": "aeic_contract"},
+    {"dataset": "TruthfulQA", "mechanism": "adaptive_stackelberg"}
+  ]
+}

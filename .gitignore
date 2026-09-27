@@ -217,8 +217,12 @@ logs/
 *~
 
 # Data files (keep examples, ignore generated)
+data/raw/
+data/processed/
 data/generated/
 data/cache/
+benchmarks/movie_consensus/*.jsonl
+benchmarks/movie_consensus/*.csv
 
 # Experiment outputs
 experiments/output/

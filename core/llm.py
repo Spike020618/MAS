@@ -52,6 +52,15 @@ LLM_BACKENDS = {
     "ali_qwen": {"api_key": ALI_API_KEY, "base_url": ALI_BASE_URL, "model": ALI_CHAT_MODEL},
 }
 
+# Last-resort addresses observed from authoritative/public DNS during successful
+# project runs. They are used only when system DNS, UDP DNS, and DoH all fail;
+# the HTTPS URL remains the hostname, so TLS still verifies the intended host.
+KNOWN_FALLBACK_IPS = {
+    "api.deepseek.com": ["36.147.63.115", "111.12.215.79", "39.156.8.67"],
+    "open.bigmodel.cn": ["60.205.172.105"],
+    "dashscope.aliyuncs.com": ["47.74.214.77"],
+}
+
 
 def install_dns_fallback(hostname: str, dns_server: str = "223.5.5.5") -> bool:
     """系统 DNS 解析失败时，给 socket.getaddrinfo 打补丁（公共 DNS）。
@@ -90,8 +99,12 @@ def install_dns_fallback(hostname: str, dns_server: str = "223.5.5.5") -> bool:
         except Exception:
             ips = []
     if not ips:
+        ips = list(KNOWN_FALLBACK_IPS.get(hostname, []))
+    if not ips:
         return False
-    ip = ips[0]
+    # Rotate across processes/calls so a stale edge address does not become a
+    # single point of failure.
+    ip = ips[int(time.time()) % len(ips)]
     orig = socket.getaddrinfo
 
     def patched(host, *args, **kwargs):
@@ -222,6 +235,9 @@ class LLMClient:
         self.max_tokens = max_tokens
         self._session = None
         self._call_count = 0
+        self.last_usage = {}
+        self.last_latency_s = None
+        self.last_status_code = None
 
         if not self.api_key:
             raise ValueError(
@@ -253,6 +269,8 @@ class LLMClient:
             "temperature": temperature,
             "max_tokens": kwargs.get("max_tokens", self.max_tokens),
         }
+        if kwargs.get("response_format"):
+            payload["response_format"] = kwargs["response_format"]
         # deepseek-reasoner 不支持 temperature 等采样参数
         reasoner = "reasoner" in str(model).lower()
         if reasoner:
@@ -261,16 +279,30 @@ class LLMClient:
 
         for attempt in range(5):
             try:
+                t0 = time.time()
                 resp = self.session.post(url, json=payload, timeout=req_timeout)
+                self.last_latency_s = time.time() - t0
+                self.last_status_code = resp.status_code
                 resp.raise_for_status()
                 data = resp.json()
                 self._call_count += 1
+                self.last_usage = data.get("usage") or {}
                 msg = data["choices"][0]["message"]
                 content = msg.get("content") or msg.get("reasoning_content") or ""
                 return content
             except (requests.exceptions.Timeout,
                     requests.exceptions.ConnectionError) as e:
                 if attempt < 4:
+                    # DNS can degrade after a process starts. Re-evaluate the
+                    # fallback on every connection failure instead of only at
+                    # experiment startup.
+                    try:
+                        from urllib.parse import urlparse
+                        host = urlparse(self.base_url).hostname
+                        if host:
+                            install_dns_fallback(host)
+                    except Exception:
+                        pass
                     time.sleep(2 ** attempt)
                     continue
                 raise
@@ -278,7 +310,14 @@ class LLMClient:
                 if resp.status_code == 429:
                     time.sleep(3 * (attempt + 1))
                     continue
-                raise
+                # Provider validation messages are essential for diagnosing
+                # backend-compatibility failures. Bound and normalize the body;
+                # request headers (including credentials) are never included.
+                detail = " ".join((resp.text or "").split())[:500]
+                raise requests.exceptions.HTTPError(
+                    f"HTTP {resp.status_code} from {self.backend}: {detail}",
+                    response=resp,
+                ) from e
         raise RuntimeError(f"API call failed after 5 attempts (last status: 429)")
 
     def generate_aeic(self, question: str, persona_id: int = 0,

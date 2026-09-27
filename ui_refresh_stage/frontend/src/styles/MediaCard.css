@@ -1,0 +1,287 @@
+:root{
+  --card-bg: #ffffff;
+  --muted: #6b7280;
+  --accent: #1890ff;
+  --accent-dark: #095bb0;
+  --shadow: 0 10px 30px rgba(2,6,23,0.08);
+}
+
+/* 视频卡片 */
+.video-card{
+  width: 100%;
+  background: linear-gradient(180deg, var(--card-bg), #fbfdff);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.video-card:hover{
+  transform: translateY(-6px); 
+  box-shadow: 0 18px 40px rgba(2,6,23,0.12);
+}
+
+.thumbnail-container{
+  background: #000;
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 */
+  overflow: hidden;
+}
+
+.thumbnail{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 悬停时的暗色遮罩 */
+.thumbnail-overlay{
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(2,6,23,0.0), rgba(2,6,23,0.18));
+  opacity: 0;
+  transition: opacity .18s ease;
+  pointer-events: none;
+}
+
+.thumbnail-container:hover .thumbnail-overlay{
+  opacity: 1;
+}
+
+/* 播放按钮 */
+.play-button{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, rgba(0,0,0,0.92), rgba(0,0,0,0.68));
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 4;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.36);
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  opacity: 1;
+}
+
+.play-button:hover{
+  transform: translate(-50%, -50%) scale(1.06); 
+  box-shadow: 0 14px 36px rgba(0,0,0,0.42);
+}
+
+.play-button:focus{
+  outline: 3px solid rgba(0,0,0,0.18); 
+  outline-offset: 4px;
+}
+
+/* 时长标签 */
+.duration{
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  z-index: 5;
+  font-weight: 500;
+}
+
+/* 信息区域 */
+.info{
+  padding: 14px 16px;
+  border-top: 1px solid #f3f6f9;
+  background: transparent;
+}
+
+.info h3{
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #0f1724;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 导演信息 */
+.director{
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 类型信息 */
+.genres{
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 元信息（评分、年份） */
+.meta-info{
+  display: flex;
+  gap: 12px;
+  margin: 8px 0;
+  font-size: 13px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.rating{
+  font-weight: 500;
+  color: #ff9900;
+}
+
+.year{
+  color: #999;
+}
+
+/* 播放量信息 - 重点突出 */
+.views-info{
+  font-size: 14px;
+  color: #2196f3;
+  font-weight: 500;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 简介 */
+.description{
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-top: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 旧的元数据样式兼容 */
+.meta{
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.meta img, 
+.meta .view-icon { 
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.meta svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* 全屏播放样式 */
+.fullscreen-overlay{
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fullscreen-overlay video,
+.fullscreen-overlay iframe {
+  width: 100%; 
+  height: 100%; 
+  max-height: 100vh; 
+  object-fit: contain;
+}
+
+/* 关闭按钮 */
+.close-button{
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  left: auto;
+  opacity: 0;
+  transition: opacity .24s ease, transform .18s ease;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 1100;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.close-button:hover{
+  background: rgba(0,0,0,0.75);
+}
+
+.fullscreen-overlay:hover .close-button{
+  opacity: 1;
+}
+
+/* 响应式设计 */
+@media (max-width: 880px){
+  .play-button{
+    width: 56px; 
+    height: 56px; 
+    font-size: 20px;
+  }
+  .thumbnail-container{
+    padding-bottom: 56.25%;
+  }
+}
+
+@media (max-width: 520px){
+  .play-button{
+    width: 48px; 
+    height: 48px; 
+    font-size: 18px;
+  }
+  .info{
+    padding: 12px;
+  }
+  .info h3{
+    font-size: 14px;
+  }
+  .director,
+  .genres,
+  .meta-info,
+  .views-info,
+  .description{
+    font-size: 12px;
+  }
+}

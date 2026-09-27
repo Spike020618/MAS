@@ -1,0 +1,133 @@
+:root{
+  --bg: #ffffff;
+  --muted: #6b7280;
+  --primary: #1890ff;
+  --primary-600: #4da2fd;
+  --glass: rgba(24,144,255,0.08);
+  --card-shadow: 0 6px 18px rgba(15,23,42,0.06);
+}
+
+.header{
+  background: linear-gradient(180deg, var(--bg), #fbfdff);
+  box-shadow: var(--card-shadow);
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(6px);
+  border-radius: 10px;
+}
+
+.header nav{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+  max-width: 6000px;
+  gap: 16px;
+}
+
+.logo{
+  display: inline-flex;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  margin-right: auto;
+}
+
+.logo .mark{
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg,var(--primary),#61b5fa);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(24,144,255,0.14);
+  font-weight: 800;
+  font-size: 14px;
+  transition: color .18s ease;
+}
+
+.logo .name{
+  font-size: 20px;
+  margin-top: 2px;
+  font-weight: 1000;
+}
+
+.header nav:hover{
+  color: #4d83cf;
+}
+
+/* Hover nav -> make logo mark text a light blue */
+.header nav:hover .logo .name { color: #64aaff; }
+
+/* 搜索区域 */
+.search{
+  /*display: flex;*/
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  min-width: 320px;
+  margin-left: auto;
+}
+
+.search-input{
+  padding: 10px 16px;
+  border: 1px solid #383737;
+  background-color: #3f3d3d;
+  border-radius: 999px;
+  min-width: 320px;
+  max-width: 52vw;
+  font-size: 16px;
+  color: #f3f3f3;
+  outline: none;
+  transition: box-shadow .18s ease, transform .12s ease;
+}
+
+.search-input::placeholder{
+  color: #fafafa;
+}
+
+.search-input:focus{
+  box-shadow: 0 6px 20px rgba(15, 15, 15, 0.08);
+  transform: translateY(-1px);
+  border-color: var(--glass);
+}
+.search-btn{
+  padding: 9px 18px;
+  margin-left: 10px;
+  background: linear-gradient(90deg, #06b6d4 0%, #3b82f6 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 6px 18px rgba(24,144,255,0.12);
+  transition: transform .12s ease, background .12s ease;
+}
+
+.search-btn .icon
+{
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.search-btn:hover{background: linear-gradient(90deg, #06b6d4 0%, #3b82f6 100%);; transform: translateY(-2px)}
+.search-btn:active{transform: translateY(0); background: var(--primary-600)}
+
+@media (max-width: 880px){
+  .search-input{min-width: 200px;}
+  .header nav{max-width: 1000px; padding-right:8px}
+}
+
+@media (max-width: 520px){
+  .search-input{min-width: 120px; max-width: 40vw}
+  .logo span{display:none}
+}

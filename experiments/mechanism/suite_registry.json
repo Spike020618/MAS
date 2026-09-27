@@ -1,0 +1,13 @@
+{
+  "registry_version": "aeic-md-final-v1",
+  "suites": [
+    {"name": "formal_v10", "matrix": "experiments/mechanism/matrices/formal_v10.json", "records": "results/mechanism/formal/formal_v10_*_test150.jsonl", "reference": "independent__no_mechanism@0.2"},
+    {"name": "information_v11_dev", "matrix": "experiments/mechanism/matrices/information_v11_dev.json", "records": "results/mechanism/pilot/information_v11_dev_shards/*.jsonl", "reference": "evidence_update__no_mechanism@0.2"},
+    {"name": "heldout_glm_v11_dev", "matrix": "experiments/mechanism/matrices/heldout_glm_v11_dev.json", "records": "results/mechanism/pilot/heldout_glm_v11_dev_shards/*.jsonl", "reference": "independent__no_mechanism@0.2"},
+    {"name": "boundary_v11_dev", "matrix": "experiments/mechanism/matrices/boundary_v11_dev.json", "records": "results/mechanism/pilot/boundary_v11_dev_shards/*.jsonl", "reference": "independent__static_aeic@0.05"},
+    {"name": "signal_ablation_v11_dev", "matrix": "experiments/mechanism/matrices/signal_ablation_v11_dev.json", "records": "results/mechanism/pilot/signal_ablation_v11_dev_shards/*.jsonl", "reference": "independent__static_aeic@0.2__signals@AEIC"},
+    {"name": "history_ablation_v11_dev", "matrix": "experiments/mechanism/matrices/history_ablation_v11_dev.json", "records": "results/mechanism/pilot/history_ablation_v11_dev_shards/*.jsonl", "reference": "independent__static_aeic@0.2"},
+    {"name": "seed_robustness_v11_dev", "matrix": "experiments/mechanism/matrices/seed_robustness_v11_dev.json", "records": "results/mechanism/pilot/seed_robustness_v11_dev_shards/*.jsonl", "reference": "independent__no_mechanism@0.2"},
+    {"name": "missing_agent_v11_dev", "matrix": "experiments/mechanism/matrices/missing_agent_v11_dev.json", "records": "results/mechanism/pilot/missing_agent_v11_dev_shards/*.jsonl", "reference": "independent__static_aeic@0.2__variant@agents5"}
+  ]
+}

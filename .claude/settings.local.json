@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/spike/**)",
+      "Bash(pip3 list *)",
+      "Bash(conda list *)",
+      "Bash(python3 -c ' *)"
+    ]
+  }
+}

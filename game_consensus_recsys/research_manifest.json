@@ -1,0 +1,27 @@
+{
+  "version": "m0.v1",
+  "thesis_axis": "game_theoretic_multi_agent_semantic_consensus",
+  "application_domain": "conversational_movie_search_and_recommendation",
+  "research_questions": {
+    "RQ1": "Can visible incentives, verification and reputation improve truthful, independent and verifiable semantic reports under strategic behavior?",
+    "RQ2": "Can a leader dynamically organize agents, message visibility, topology and verification budget to obtain reliable consensus at lower cost?"
+  },
+  "consensus_definition": {
+    "decision_consensus": "agreement sufficient to execute a ranked recommendation decision",
+    "evidence_consensus": "compatibility and verification of the supporting evidence",
+    "residual_dissent": "preserved high-value objections that remain after the decision"
+  },
+  "primary_endpoints": [
+    "constraint_satisfaction_rate",
+    "invalid_candidate_rate",
+    "evidence_supported_recommendation_rate",
+    "unsupported_flip_rate",
+    "independent_evidence_novelty",
+    "ndcg_at_k",
+    "token_cost",
+    "latency_p95"
+  ],
+  "online_feature_policy": "The planner may use only request-time observable features; ground truth and post-hoc utility are forbidden.",
+  "system_boundary": "tvos-agent is read-only scenario reference; this implementation is greenfield."
+  ,"model_constraint": "A single DeepSeek API key and model endpoint back all logical LLM agents; deterministic retrieval, verification, and no-key fallback remain available."
+}
