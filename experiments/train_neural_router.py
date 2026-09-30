@@ -29,11 +29,11 @@ from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import evaluate_config
 
-SIGNALS_DIR = "results/signals"
-CONFIGS_DIR = "results/configs"
+SIGNALS_DIR = "experiments/results/signals"
+CONFIGS_DIR = "experiments/results/configs"
 TRAIN_DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
 
 

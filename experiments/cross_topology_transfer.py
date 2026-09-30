@@ -11,7 +11,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import evaluate_config, compute_ic_metric
 from collections import Counter
 
@@ -41,7 +41,7 @@ def load_questions(topo):
     all_q = []
     for ds in DATASETS:
         suffix = f"_{topo}" if topo != "parallel" else ""
-        path = f"results/signals/{ds}{suffix}.json"
+        path = f"experiments/results/signals/{ds}{suffix}.json"
         with open(path) as f:
             data = json.load(f)
         all_q.extend(data["questions"])
@@ -55,8 +55,8 @@ def main():
 
     configs = {}
     for topo in TOPOS:
-        cv_path = f"results/configs/opt_{topo}_cv.json"
-        path = f"results/configs/opt_{topo}.json"
+        cv_path = f"experiments/results/configs/opt_{topo}_cv.json"
+        path = f"experiments/results/configs/opt_{topo}.json"
         cfg_path = cv_path if os.path.exists(cv_path) else path
         configs[topo] = ConsensusConfig.load(cfg_path)
 
@@ -120,7 +120,7 @@ def main():
         "majvote_acc": mv_acc.tolist(),
         "topos": TOPOS,
     }
-    out_path = "results/cross_topology_transfer.json"
+    out_path = "experiments/results/cross_topology_transfer.json"
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2)
     print(f"\nSaved to {out_path}")

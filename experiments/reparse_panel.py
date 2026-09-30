@@ -3,7 +3,7 @@
 用于解析器升级（骑墙回退、截断JSON救援）后修复存量缓存，避免重新采集。
 
 Usage:
-  python experiments/reparse_panel.py results/review/panel/debate_glm_sub150_2024.json
+  python experiments/reparse_panel.py experiments/results/review/panel/debate_glm_sub150_2024.json
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.review_prompts import parse_stance_rating
+from experiments.core.review_prompts import parse_stance_rating
 
 
 def main():

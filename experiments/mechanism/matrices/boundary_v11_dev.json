@@ -16,7 +16,7 @@
     "resource_tiered": true,
     "similarity": "embedding",
     "experiment_id": "aeic-md-v11-boundary-dev",
-    "out": "results/mechanism/pilot/boundary_v11_dev.jsonl"
+    "out": "experiments/results/mechanism/pilot/boundary_v11_dev.jsonl"
   },
   "contrasts": [
     {"name": "reward_high_vs_low", "left": "independent__static_aeic@0.05", "right": "independent__static_aeic@0.5"},

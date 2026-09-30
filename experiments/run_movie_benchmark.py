@@ -6,11 +6,11 @@ import json
 import time
 from pathlib import Path
 
-from game_consensus_recsys.deepseek import DeepSeekClient, DeepSeekConfig
-from game_consensus_recsys.deepseek_agents import DeepSeekReviewAgent
-from game_consensus_recsys.domain import SearchRequest
-from game_consensus_recsys.movie_data import JsonlMovieCatalog
-from game_consensus_recsys.workflow import ConsensusWorkflow
+from system.game_consensus_recsys.deepseek import DeepSeekClient, DeepSeekConfig
+from system.game_consensus_recsys.deepseek_agents import DeepSeekReviewAgent
+from system.game_consensus_recsys.domain import SearchRequest
+from system.game_consensus_recsys.movie_data import JsonlMovieCatalog
+from system.game_consensus_recsys.workflow import ConsensusWorkflow
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -35,11 +35,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--method", required=True, choices=["lexical", "single", "ours"])
     parser.add_argument("--benchmark", type=Path, default=Path("benchmarks/movie_consensus/test.jsonl"))
-    parser.add_argument("--catalog", type=Path, default=Path("data/processed/movie_catalog.jsonl"))
+    parser.add_argument("--catalog", type=Path, default=Path("experiments/data/processed/movie_catalog.jsonl"))
     parser.add_argument("--output", type=Path)
     parser.add_argument("--limit", type=int)
     args = parser.parse_args()
-    output = args.output or Path(f"results/movie/{args.method}.jsonl")
+    output = args.output or Path(f"experiments/results/movie/{args.method}.jsonl")
     done = {x["case_id"] for x in load_jsonl(output)} if output.is_file() else set()
     catalog = JsonlMovieCatalog(args.catalog)
     config = DeepSeekConfig.from_environment() if args.method != "lexical" else None

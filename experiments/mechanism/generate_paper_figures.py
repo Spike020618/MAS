@@ -1,7 +1,7 @@
 """Generate the paper-facing figures directly from frozen AEIC-MD bundles.
 
-The script deliberately reads only ``results/mechanism/frozen``.  It creates
-PNG and PDF counterparts under ``results/mechanism/figures`` and a compact
+The script deliberately reads only ``experiments/results/mechanism/frozen``.  It creates
+PNG and PDF counterparts under ``experiments/results/mechanism/figures`` and a compact
 machine-readable source table alongside them.
 """
 from __future__ import annotations
@@ -151,7 +151,7 @@ def robustness_figure(source: dict) -> None:
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
-    source: dict = {"source": "results/mechanism/frozen/manifest.json"}
+    source: dict = {"source": "experiments/results/mechanism/frozen/manifest.json"}
     formal_figure(source)
     boundary_figure(source)
     information_figure(source)

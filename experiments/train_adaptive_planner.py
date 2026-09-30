@@ -23,13 +23,13 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import evaluate_config
 
 TRAIN_DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
 TOPOS = ["parallel", "sequential", "star", "debate"]
-SIGNALS_DIR = "results/signals"
-CONFIGS_DIR = "results/configs"
+SIGNALS_DIR = "experiments/results/signals"
+CONFIGS_DIR = "experiments/results/configs"
 
 
 def extract_features(signals: dict) -> np.ndarray:
@@ -363,7 +363,7 @@ def main():
             "rule": "majority_ratio < threshold → debate",
             "accuracy": avg,
         }
-        config_path = "results/configs/adaptive_routing.json"
+        config_path = "experiments/results/configs/adaptive_routing.json"
         with open(config_path, "w") as f:
             json.dump(routing_config, f, indent=2)
         print(f"  Config saved to {config_path}")
@@ -393,7 +393,7 @@ def main():
     avg_train = np.mean([r["accuracy"] for r in train_results.values()])
     print(f"\n  Train avg: {avg_train:.1%}")
 
-    model_path = "results/configs/adaptive_planner.pkl"
+    model_path = "experiments/results/configs/adaptive_planner.pkl"
     with open(model_path, "wb") as f:
         pickle.dump({"clf": clf, "scaler": scaler, "name": clf_name,
                      "topos": TOPOS, "feature_names": [

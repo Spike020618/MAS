@@ -86,11 +86,11 @@ def inspect_bundle(bundle: Path) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", type=Path, default=Path("results/mechanism/frozen"))
+    parser.add_argument("--root", type=Path, default=Path("experiments/results/mechanism/frozen"))
     parser.add_argument("--require", action="append", default=[],
                         help="Required bundle name; repeat for every preregistered suite")
     parser.add_argument("--out", type=Path,
-                        default=Path("results/mechanism/frozen/manifest.json"))
+                        default=Path("experiments/results/mechanism/frozen/manifest.json"))
     args = parser.parse_args()
     bundles = sorted(
         path for path in args.root.iterdir()

@@ -10,7 +10,7 @@ Produces:
 
 Usage:
   python experiments/analyze_dynamic_deep.py
-  python experiments/analyze_dynamic_deep.py --results_path results/online_stackelberg/online_ab_results.json
+  python experiments/analyze_dynamic_deep.py --results_path experiments/results/online_stackelberg/online_ab_results.json
 """
 from __future__ import annotations
 
@@ -480,7 +480,7 @@ def optimal_threshold_learning(experiments):
 def main():
     parser = argparse.ArgumentParser(description="Deep analysis of dynamic experiment")
     parser.add_argument("--results_path",
-                        default="results/online_stackelberg/online_ab_results.json")
+                        default="experiments/results/online_stackelberg/online_ab_results.json")
     args = parser.parse_args()
 
     if not os.path.exists(args.results_path):

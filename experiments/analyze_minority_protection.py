@@ -18,7 +18,7 @@ from collections import Counter
 
 import numpy as np
 
-DEBATE_PATH = "results/review/panel/debate_2024.json"
+DEBATE_PATH = "experiments/results/review/panel/debate_2024.json"
 STRATA = ["clear_accept", "borderline", "clear_reject"]
 
 ANCHOR_RE = re.compile(

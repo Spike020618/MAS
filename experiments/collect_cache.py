@@ -9,7 +9,7 @@ Usage:
   python experiments/collect_cache.py --dataset StrategyQA --n_samples 50 --n_agents 3
 
   # Phase 2: 预计算信号（本地embedding）
-  python experiments/collect_cache.py --precompute results/cache/StrategyQA.json
+  python experiments/collect_cache.py --precompute experiments/results/cache/StrategyQA.json
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.llm import MultiLLMPool, AGENT_PERSONAS
+from experiments.core.llm import MultiLLMPool, AGENT_PERSONAS
 
 
 def _atomic_save(data, path):
@@ -106,8 +106,8 @@ def collect_aeic(dataset: str, n_samples: int, n_agents: int,
 
 def precompute_signals(cache_path: str):
     """Phase 2: 从AEIC缓存计算IC/EC/EQ/EV/stance/agreement。"""
-    from core.similarity import SimilarityCalculator
-    from core.trust import (
+    from experiments.core.similarity import SimilarityCalculator
+    from experiments.core.trust import (
         compute_ic_consistency, compute_ec_relevance,
         compute_evidence_quality, compute_evidence_consensus,
         compute_neighbor_agreement, extract_stance,

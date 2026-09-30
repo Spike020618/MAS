@@ -1,0 +1,10 @@
+\section{作为可观测报告空间的AEIC}\label{sec:aeic}
+对问题$x$，Agent $i$提交
+\begin{equation}r_i=(A_i,E_i,I_i,C_i),\end{equation}
+其中$A_i$给出操作性假设，$E_i$列出具体证据，$I_i$连接证据与答案，$C_i$包含明确立场。严格四字段JSON由此区分结构完整性、向后续Agent暴露的证据和最终答案。
+
+AEIC并非正确性证明。完整报告可能自洽但错误，Agent也可能在填满字段时模仿同伴。定义完整度
+\begin{equation}q_{\mathrm{comp}}(r)=\frac{1}{4}\sum_{z\in\{A,E,I,C\}}\mathbf{1}[z\text{非空}],\end{equation}
+并令$q_C(r)$表示$C$是否给出合法任务立场。静态规则仅使用这些过程信号，不向行动选择提示提供真实答案。
+
+区分\emph{可观测过程}与\emph{事实真值}是有意设计。仅结果信用要求环境在任务后知道正确性，而过程信用可以从报告本身提前宣布并检查。二者比较用于判断延迟结果奖励是否与绑定到可读生产过程的规则具有相同行为效应。

@@ -24,10 +24,10 @@ from scipy.optimize import differential_evolution
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-PARALLEL_PATH = "results/review/panel/parallel_2024.json"
-DEBATE_R1_PATH = "results/review/panel/debate_2024.json"  # r1 轮 = 独立评审
-STAR_PATH = "results/review/panel/star_2024.json"
-OUT_PATH = "results/review/study2a_theta_star.json"
+PARALLEL_PATH = "experiments/results/review/panel/parallel_2024.json"
+DEBATE_R1_PATH = "experiments/results/review/panel/debate_2024.json"  # r1 轮 = 独立评审
+STAR_PATH = "experiments/results/review/panel/star_2024.json"
+OUT_PATH = "experiments/results/review/study2a_theta_star.json"
 STRATA = ["clear_accept", "borderline", "clear_reject"]
 
 # 论文锚点：证据具体性启发式

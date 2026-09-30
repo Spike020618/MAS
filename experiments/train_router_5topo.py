@@ -25,11 +25,11 @@ from torch.utils.data import DataLoader, Dataset
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import evaluate_config
 
-SIGNALS_DIR = "results/signals"
-CONFIGS_DIR = "results/configs"
+SIGNALS_DIR = "experiments/results/signals"
+CONFIGS_DIR = "experiments/results/configs"
 DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
 TOPOS_4 = ["parallel", "sequential", "star", "debate"]
 TOPOS_5 = ["parallel", "sequential", "star", "debate", "hierarchical"]

@@ -26,11 +26,11 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.llm import LLMClient, MultiLLMPool, AGENT_PERSONAS
-from core.orchestrator import Orchestrator
-from core.similarity import SimilarityCalculator
-from core.topology import make_topology
-from core.trust import (
+from experiments.core.llm import LLMClient, MultiLLMPool, AGENT_PERSONAS
+from experiments.core.orchestrator import Orchestrator
+from experiments.core.similarity import SimilarityCalculator
+from experiments.core.topology import make_topology
+from experiments.core.trust import (
     evaluate_and_decide,
     majority_vote,
     quality_weighted_vote,
@@ -40,7 +40,7 @@ from core.trust import (
     compute_evidence_quality,
     compute_evidence_consensus,
 )
-from core.trust_tracker import TrustTracker
+from experiments.core.trust_tracker import TrustTracker
 
 
 # ─── 统一CSV格式 ───────────────────────────────────────────────────
@@ -566,7 +566,7 @@ def main():
         out_path = args.output
     else:
         os.makedirs("results", exist_ok=True)
-        out_path = f"results/exp_fixed_{args.dataset}_{len(questions)}q.json"
+        out_path = f"experiments/results/exp_fixed_{args.dataset}_{len(questions)}q.json"
 
     def convert(obj):
         if isinstance(obj, np.ndarray):

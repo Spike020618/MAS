@@ -3,7 +3,7 @@
   "seed": 42,
   "datasets": {
     "StrategyQA": {
-      "source": "results/cache/StrategyQA.json",
+      "source": "experiments/results/cache/StrategyQA.json",
       "source_sha256": "2cfbcf43be1326ed35509f1d16a2f6a698125fbe92ef9361a984e8665a7bf7e2",
       "n_valid": 300,
       "splits": {
@@ -316,7 +316,7 @@
       }
     },
     "MMLU-Hard": {
-      "source": "results/cache/MMLU-Hard.json",
+      "source": "experiments/results/cache/MMLU-Hard.json",
       "source_sha256": "d5a22dba60cbc3bd411716dc93bc97caa7ba4c297f65412d6b803579a5f8d83d",
       "n_valid": 300,
       "splits": {
@@ -629,7 +629,7 @@
       }
     },
     "TruthfulQA": {
-      "source": "results/cache/TruthfulQA.json",
+      "source": "experiments/results/cache/TruthfulQA.json",
       "source_sha256": "741b1c7ef31cf92fdc6c3647092ee4c922977e0fc5d005ffa16be9f5d7c04d3d",
       "n_valid": 300,
       "splits": {

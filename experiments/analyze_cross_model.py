@@ -2,8 +2,8 @@
 跨模型评审面板对比 — 同一 150 篇子集上，各模型集群的 herding 行为指标
 
 输入：
-  - DeepSeek:  results/review/panel/debate_2024.json（300 篇全集，按子集切片）
-  - 其他模型:  results/review/panel/debate_{tag}_2024.json（150 篇子集原生采集）
+  - DeepSeek:  experiments/results/review/panel/debate_2024.json（300 篇全集，按子集切片）
+  - 其他模型:  experiments/results/review/panel/debate_{tag}_2024.json（150 篇子集原生采集）
 
 指标（每模型）：
   - accept 基准率（round1 独立评审，按分层）
@@ -15,8 +15,8 @@
 
 Usage:
   python experiments/analyze_cross_model.py --year 2024 \
-      --models deepseek:results/review/panel/debate_2024.json \
-               glm:results/review/panel/debate_glm_sub150_2024.json
+      --models deepseek:experiments/results/review/panel/debate_2024.json \
+               glm:experiments/results/review/panel/debate_glm_sub150_2024.json
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ import sys
 
 import numpy as np
 
-SUBSET_PATH = "results/review/review_papers_2024_sub150.json"
+SUBSET_PATH = "experiments/results/review/review_papers_2024_sub150.json"
 STRATA = ["clear_accept", "borderline", "clear_reject"]
 
 
@@ -140,7 +140,7 @@ def main():
     ap.add_argument("--year", type=int, default=2024)
     ap.add_argument("--models", nargs="+", required=True,
                     help="name:path 形式，可多个")
-    ap.add_argument("--out", default="results/review/cross_model_analysis.json")
+    ap.add_argument("--out", default="experiments/results/review/cross_model_analysis.json")
     args = ap.parse_args()
 
     subset = _subset_ids()

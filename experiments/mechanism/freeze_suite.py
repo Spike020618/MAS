@@ -12,7 +12,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from core.mechanism.schema import record_from_dict
+from experiments.core.mechanism.schema import record_from_dict
 
 
 HERE = Path(__file__).resolve().parent
@@ -64,7 +64,7 @@ def main() -> None:
     parser.add_argument("--name", required=True)
     parser.add_argument("--reference", required=True)
     parser.add_argument("--out-root", type=Path,
-                        default=ROOT / "results/mechanism/frozen")
+                        default=ROOT / "experiments/results/mechanism/frozen")
     args = parser.parse_args()
 
     matrix = args.matrix.resolve()

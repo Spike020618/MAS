@@ -3,12 +3,12 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from core.reputation import ReputationSystem, weighted_majority_vote
+from experiments.core.reputation import ReputationSystem, weighted_majority_vote
 
 def evaluate_repeated_games():
     print("=== Direction 4: Long-term Trust & Repeated Games ===\n")
     
-    cache_dir = "results/cache"
+    cache_dir = "experiments/results/cache"
     dataset = "MMLU-Hard"
     topo = "star" # Changing to star since parallel doesn't exist
     

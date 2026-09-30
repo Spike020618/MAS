@@ -26,17 +26,17 @@ os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(line_buffering=True)
 
-from core.llm import AGENT_PERSONAS, LLMClient, LLM_BACKENDS, install_dns_fallback
-from core.mechanism.contracts import (
+from experiments.core.llm import AGENT_PERSONAS, LLMClient, LLM_BACKENDS, install_dns_fallback
+from experiments.core.mechanism.contracts import (
     CONTRACTS, apply_signal_mask, parse_action, render_contract, scale_costs,
     scale_rewards,
 )
-from core.mechanism.controller import MechanismController
-from core.mechanism.behavioral_metrics import majority_stance
-from core.mechanism.schema import AEICReport, AgentRound, ExperimentRecord
-from core.mechanism.storage import RecordStore
-from core.trust import extract_stance, majority_vote
-from core.similarity import SimilarityCalculator
+from experiments.core.mechanism.controller import MechanismController
+from experiments.core.mechanism.behavioral_metrics import majority_stance
+from experiments.core.mechanism.schema import AEICReport, AgentRound, ExperimentRecord
+from experiments.core.mechanism.storage import RecordStore
+from experiments.core.trust import extract_stance, majority_vote
+from experiments.core.similarity import SimilarityCalculator
 
 
 BEHAVIORS = ["independent", "evidence_update", "social_only", "copy_pressure", "counterevidence"]
@@ -402,7 +402,7 @@ def main() -> None:
                         help="Maximum attempts per experimental unit in this invocation")
     parser.add_argument("--max-infra-attempts", type=int, default=10,
                         help="Connection/DNS retries not counted as experimental attempts")
-    parser.add_argument("--out", type=Path, default=ROOT / "results/mechanism/pilot/records.jsonl")
+    parser.add_argument("--out", type=Path, default=ROOT / "experiments/results/mechanism/pilot/records.jsonl")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     if args.max_attempts < 1:

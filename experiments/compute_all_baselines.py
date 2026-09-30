@@ -20,11 +20,11 @@ from collections import Counter
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import evaluate_config
 
-SIGNALS_DIR = "results/signals"
-CONFIGS_DIR = "results/configs"
+SIGNALS_DIR = "experiments/results/signals"
+CONFIGS_DIR = "experiments/results/configs"
 DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
 TOPOS = ["parallel", "sequential", "star", "debate", "hierarchical"]
 TOPOS_BASELINE = ["parallel", "debate"]  # for ChatEval / UnguidedDebate
@@ -274,7 +274,7 @@ def main():
 
         # AgentVerse = agentverse topology + solver decision
         if agentverse_data:
-            from core.trust import extract_stance
+            from experiments.core.trust import extract_stance
             c_av = t_av = 0
             for q in agentverse_data["questions"][:300]:
                 agents = q.get("agents", [])
@@ -415,7 +415,7 @@ def main():
         for key, (c, t) in all_results[ds].items():
             output[ds][key] = {"correct": c, "total": t, "accuracy": c/t if t > 0 else 0}
 
-    out_path = "results/all_baselines.json"
+    out_path = "experiments/results/all_baselines.json"
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2)
     print(f"\nSaved to {out_path}")

@@ -33,10 +33,10 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(line_buffering=True)
 
-from core.llm import LLMClient
-from core.orchestrator import Orchestrator
-from core.similarity import SimilarityCalculator
-from core.trust import majority_vote, extract_stance
+from experiments.core.llm import LLMClient
+from experiments.core.orchestrator import Orchestrator
+from experiments.core.similarity import SimilarityCalculator
+from experiments.core.trust import majority_vote, extract_stance
 from experiments.collect_cache_topo import get_topology_W
 from experiments.exp_orchestrator import load_questions
 
@@ -122,7 +122,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--n_samples", type=int, default=30)
     parser.add_argument("--dataset", default="MMLU-Hard")
-    parser.add_argument("--out_dir", default="results/memory_diverse")
+    parser.add_argument("--out_dir", default="experiments/results/memory_diverse")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()

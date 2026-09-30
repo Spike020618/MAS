@@ -23,10 +23,10 @@ from scipy.stats import binomtest
 from sklearn.linear_model import LogisticRegression
 
 PANELS = {
-    "parallel": "results/review/panel/parallel_2024.json",
-    "debate_r1": "results/review/panel/debate_2024.json",
+    "parallel": "experiments/results/review/panel/parallel_2024.json",
+    "debate_r1": "experiments/results/review/panel/debate_2024.json",
 }
-OUT_PATH = "results/review/study2a_soft_calibration.json"
+OUT_PATH = "experiments/results/review/study2a_soft_calibration.json"
 STRATA = ["clear_accept", "borderline", "clear_reject"]
 STANCE_MAP = {"accept": 1, "weak_accept": 1, "reject": 0, "weak_reject": 0}
 N_TUNE_REP = 20

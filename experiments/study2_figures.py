@@ -2,8 +2,8 @@
 论文图：跨模型对比 + Study 2 干预总结（LNCS 风格，serif 9pt，PDF+PNG）
 
 输出：
-  results/review/figures/fig_s2_crossmodel.{pdf,png}
-  results/review/figures/fig_s3_interventions.{pdf,png}
+  experiments/results/review/figures/fig_s2_crossmodel.{pdf,png}
+  experiments/results/review/figures/fig_s3_interventions.{pdf,png}
 """
 from __future__ import annotations
 
@@ -22,11 +22,11 @@ plt.rcParams.update({
     "figure.dpi": 150,
 })
 COLORS = ["#4C72B0", "#55A868", "#C44E52", "#8172B3"]
-FIG_DIR = "results/review/figures"
+FIG_DIR = "experiments/results/review/figures"
 
 
 def fig_crossmodel():
-    with open("results/review/cross_model_analysis.json", encoding="utf-8") as f:
+    with open("experiments/results/review/cross_model_analysis.json", encoding="utf-8") as f:
         d = json.load(f)
     models = [("deepseek", "DeepSeek-V3"), ("glm", "GLM-4-Flash"), ("r1", "DeepSeek-R1")]
     fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.3))
@@ -81,11 +81,11 @@ def fig_crossmodel():
 
 
 def fig_interventions():
-    s2a = json.load(open("results/review/study2a_theta_star.json",
+    s2a = json.load(open("experiments/results/review/study2a_theta_star.json",
                          encoding="utf-8"))
-    s2b = json.load(open("results/review/regulated_v3_analysis.json",
+    s2b = json.load(open("experiments/results/review/regulated_v3_analysis.json",
                          encoding="utf-8"))
-    s2c = json.load(open("results/review/study2c_routing.json",
+    s2c = json.load(open("experiments/results/review/study2c_routing.json",
                          encoding="utf-8"))
     fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.4))
 

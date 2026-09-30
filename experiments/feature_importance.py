@@ -229,7 +229,7 @@ def main():
                       for kk, vv in v.items()}
                   for k, v in results.items()},
     }
-    out_path = "results/feature_importance.json"
+    out_path = "experiments/results/feature_importance.json"
     with open(out_path, "w") as f:
         json.dump(out, f, indent=2, default=float)
     print(f"\nSaved to {out_path}")

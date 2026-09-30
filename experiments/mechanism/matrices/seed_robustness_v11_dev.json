@@ -14,7 +14,7 @@
     "resource_tiered": true,
     "similarity": "embedding",
     "experiment_id": "aeic-md-v11-seed-robustness-dev",
-    "out": "results/mechanism/pilot/seed_robustness_v11_dev.jsonl"
+    "out": "experiments/results/mechanism/pilot/seed_robustness_v11_dev.jsonl"
   },
   "contrasts": [
     {"name": "static_vs_none_pooled_seeds", "left": "independent__no_mechanism@0.2", "right": "independent__static_aeic@0.2"}

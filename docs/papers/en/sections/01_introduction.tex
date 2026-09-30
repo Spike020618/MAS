@@ -1,0 +1,21 @@
+%======================================================================
+\section{Introduction}
+\label{sec:intro}
+%======================================================================
+
+LLM agents can debate, critique, vote, and synthesize one another's outputs. Yet the aggregate is only as useful as the behavior that produced it. A short answer, an independently reasoned report, a verification pass, and imitation of a visible peer have different costs and informational value. Most multi-agent evaluations observe only the final answer, making these production choices invisible and leaving the system designer unable to distinguish genuine deliberation from cheap agreement.
+
+This is a mechanism-design problem before it is an aggregation problem. A designer must announce what behavior will receive credit before the agents act; the agents must then choose whether the expected credit justifies the effort. Retrospectively weighting an already-generated response cannot establish this follower response, because the generation policy never observed the rule. Similarly, changing communication topology controls where information flows but not whether agents invest in producing independently checkable information.
+
+We introduce \textbf{AEIC-MD}, an AEIC-mediated leader--follower framework for multi-agent deliberation. Each report exposes four fields---Assumption, Evidence, Inference, and Conclusion---that form a parseable report space. Before solving, every follower observes a public offer specifying the credit rule, action costs, information policy, and verification budget. It then declares one of four actions: low effort, complete AEIC reasoning, verification, or imitation. The declared action selects a real generation path; the resulting report, resource use, credit, cost, and reputation update are logged. This ordering turns the broad Stackelberg intuition of commitment followed by response into a falsifiable experiment.
+
+Our confirmatory comparison pairs 450 held-out questions across StrategyQA, MMLU-Hard, and TruthfulQA under three rules. Static AEIC increases high-effort choices from 0.46\% to 56.93\% and final accuracy from 68.00\% to 82.22\%. Outcome-only reward raises effort only to 3.08\% and leaves accuracy statistically unchanged. The distinction matters: the result is not that reward language generally improves answers, but that a locally legible process rule changes the action policy and the collective outcome.
+
+We stress-test that interpretation instead of relying on one headline comparison. Reward and cost sweeps test directional response; evidence, social-only, copy-pressure, and counterevidence environments vary what agents can observe; signal and history ablations probe the implemented contract; two additional seeds and three-to-five-agent panels test stability. Finally, a held-out GLM backend does not respond to the same contract. This negative result prevents a universal claim and points to backend-specific contract calibration as the central unsolved problem.
+
+Our contributions are:
+\begin{enumerate}
+ \item an executable leader--follower protocol in which public rules precede logged action choices and action choices control real resource paths;
+ \item paired causal evidence that an AEIC process rule changes follower effort and improves collective accuracy beyond an outcome-only reward;
+ \item a fully frozen eight-suite evaluation, including dose response, information controls, ablations, robustness, and an explicit non-transfer result that defines the claim boundary.
+\end{enumerate}

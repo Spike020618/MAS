@@ -17,7 +17,7 @@ from scipy import stats
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import (
     evaluate_config, consensus_from_signals, compute_weights
 )
@@ -56,7 +56,7 @@ def load_aligned_questions():
         topo_suffix = f"_{topo}" if topo != "parallel" else ""
         all_q = {}
         for ds in DATASETS:
-            path = f"results/signals/{ds}{topo_suffix}.json"
+            path = f"experiments/results/signals/{ds}{topo_suffix}.json"
             with open(path) as f:
                 data = json.load(f)
             for q in data["questions"]:
@@ -122,7 +122,7 @@ def run_tests():
 
     # Router: need to simulate what router picks
     # Load router model or results
-    router_path = "results/configs/router_v10_results.json"
+    router_path = "experiments/results/configs/router_v10_results.json"
     with open(router_path) as f:
         router_data = json.load(f)
 
@@ -218,7 +218,7 @@ def run_tests():
     DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
     for topo in TOPOS:
         topo_suffix = f"_{topo}" if topo != "parallel" else ""
-        config_path = f"results/configs/opt_{topo}_cv.json"
+        config_path = f"experiments/results/configs/opt_{topo}_cv.json"
         if not os.path.exists(config_path):
             print(f"  {topo}: config not found, skipping")
             continue
@@ -228,7 +228,7 @@ def run_tests():
         mv_results = []
         sg_results = []
         for ds in DATASETS:
-            sig_path = f"results/signals/{ds}{topo_suffix}.json"
+            sig_path = f"experiments/results/signals/{ds}{topo_suffix}.json"
             with open(sig_path) as f:
                 data = json.load(f)
             for q in data["questions"]:
@@ -254,7 +254,7 @@ def run_tests():
     print("6. Online vs Offline McNemar Tests")
     print(f"{'='*50}")
 
-    online_path = "results/online_stackelberg/online_stackelberg_results.json"
+    online_path = "experiments/results/online_stackelberg/online_stackelberg_results.json"
     if os.path.exists(online_path):
         with open(online_path) as f:
             online_data = json.load(f)
@@ -274,7 +274,7 @@ def run_tests():
                     continue
 
                 # Load offline per-question data
-                sig_path = f"results/signals/{ds}_{topo}.json"
+                sig_path = f"experiments/results/signals/{ds}_{topo}.json"
                 with open(sig_path) as f:
                     sig_data = json.load(f)
 
@@ -340,7 +340,7 @@ def run_tests():
         "n_correct_distribution": {str(k): v for k, v in sorted(n_correct_dist.items())},
     }
 
-    out_path = "results/statistical_tests.json"
+    out_path = "experiments/results/statistical_tests.json"
     with open(out_path, "w") as f:
         json.dump(results_dict, f, indent=2)
     print(f"\nSaved to {out_path}")

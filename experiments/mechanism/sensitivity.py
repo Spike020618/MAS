@@ -10,8 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from core.mechanism.behavioral_metrics import stance_flip, unsupported_flip
-from core.mechanism.schema import AEICReport
+from experiments.core.mechanism.behavioral_metrics import stance_flip, unsupported_flip
+from experiments.core.mechanism.schema import AEICReport
 
 
 def report_from(item: dict) -> AEICReport:

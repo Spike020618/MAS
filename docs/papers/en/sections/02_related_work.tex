@@ -1,0 +1,16 @@
+%======================================================================
+\section{Related Work}
+\label{sec:related}
+%======================================================================
+
+\paragraph{Multi-agent deliberation.}
+Self-consistency aggregates sampled reasoning paths~\cite{wang2023selfconsistency}; multi-agent debate exposes model instances to one another before aggregation~\cite{du2024improving}; and systems such as ChatEval and AgentVerse organize specialized agents or evaluators~\cite{chan2023chateval,chen2023agentverse}. These approaches primarily ask how communication and aggregation affect the final answer. Recent work also documents conformity, sycophancy, and the loss of useful disagreement in homogeneous panels~\cite{pitre2025consensagent,swamy2025peacemaker}. AEIC-MD addresses an earlier decision: whether an agent chooses to incur the cost of an independently checkable report before communication and aggregation occur.
+
+\paragraph{Structured reasoning as an interface.}
+Chain-of-thought, Tree-of-Thoughts, and ReAct structure an individual model's computation~\cite{wei2022chain,yao2024tree,yao2023react}. Our use of structure is different. AEIC partitions a report into Assumption, Evidence, Inference, and Conclusion so that report completeness, the final stance, and the resource-producing action can be observed and logged consistently across agents. The structure is therefore both a generation protocol and a contractible report space; we do not assume that formatting alone makes the content truthful.
+
+\paragraph{Mechanism design for language models.}
+Principal--agent and contract-theoretic views of LLM systems distinguish a designer's committed rule from an agent's response~\cite{rauba2025principal,saig2024incentivizing}. Stackelberg incentives have similarly been used in distributed learning and crowdsourcing~\cite{fu2024stackelberg,guo2023incentive,wang2024incentive}. AEIC-MD instantiates this ordering directly: the rule is rendered before generation, the follower declares an action before solving, and the corresponding resource path is executed. This differs from assigning an offline score to a response that was generated without seeing the rule.
+
+\paragraph{Communication structure versus production incentives.}
+Topology determines which reports are visible and how they flow, as in sequential, centralized, or fully connected deliberation~\cite{hong2023metagpt,chen2024reconcile}. It cannot by itself determine whether those reports contain costly independent work. We therefore treat information structure as a controlled environment and a future design layer, not as the identity of the mechanism. This separation is central to the experimental design: the confirmatory test holds information flow fixed while changing only the announced rule.

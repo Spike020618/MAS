@@ -14,7 +14,7 @@
     "resource_tiered": true,
     "similarity": "embedding",
     "experiment_id": "aeic-md-v10-resource-pilot",
-    "out": "results/mechanism/pilot/pilot_v10_three_domain_dev50.jsonl"
+    "out": "experiments/results/mechanism/pilot/pilot_v10_three_domain_dev50.jsonl"
   },
   "jobs": [
     {"dataset": "StrategyQA", "mechanism": "no_mechanism"},

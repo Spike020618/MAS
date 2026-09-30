@@ -1,0 +1,5147 @@
+{
+  "request_id": "36779642186940b2b9c09c01cf3bcbef",
+  "decisions": [
+    {
+      "candidate": {
+        "movie_id": "99764",
+        "title": "It's Such a Beautiful Day",
+        "year": 2012,
+        "genres": [
+          "Animation",
+          "Comedy",
+          "Drama",
+          "Fantasy",
+          "Sci-Fi"
+        ],
+        "sources": [
+          "lexical",
+          "preference"
+        ],
+        "retrieval_score": 0.4665683967376803,
+        "metadata": {
+          "rating": 4.0037,
+          "rating_count": 406,
+          "semantic_tags": [
+            {
+              "relevance": 0.968,
+              "tag": "existentialism"
+            },
+            {
+              "relevance": 0.9645,
+              "tag": "weird"
+            },
+            {
+              "relevance": 0.9547,
+              "tag": "surreal"
+            },
+            {
+              "relevance": 0.9545,
+              "tag": "melancholic"
+            },
+            {
+              "relevance": 0.934,
+              "tag": "life & death"
+            },
+            {
+              "relevance": 0.9135,
+              "tag": "narrated"
+            },
+            {
+              "relevance": 0.8885,
+              "tag": "nonlinear"
+            },
+            {
+              "relevance": 0.8853,
+              "tag": "immortality"
+            },
+            {
+              "relevance": 0.8742,
+              "tag": "storytelling"
+            },
+            {
+              "relevance": 0.8738,
+              "tag": "life"
+            },
+            {
+              "relevance": 0.8685,
+              "tag": "beautifully filmed"
+            },
+            {
+              "relevance": 0.867,
+              "tag": "enigmatic"
+            }
+          ],
+          "imdb_id": "tt2396224",
+          "evidence_refs": {
+            "metadata": "movielens:movies.csv:movieId=99764",
+            "ratings": "movielens:ratings.csv:movieId=99764",
+            "tags": "movielens:genome-scores.csv:movieId=99764"
+          }
+        }
+      },
+      "score": 0.733432,
+      "decision_consensus": 0.822517,
+      "evidence_consensus": 1,
+      "residual_dissent": [],
+      "accepted_evidence": [
+        {
+          "claim": "目录记录：It's Such a Beautiful Day（2012），类型为Animation/Comedy/Drama/Fantasy/Sci-Fi",
+          "source": "catalog",
+          "reference": "movielens:movies.csv:movieId=99764",
+          "verified": true,
+          "strength": 1
+        },
+        {
+          "claim": "候选匹配用户偏好类型：drama,sci-fi",
+          "source": "request_profile",
+          "reference": "request:preferred_genres",
+          "verified": true,
+          "strength": 0.9
+        },
+        {
+          "claim": "候选满足全部硬约束",
+          "source": "constraint_checker",
+          "reference": "request:99764",
+          "verified": true,
+          "strength": 1
+        }
+      ],
+      "contributing_agents": [
+        "preference-1",
+        "retrieval-1",
+        "verifier-1"
+      ]
+    },
+    {
+      "candidate": {
+        "movie_id": "89039",
+        "title": "Another Earth",
+        "year": 2011,
+        "genres": [
+          "Drama",
+          "Romance",
+          "Sci-Fi"
+        ],
+        "sources": [
+          "lexical",
+          "preference"
+        ],
+        "retrieval_score": 0.46629668601669894,
+        "metadata": {
+          "rating": 3.5443,
+          "rating_count": 1106,
+          "semantic_tags": [
+            {
+              "relevance": 0.9275,
+              "tag": "scifi"
+            },
+            {
+              "relevance": 0.9252,
+              "tag": "parallel universe"
+            },
+            {
+              "relevance": 0.9205,
+              "tag": "sci-fi"
+            },
+            {
+              "relevance": 0.9198,
+              "tag": "science fiction"
+            },
+            {
+              "relevance": 0.913,
+              "tag": "melancholic"
+            },
+            {
+              "relevance": 0.8998,
+              "tag": "cerebral"
+            },
+            {
+              "relevance": 0.8933,
+              "tag": "existentialism"
+            },
+            {
+              "relevance": 0.8895,
+              "tag": "sci fi"
+            },
+            {
+              "relevance": 0.8885,
+              "tag": "weird"
+            },
+            {
+              "relevance": 0.8735,
+              "tag": "loneliness"
+            },
+            {
+              "relevance": 0.8707,
+              "tag": "enigmatic"
+            },
+            {
+              "relevance": 0.8595,
+              "tag": "space travel"
+            }
+          ],
+          "imdb_id": "tt1549572",
+          "evidence_refs": {
+            "metadata": "movielens:movies.csv:movieId=89039",
+            "ratings": "movielens:ratings.csv:movieId=89039",
+            "tags": "movielens:genome-scores.csv:movieId=89039"
+          }
+        }
+      },
+      "score": 0.733296,
+      "decision_consensus": 0.822427,
+      "evidence_consensus": 1,
+      "residual_dissent": [],
+      "accepted_evidence": [
+        {
+          "claim": "目录记录：Another Earth（2011），类型为Drama/Romance/Sci-Fi",
+          "source": "catalog",
+          "reference": "movielens:movies.csv:movieId=89039",
+          "verified": true,
+          "strength": 1
+        },
+        {
+          "claim": "候选匹配用户偏好类型：drama,sci-fi",
+          "source": "request_profile",
+          "reference": "request:preferred_genres",
+          "verified": true,
+          "strength": 0.9
+        },
+        {
+          "claim": "候选满足全部硬约束",
+          "source": "constraint_checker",
+          "reference": "request:89039",
+          "verified": true,
+          "strength": 1
+        }
+      ],
+      "contributing_agents": [
+        "preference-1",
+        "retrieval-1",
+        "verifier-1"
+      ]
+    },
+    {
+      "candidate": {
+        "movie_id": "110730",
+        "title": "Transcendence",
+        "year": 2014,
+        "genres": [
+          "Drama",
+          "Sci-Fi",
+          "IMAX"
+        ],
+        "sources": [
+          "lexical",
+          "preference"
+        ],
+        "retrieval_score": 0.465860790561594,
+        "metadata": {
+          "rating": 3.2068,
+          "rating_count": 2232,
+          "semantic_tags": [
+            {
+              "relevance": 0.9965,
+              "tag": "technology"
+            },
+            {
+              "relevance": 0.9797,
+              "tag": "future"
+            },
+            {
+              "relevance": 0.976,
+              "tag": "sci-fi"
+            },
+            {
+              "relevance": 0.968,
+              "tag": "futuristic"
+            },
+            {
+              "relevance": 0.9675,
+              "tag": "scifi"
+            },
+            {
+              "relevance": 0.9472,
+              "tag": "science fiction"
+            },
+            {
+              "relevance": 0.9323,
+              "tag": "sci fi"
+            },
+            {
+              "relevance": 0.9307,
+              "tag": "internet"
+            },
+            {
+              "relevance": 0.913,
+              "tag": "humanity"
+            },
+            {
+              "relevance": 0.9038,
+              "tag": "artificial intelligence"
+            },
+            {
+              "relevance": 0.8867,
+              "tag": "plot holes"
+            },
+            {
+              "relevance": 0.876,
+              "tag": "computers"
+            }
+          ],
+          "imdb_id": "tt2209764",
+          "evidence_refs": {
+            "metadata": "movielens:movies.csv:movieId=110730",
+            "ratings": "movielens:ratings.csv:movieId=110730",
+            "tags": "movielens:genome-scores.csv:movieId=110730"
+          }
+        }
+      },
+      "score": 0.733078,
+      "decision_consensus": 0.822282,
+      "evidence_consensus": 1,
+      "residual_dissent": [],
+      "accepted_evidence": [
+        {
+          "claim": "目录记录：Transcendence（2014），类型为Drama/Sci-Fi/IMAX",
+          "source": "catalog",
+          "reference": "movielens:movies.csv:movieId=110730",
+          "verified": true,
+          "strength": 1
+        },
+        {
+          "claim": "候选匹配用户偏好类型：drama,sci-fi",
+          "source": "request_profile",
+          "reference": "request:preferred_genres",
+          "verified": true,
+          "strength": 0.9
+        },
+        {
+          "claim": "候选满足全部硬约束",
+          "source": "constraint_checker",
+          "reference": "request:110730",
+          "verified": true,
+          "strength": 1
+        }
+      ],
+      "contributing_agents": [
+        "preference-1",
+        "retrieval-1",
+        "verifier-1"
+      ]
+    }
+  ],
+  "trace": {
+    "request_id": "36779642186940b2b9c09c01cf3bcbef",
+    "mechanism": "public_static_aeic_then_evidence_reputation_v1",
+    "topology": "parallel_review_with_escalation",
+    "plan": {
+      "risk_level": "high",
+      "complexity_score": 0.76,
+      "agent_roles": [
+        "retrieval",
+        "preference",
+        "verifier"
+      ],
+      "topology": "parallel_review_with_escalation",
+      "verification_budget": 3,
+      "rationale": [
+        "3 hard constraints require verification",
+        "personal preference evidence is available",
+        "long query may contain compositional intent"
+      ]
+    },
+    "events": [
+      {
+        "stage": "planning",
+        "event": "plan_selected",
+        "payload": {
+          "risk_level": "high",
+          "complexity_score": 0.76,
+          "agent_roles": [
+            "retrieval",
+            "preference",
+            "verifier"
+          ],
+          "verification_budget": 3
+        }
+      },
+      {
+        "stage": "mechanism",
+        "event": "public_contract_committed",
+        "payload": {
+          "mechanism": "public_static_aeic_then_evidence_reputation_v1",
+          "timing": "contract_before_follower_action"
+        }
+      },
+      {
+        "stage": "retrieval",
+        "event": "candidates_retrieved",
+        "payload": {
+          "count": 50,
+          "candidate_ids": [
+            "134130",
+            "115713",
+            "106920",
+            "97752",
+            "113741",
+            "166635",
+            "86320",
+            "80969",
+            "112804",
+            "96655",
+            "99764",
+            "89039",
+            "110730",
+            "115680",
+            "113378",
+            "96832",
+            "196997",
+            "80917",
+            "194951",
+            "92694",
+            "130576",
+            "100302",
+            "116905",
+            "196889",
+            "164367",
+            "109187",
+            "144482",
+            "94799",
+            "92210",
+            "94810",
+            "120392",
+            "170629",
+            "91505",
+            "204352",
+            "89898",
+            "179881",
+            "162982",
+            "143365",
+            "151695",
+            "105519",
+            "141004",
+            "99537",
+            "149650",
+            "200200",
+            "119139",
+            "141397",
+            "127188",
+            "181217",
+            "142424",
+            "201594"
+          ]
+        }
+      },
+      {
+        "stage": "deliberation",
+        "event": "agent_completed",
+        "payload": {
+          "agent_id": "retrieval-1",
+          "role": "retrieval",
+          "reports": 50,
+          "actions": {
+            "aeic_effort": 50
+          },
+          "tokens": 0,
+          "latency_ms": 2
+        }
+      },
+      {
+        "stage": "deliberation",
+        "event": "agent_completed",
+        "payload": {
+          "agent_id": "preference-1",
+          "role": "preference",
+          "reports": 50,
+          "actions": {
+            "aeic_effort": 50
+          },
+          "tokens": 0,
+          "latency_ms": 1
+        }
+      },
+      {
+        "stage": "deliberation",
+        "event": "agent_completed",
+        "payload": {
+          "agent_id": "verifier-1",
+          "role": "verifier",
+          "reports": 50,
+          "actions": {
+            "verify": 50
+          },
+          "tokens": 0,
+          "latency_ms": 1
+        }
+      },
+      {
+        "stage": "deliberation",
+        "event": "agent_completed",
+        "payload": {
+          "agent_id": "deepseek-preference-1",
+          "role": "preference",
+          "reports": 10,
+          "actions": {
+            "aeic_effort": 10
+          },
+          "tokens": 5234,
+          "latency_ms": 5245
+        }
+      },
+      {
+        "stage": "deliberation",
+        "event": "agent_completed",
+        "payload": {
+          "agent_id": "deepseek-diversity-1",
+          "role": "diversity",
+          "reports": 10,
+          "actions": {
+            "aeic_effort": 10
+          },
+          "tokens": 5530,
+          "latency_ms": 6983
+        }
+      },
+      {
+        "stage": "deliberation",
+        "event": "agent_completed",
+        "payload": {
+          "agent_id": "deepseek-critic-1",
+          "role": "critic",
+          "reports": 10,
+          "actions": {
+            "aeic_effort": 10
+          },
+          "tokens": 5723,
+          "latency_ms": 6010
+        }
+      },
+      {
+        "stage": "consensus",
+        "event": "ranking_completed",
+        "payload": {
+          "selected": [
+            "99764",
+            "89039",
+            "110730"
+          ],
+          "scores": {
+            "89039": 0.733296,
+            "99764": 0.733432,
+            "110730": 0.733078
+          }
+        }
+      }
+    ],
+    "reports": [
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "134130",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：The Martian（2015），类型为Adventure/Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=134130",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.49323115299090897,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "115713",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Ex Machina（2015），类型为Drama/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=115713",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.49027445711738626,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "106920",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Her（2013），类型为Drama/Romance/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=106920",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4876074851462236,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "97752",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Cloud Atlas（2012），类型为Drama/Sci-Fi/IMAX",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=97752",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.47833104013695193,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "113741",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Coherence（2013），类型为Drama/Mystery/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=113741",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4746426858242645,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "166635",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Passengers（2016），类型为Adventure/Drama/Romance/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=166635",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4736688467069401,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "86320",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Melancholia（2011），类型为Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=86320",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.47303731084500134,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "80969",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Never Let Me Go（2010），类型为Drama/Romance/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=80969",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4704427416276809,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "112804",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：I Origins（2014），类型为Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=112804",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4688592807320042,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "96655",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Robot & Frank（2012），类型为Comedy/Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=96655",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.46771606180299696,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "99764",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：It's Such a Beautiful Day（2012），类型为Animation/Comedy/Drama/Fantasy/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=99764",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4665683967376803,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "89039",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Another Earth（2011），类型为Drama/Romance/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=89039",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.46629668601669894,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "110730",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Transcendence（2014），类型为Drama/Sci-Fi/IMAX",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=110730",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.465860790561594,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "115680",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Time Lapse（2014），类型为Crime/Drama/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=115680",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.46407815783695233,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "113378",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Giver, The（2014），类型为Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=113378",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.46388611052426526,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "96832",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Holy Motors（2012），类型为Drama/Fantasy/Musical/Mystery/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=96832",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4637662534433852,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "196997",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Black Mirror: Bandersnatch（2018），类型为Drama/Mystery/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=196997",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4630087345828641,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "80917",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Monsters（2010），类型为Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=80917",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4611335649074737,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "194951",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Bird Box（2018），类型为Drama/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=194951",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4604744484396659,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "92694",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Perfect Sense（2011），类型为Drama/Romance/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=92694",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4597449283507925,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "130576",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Midnight Special（2015），类型为Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=130576",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4590886043028816,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "100302",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Upside Down（2012），类型为Drama/Romance/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=100302",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4582369047334595,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "116905",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Patema Inverted（2013），类型为Adventure/Animation/Drama/Fantasy/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=116905",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4576542417563153,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "196889",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Glass（2019），类型为Drama/Horror/Mystery/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=196889",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4574232145349343,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "164367",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：The Girl with All the Gifts（2016），类型为Drama/Horror/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=164367",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.457124065721069,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "109187",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Zero Theorem, The（2013），类型为Drama/Fantasy/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=109187",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.45707244424825666,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "144482",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Circle（2015），类型为Drama/Horror/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=144482",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4559710105239469,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "94799",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Sound of My Voice（2011），类型为Drama/Mystery/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=94799",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.45528439158517636,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "92210",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Disappearance of Haruhi Suzumiya, The (Suzumiya Haruhi no shôshitsu)（2010），类型为Adventure/Animation/Drama/Mystery/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=92210",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4548225886528225,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "94810",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Eva（2011），类型为Drama/Fantasy/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=94810",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.45380978814494194,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "120392",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Comet（2014），类型为Comedy/Drama/Romance/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=120392",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4528593886528225,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "170629",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：The Discovery（2017），类型为Drama/Romance/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=170629",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.45214085737556714,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "91505",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Clone (Womb)（2010），类型为Drama/Romance/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=91505",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.45197938814494193,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "204352",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Ad Astra（2019），类型为Adventure/Drama/Mystery/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=204352",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4511102125276405,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "89898",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Generation P（2011），类型为Comedy/Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=89898",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4496689007929128,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "179881",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Downsizing（2017），类型为Comedy/Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=179881",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4493869870885465,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "162982",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Steins;Gate the Movie: The Burden of Déjà vu（2013），类型为Animation/Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=162982",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4484600638245177,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "143365",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：The Circle（2016），类型为Drama/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=143365",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.44824628947934725,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "151695",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：The Survivalist（2015），类型为Drama/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=151695",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4478148763779079,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "105519",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Philosophers, The (After The Dark)（2013），类型为Drama/Fantasy/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=105519",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.44755539365048447,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "141004",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Victor Frankenstein（2015），类型为Drama/Horror/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=141004",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4466643776956094,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "99537",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Extracted（2012），类型为Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=99537",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.44662183633679625,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "149650",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Childhood's End（2015），类型为Drama/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=149650",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.44618737599511915,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "200200",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Mirage（2018），类型为Drama/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=200200",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.44562521118355486,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "119139",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Ascension（2014），类型为Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=119139",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4454065759951192,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "141397",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Equals（2015），类型为Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=141397",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4446808585691311,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "127188",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Advantageous（2015），类型为Children/Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=127188",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4445892192775822,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "181217",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Doctor Who: The Return Of Doctor Mysterio（2016），类型为Adventure/Children/Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=181217",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.44389561118355486,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "142424",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Into the Forest（2015），类型为Drama/Sci-Fi",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=142424",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.44335007888867006,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "retrieval-1",
+        "role": "retrieval",
+        "candidate_id": "201594",
+        "assumption": "目录元数据是实体与属性判断的事实基础",
+        "evidence": [
+          {
+            "claim": "目录记录：Brightburn（2019），类型为Drama/Horror/Sci-Fi/Thriller",
+            "source": "catalog",
+            "reference": "movielens:movies.csv:movieId=201594",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "候选存在于目录中，且检索得分反映查询匹配度。",
+        "verdict": "support",
+        "utility": 0.4433335652490294,
+        "confidence": 0.92,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 2
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "134130",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "115713",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "106920",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "97752",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "113741",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "166635",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "86320",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "80969",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "112804",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "96655",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "99764",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "89039",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "110730",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "115680",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "113378",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "96832",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "196997",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "80917",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "194951",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "92694",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "130576",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "100302",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "116905",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "196889",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "164367",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "109187",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "144482",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "94799",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "92210",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "94810",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "120392",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "170629",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "91505",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "204352",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "89898",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "179881",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "162982",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "143365",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "151695",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "105519",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "141004",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "99537",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "149650",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "200200",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "119139",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "141397",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "127188",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "181217",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "142424",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "preference-1",
+        "role": "preference",
+        "candidate_id": "201594",
+        "assumption": "显式偏好优先于推测的隐式偏好",
+        "evidence": [
+          {
+            "claim": "候选匹配用户偏好类型：drama,sci-fi",
+            "source": "request_profile",
+            "reference": "request:preferred_genres",
+            "verified": true,
+            "strength": 0.9
+          }
+        ],
+        "inference": "根据候选类型与用户偏好的交集估计个性化效用。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "134130",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:134130",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "115713",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:115713",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "106920",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:106920",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "97752",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:97752",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "113741",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:113741",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "166635",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:166635",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "86320",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:86320",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "80969",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:80969",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "112804",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:112804",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "96655",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:96655",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "99764",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:99764",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "89039",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:89039",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "110730",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:110730",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "115680",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:115680",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "113378",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:113378",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "96832",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:96832",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "196997",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:196997",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "80917",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:80917",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "194951",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:194951",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "92694",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:92694",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "130576",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:130576",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "100302",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:100302",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "116905",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:116905",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "196889",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:196889",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "164367",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:164367",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "109187",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:109187",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "144482",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:144482",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "94799",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:94799",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "92210",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:92210",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "94810",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:94810",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "120392",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:120392",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "170629",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:170629",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "91505",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:91505",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "204352",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:204352",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "89898",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:89898",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "179881",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:179881",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "162982",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:162982",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "143365",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:143365",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "151695",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:151695",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "105519",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:105519",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "141004",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:141004",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "99537",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:99537",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "149650",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:149650",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "200200",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:200200",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "119139",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:119139",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "141397",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:141397",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "127188",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:127188",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "181217",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:181217",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "142424",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:142424",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "verifier-1",
+        "role": "verifier",
+        "candidate_id": "201594",
+        "assumption": "硬约束不应被偏好分数补偿",
+        "evidence": [
+          {
+            "claim": "候选满足全部硬约束",
+            "source": "constraint_checker",
+            "reference": "request:201594",
+            "verified": true,
+            "strength": 1
+          }
+        ],
+        "inference": "逐项检查年份和排除类型。",
+        "verdict": "support",
+        "utility": 1,
+        "confidence": 0.99,
+        "action": "verify",
+        "token_cost": 0,
+        "latency_ms": 1
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "134130",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2015，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含science fiction、scifi、science、survival等，体现科幻与思想性元素",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选符合用户对科幻剧情片的基本要求，且未包含被排除的类型，但思想性程度需结合标签判断，标签中survival、science等暗示一定思想性。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "115713",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2015，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含cerebral、philosophical、artificial intelligence等，强烈体现思想性",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选高度符合用户对思想性科幻剧情片的要求，且未包含被排除的类型，思想性标签突出。",
+        "verdict": "support",
+        "utility": 0.95,
+        "confidence": 0.95,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "106920",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2013，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含loneliness、relationships、technology、melancholic等，体现思想性和情感深度",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选符合用户对科幻剧情片的要求，且未包含被排除的类型，思想性通过情感和科技关系标签体现。",
+        "verdict": "support",
+        "utility": 0.9,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "97752",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2012，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含complex、multiple storylines、dystopia等，体现思想性",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选符合用户对科幻剧情片的要求，且未包含被排除的类型，思想性通过复杂叙事和反乌托邦标签体现。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "113741",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2013，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含cerebral、psychological、parallel universe等，体现思想性",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选符合用户对科幻剧情片的要求，且未包含被排除的类型，思想性通过心理和哲学标签体现。",
+        "verdict": "support",
+        "utility": 0.9,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "166635",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2016，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含space travel、love story、romance等，思想性较弱",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选符合基本类型和年份要求，但思想性标签较弱，更偏向浪漫和冒险，可能不完全符合思想性要求。",
+        "verdict": "support",
+        "utility": 0.6,
+        "confidence": 0.8,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "86320",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2011，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含existentialism、depression、art house等，强烈体现思想性",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选高度符合用户对思想性科幻剧情片的要求，且未包含被排除的类型，思想性标签突出。",
+        "verdict": "support",
+        "utility": 0.95,
+        "confidence": 0.95,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "80969",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2010，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含existentialism、thought-provoking、cloning等，体现思想性",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选符合用户对科幻剧情片的要求，且未包含被排除的类型，思想性通过存在主义和克隆伦理标签体现。",
+        "verdict": "support",
+        "utility": 0.9,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "112804",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2014，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含philosophical、science、religion等，体现思想性",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选符合用户对科幻剧情片的要求，且未包含被排除的类型，思想性通过哲学和科学标签体现。",
+        "verdict": "support",
+        "utility": 0.9,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-preference-1",
+        "role": "preference",
+        "candidate_id": "96655",
+        "assumption": "用户希望推荐2010年以后的思想性科幻剧情片，排除动作片和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama和Sci-Fi，符合偏好类型",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2012，满足2010年以后",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "类型不包含Action或Disaster，未违反排除条件",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含existentialism、memory、robot等，体现思想性",
+            "source": "deepseek:preference",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该候选符合用户对科幻剧情片的要求，且未包含被排除的类型，思想性通过存在主义和记忆主题标签体现。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5234,
+        "latency_ms": 5245
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "134130",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Adventure, Drama, Sci-Fi，含冒险元素",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 space travel, mars, nasa, astronauts, stranded, survival",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2015，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 4.0334，rating_count 16489",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片虽含 Drama 与 Sci-Fi，但 Adventure 类型及 stranded/survival 标签指向生存冒险叙事，与用户排除动作/灾难的意图存在张力；其太空生存题材与 Passengers 高度重叠，多样性贡献有限。",
+        "verdict": "oppose",
+        "utility": 0.25,
+        "confidence": 0.7,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "115713",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Drama, Sci-Fi, Thriller，无动作或灾难类型",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 cerebral, philosophical, artificial intelligence, man versus machine, android(s)/cyborg(s)",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2015，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 3.9694，rating_count 12547",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片以人工智能与哲学思辨为核心，cerebral 与 philosophical 标签直接对应思想性科幻剧情片，且无动作/灾难类型，能为列表提供 AI 伦理这一独特维度。",
+        "verdict": "support",
+        "utility": 0.9,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "106920",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Drama, Romance, Sci-Fi，无动作或灾难类型",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 loneliness, relationships, technology, melancholic, emotional, bittersweet",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2013，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 3.8845，rating_count 10428",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片以人机情感关系与孤独为主题，情感/关系维度与 Ex Machina 的 AI 伦理、Cloud Atlas 的宏大叙事形成差异，且无动作/灾难类型，多样性贡献高。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.8,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "97752",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Drama, Sci-Fi, IMAX，无动作或灾难类型",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 complex, multiple storylines, dystopia, post-apocalyptic, storytelling",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2012，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 3.5679，rating_count 5750",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片以多线叙事与复杂结构为特征，complex/multiple storylines 标签体现思想性叙事实验，且无动作/灾难类型，能为列表提供结构实验这一独特维度。",
+        "verdict": "support",
+        "utility": 0.8,
+        "confidence": 0.75,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "113741",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Drama, Mystery, Sci-Fi, Thriller，无动作或灾难类型",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 cerebral, psychological, parallel universe, alternate reality, low budget, complicated",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2013，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 3.8647，rating_count 1744",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片为低预算独立制作，parallel universe/alternate reality 与 cerebral/psychological 标签指向高概念思想性科幻，rating_count 较低体现长尾覆盖价值，且无动作/灾难类型。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.8,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "166635",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Adventure, Drama, Romance, Sci-Fi，含冒险元素",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 space travel, space, space opera, visually stunning, love story",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2016，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 3.5396，rating_count 3171",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片含 Adventure 类型及 space opera 标签，偏向太空冒险奇观，与 The Martian 的太空题材高度同质，且冒险元素与用户排除动作/灾难的意图存在张力，多样性贡献低。",
+        "verdict": "oppose",
+        "utility": 0.2,
+        "confidence": 0.7,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "86320",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Drama, Sci-Fi，无动作或灾难类型",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 depression, existentialism, melancholic, art house, slow paced, end of the world, surreal",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2011，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 3.632，rating_count 2353",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片为艺术电影，existentialism/art house/slow paced 标签体现高度思想性与作者风格，end of the world 虽涉及末日但非灾难类型片，能为列表提供艺术电影长尾维度。",
+        "verdict": "support",
+        "utility": 0.8,
+        "confidence": 0.75,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "80969",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Drama, Romance, Sci-Fi，无动作或灾难类型",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 existentialism, thought-provoking, cloning, melancholic, heartbreaking, based on a book",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2010，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 3.6566，rating_count 1542",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片以克隆伦理与存在主义为主题，thought-provoking/existentialism/cloning 标签直接对应思想性科幻，rating_count 较低体现长尾价值，且无动作/灾难类型。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.8,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "112804",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Drama, Sci-Fi，无动作或灾难类型",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 philosophical, science, religion, philosophy, original, storytelling",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2014，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 3.6993，rating_count 1119",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片以科学与宗教/哲学的张力为核心，philosophical/philosophy/religion 标签体现思想性，rating_count 仅 1119 体现长尾覆盖，且无动作/灾难类型。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.8,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-diversity-1",
+        "role": "diversity",
+        "candidate_id": "96655",
+        "assumption": "候选需在满足科幻+剧情且排除动作/灾难的前提下，为列表贡献多样性并覆盖长尾思想性题材。",
+        "evidence": [
+          {
+            "claim": "类型为 Comedy, Drama, Sci-Fi，无动作或灾难类型",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包含 robot, man versus machine, memory, memory loss, existentialism, original",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份 2012，符合 2010 年以后",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分 3.6784，rating_count 998",
+            "source": "deepseek:diversity",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片以机器人与记忆/存在主义为主题，Comedy 类型与多数候选形成差异，rating_count 仅 998 体现长尾覆盖，且无动作/灾难类型。",
+        "verdict": "support",
+        "utility": 0.8,
+        "confidence": 0.75,
+        "action": "aeic_effort",
+        "token_cost": 5530,
+        "latency_ms": 6983
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "134130",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Adventure, Drama, Sci-Fi",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2015符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括space travel, mars, nasa, space program, space, astronauts, science fiction, scifi, stranded, survival, science, sci-fi",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分4.0334，评分人数16489",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:134130",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，但类型中的Adventure可能暗示包含动作或冒险元素，且语义标签强调生存和太空旅行，可能缺乏思想深度，更偏向娱乐性。",
+        "verdict": "oppose",
+        "utility": 0.4,
+        "confidence": 0.7,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "115713",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama, Sci-Fi, Thriller",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2015符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括android(s)/cyborg(s), cerebral, science fiction, robot, technology, futuristic, man versus machine, scifi, androids, artificial intelligence, sci-fi, philosophical",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分3.9694，评分人数12547",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:115713",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，语义标签中的cerebral和philosophical表明其具有思想性，且类型无动作或灾难，完全符合用户要求。",
+        "verdict": "support",
+        "utility": 0.9,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "106920",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama, Romance, Sci-Fi",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2013符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括loneliness, relationships, future, technology, futuristic, original, melancholic, love story, love, touching, bittersweet, emotional",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分3.8845，评分人数10428",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:106920",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，语义标签中的original和emotional表明其具有思想性，且类型无动作或灾难，符合用户要求。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "97752",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama, Sci-Fi, IMAX",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2012符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括future, visually appealing, storytelling, futuristic, complex, post-apocalyptic, dystopia, visually stunning, multiple storylines, adapted from:book, visual, original",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分3.5679，评分人数5750",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:97752",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，语义标签中的complex和storytelling表明其具有思想性，且类型无动作或灾难，符合用户要求。",
+        "verdict": "support",
+        "utility": 0.8,
+        "confidence": 0.8,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "113741",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama, Mystery, Sci-Fi, Thriller",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2013符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括cerebral, paranoia, low budget, sci-fi, science fiction, psychological, complicated, parallel universe, weird, alternate reality, scifi, twists & turns",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分3.8647，评分人数1744",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:113741",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，语义标签中的cerebral和psychological表明其具有思想性，且类型无动作或灾难，符合用户要求。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "166635",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Adventure, Drama, Romance, Sci-Fi",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2016符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括space travel, space, sci-fi, science fiction, scifi, sci fi, futuristic, technology, visually stunning, love story, romance, space opera",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分3.5396，评分人数3171",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:166635",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，但类型中的Adventure可能暗示包含动作或冒险元素，且语义标签强调爱情和视觉效果，可能缺乏思想深度，更偏向娱乐性。",
+        "verdict": "oppose",
+        "utility": 0.3,
+        "confidence": 0.7,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "86320",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama, Sci-Fi",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2011符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括depression, weird, melancholic, existentialism, golden palm, end of the world, surreal, art house, slow paced, visually appealing, enigmatic, loneliness",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分3.632，评分人数2353",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:86320",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，语义标签中的existentialism和art house表明其具有思想性，且类型无动作或灾难，符合用户要求。",
+        "verdict": "support",
+        "utility": 0.9,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "80969",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama, Romance, Sci-Fi",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2010符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括emotional, melancholic, heartbreaking, based on a book, existentialism, bittersweet, thought-provoking, loneliness, cloning, bleak, sad, love story",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分3.6566，评分人数1542",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:80969",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，语义标签中的existentialism和thought-provoking表明其具有思想性，且类型无动作或灾难，符合用户要求。",
+        "verdict": "support",
+        "utility": 0.85,
+        "confidence": 0.85,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "112804",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Drama, Sci-Fi",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2014符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括science, philosophical, sci-fi, science fiction, scifi, religion, sci fi, original, good acting, love story, storytelling, philosophy",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分3.6993，评分人数1119",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:112804",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，语义标签中的philosophical和philosophy表明其具有思想性，且类型无动作或灾难，符合用户要求。",
+        "verdict": "support",
+        "utility": 0.9,
+        "confidence": 0.9,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      },
+      {
+        "agent_id": "deepseek-critic-1",
+        "role": "critic",
+        "candidate_id": "96655",
+        "assumption": "用户想要2010年后的思想性科幻剧情片，排除动作和灾难片。",
+        "evidence": [
+          {
+            "claim": "类型包含Comedy, Drama, Sci-Fi",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "年份2012符合min_year",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "语义标签包括robot, future, robots, futuristic, science fiction, man versus machine, technology, memory, scifi, memory loss, original, existentialism",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          },
+          {
+            "claim": "评分3.6784，评分人数998",
+            "source": "deepseek:critic",
+            "reference": "request_candidate:96655",
+            "verified": false,
+            "strength": 0.55
+          }
+        ],
+        "inference": "该片是科幻剧情片，语义标签中的existentialism表明其具有思想性，且类型无动作或灾难，符合用户要求。",
+        "verdict": "support",
+        "utility": 0.8,
+        "confidence": 0.8,
+        "action": "aeic_effort",
+        "token_cost": 5723,
+        "latency_ms": 6010
+      }
+    ],
+    "reputations_before": {
+      "deepseek-critic-1": 0,
+      "deepseek-diversity-1": 0,
+      "deepseek-preference-1": 0,
+      "preference-1": 8.456193,
+      "retrieval-1": 9.152585,
+      "verifier-1": 9.848978
+    },
+    "reputations_after": {
+      "deepseek-critic-1": 0,
+      "deepseek-diversity-1": 0,
+      "deepseek-preference-1": 0,
+      "preference-1": 8.499774,
+      "retrieval-1": 9.199756,
+      "verifier-1": 9.899737
+    },
+    "schema_version": "game-consensus-recsys.v1"
+  }
+}

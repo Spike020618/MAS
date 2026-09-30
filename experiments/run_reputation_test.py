@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.reputation import ReputationSystem, weighted_majority_vote
+from experiments.core.reputation import ReputationSystem, weighted_majority_vote
 
 def test_reputation():
     print("Initializing reputation system for 3 agents...")

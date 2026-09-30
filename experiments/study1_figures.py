@@ -1,5 +1,5 @@
 """
-Study 1 图表生成 — LNCS 风格（serif/9pt/PDF+PNG），输出至 results/review/figures/
+Study 1 图表生成 — LNCS 风格（serif/9pt/PDF+PNG），输出至 experiments/results/review/figures/
 
   fig_s1_negativity_bias:   独立评审 accept 率（按分层）vs 人类官方基准
   fig_s1_minority_fate:     讨论后少数派去向（负向棘轮）
@@ -33,9 +33,9 @@ plt.rcParams.update({
     "savefig.pad_inches": 0.05,
 })
 
-PANEL_DIR = "results/review/panel"
-STATS_PATH = "results/review/study1_stats.json"
-FIG_DIR = "results/review/figures"
+PANEL_DIR = "experiments/results/review/panel"
+STATS_PATH = "experiments/results/review/study1_stats.json"
+FIG_DIR = "experiments/results/review/figures"
 STRATA = ["clear_accept", "borderline", "clear_reject"]
 STRATA_LABELS = ["Clear\nAccept", "Borderline", "Clear\nReject"]
 COLORS = ["#4C72B0", "#55A868", "#C44E52", "#8172B2", "#CCB974", "#64B5CD"]

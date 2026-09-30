@@ -14,7 +14,7 @@ from sklearn.model_selection import StratifiedKFold
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import (
     evaluate_config, compute_weights, objective, compute_ic_metric,
     consensus_from_signals
@@ -130,7 +130,7 @@ for topo in TOPOS:
     results[topo] = {}
 
     for ds in DATASETS:
-        sig_path = f"results/signals/{ds}{topo_suffix}.json"
+        sig_path = f"experiments/results/signals/{ds}{topo_suffix}.json"
         if not os.path.exists(sig_path):
             print(f"SKIP: {sig_path} not found")
             results[topo][ds] = {"skip": True}
@@ -208,7 +208,7 @@ for topo in TOPOS:
                        if "skip" not in results[topo].get(ds, {})])
     print(f"AEIC+SG ({topo:12s})  {vals[0]:>10} {vals[1]:>12} {vals[2]:>12} {avg*100:>7.1f}±{avg_std*100:.1f}")
 
-out_path = "results/configs/per_dataset_cv_results.json"
+out_path = "experiments/results/configs/per_dataset_cv_results.json"
 with open(out_path, "w") as f:
     json.dump(results, f, indent=2, default=str)
 print(f"\nSaved to {out_path}")

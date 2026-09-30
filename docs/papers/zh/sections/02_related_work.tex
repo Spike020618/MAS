@@ -1,0 +1,8 @@
+\section{相关工作}\label{sec:related}
+\paragraph{多智能体审议。}Self-consistency聚合采样推理路径~\cite{wang2023selfconsistency}；多智能体辩论在聚合前让模型实例彼此可见~\cite{du2024improving}；ChatEval与AgentVerse组织专业Agent或评估者~\cite{chan2023chateval,chen2023agentverse}。近期研究还揭示同质面板中的从众、谄媚和有效分歧损失~\cite{pitre2025consensagent,swamy2025peacemaker}。AEIC-MD关注更早的决策：Agent是否选择承担可独立检查报告的成本。
+
+\paragraph{作为接口的结构化推理。}Chain-of-Thought、Tree-of-Thoughts和ReAct组织单模型计算~\cite{wei2022chain,yao2024tree,yao2023react}。AEIC统一观测报告完整性、最终立场和资源行动。它既是生成协议，也是可缔约报告空间；本文不假设格式保证真实性。
+
+\paragraph{语言模型机制设计。}LLM的委托--代理和合同视角区分设计者承诺与Agent响应~\cite{rauba2025principal,saig2024incentivizing}；Stackelberg激励也用于分布式学习和众包~\cite{fu2024stackelberg,guo2023incentive,wang2024incentive}。AEIC-MD直接执行“规则先呈现、行动先声明、路径后执行”的顺序，区别于对未见规则时生成的回答做离线评分。
+
+\paragraph{通信结构与生产激励。}拓扑决定报告如何流动~\cite{hong2023metagpt,chen2024reconcile}，却不能保证报告包含独立工作。本文将信息结构作为受控环境和未来设计层；确认性实验固定信息流，仅改变公开规则。

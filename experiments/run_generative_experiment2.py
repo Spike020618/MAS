@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def run_generative_experiment():
-    cache_dir = "results/cache"
+    cache_dir = "experiments/results/cache"
     datasets = ["GSM8K", "GSM-Hard"]
     
     print("=== Direction 3: Generative Consensus Evaluation (Yes/No Format) ===\n")

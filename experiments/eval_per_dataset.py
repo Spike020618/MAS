@@ -13,7 +13,7 @@ from scipy.optimize import differential_evolution
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import evaluate_config, objective
 
 TOPOS = ["parallel", "sequential", "star", "debate", "hierarchical"]
@@ -22,7 +22,7 @@ DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
 
 def load_questions(ds, topo):
     suffix = f"_{topo}" if topo != "parallel" else ""
-    path = f"results/signals/{ds}{suffix}.json"
+    path = f"experiments/results/signals/{ds}{suffix}.json"
     with open(path) as f:
         data = json.load(f)
     return data["questions"][:300], data["meta"]["n_agents"]
@@ -51,8 +51,8 @@ for topo in TOPOS:
     results[topo] = {}
 
     # Load existing θ* config
-    cv_path = f"results/configs/opt_{topo}_cv.json"
-    path = f"results/configs/opt_{topo}.json"
+    cv_path = f"experiments/results/configs/opt_{topo}_cv.json"
+    path = f"experiments/results/configs/opt_{topo}.json"
     cfg_path = cv_path if os.path.exists(cv_path) else path
     with open(cfg_path) as f:
         theta = json.load(f)
@@ -141,7 +141,7 @@ for topo in TOPOS:
     avg = results[topo]["_avg_lodo"]
     print(f"AEIC+SG ({topo:12s})  {vals[0]:>10} {vals[1]:>12} {vals[2]:>12} {avg*100:>9.1f}")
 
-out_path = "results/configs/per_dataset_cv_results.json"
+out_path = "experiments/results/configs/per_dataset_cv_results.json"
 with open(out_path, "w") as f:
     json.dump(results, f, indent=2)
 print(f"\nSaved to {out_path}")

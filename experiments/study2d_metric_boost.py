@@ -22,9 +22,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.preprocessing import StandardScaler
 
-V3_PATH = "results/review/panel/debate_2024.json"
-R1_PATH = "results/review/panel/debate_r1_sub150_2024.json"
-OUT_PATH = "results/review/study2d_metric_boost.json"
+V3_PATH = "experiments/results/review/panel/debate_2024.json"
+R1_PATH = "experiments/results/review/panel/debate_r1_sub150_2024.json"
+OUT_PATH = "experiments/results/review/study2d_metric_boost.json"
 STRATA = ["clear_accept", "borderline", "clear_reject"]
 STANCE_MAP = {"accept": 1, "weak_accept": 1, "reject": 0, "weak_reject": 0}
 

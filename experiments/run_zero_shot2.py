@@ -20,7 +20,7 @@ def compute_end_to_end_accuracy(y_pred, q_correct_by_topo, q_ids_test):
     return correct / total if total > 0 else 0
 
 def run_zero_shot_experiment():
-    cache_dir = "results/cache"
+    cache_dir = "experiments/results/cache"
     topologies = ["parallel", "sequential", "star", "debate", "hierarchical"]
     datasets = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
     

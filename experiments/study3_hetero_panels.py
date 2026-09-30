@@ -21,11 +21,11 @@ import json
 import numpy as np
 
 FILES = {
-    "V3": "results/review/panel/debate_2024.json",
-    "R1": "results/review/panel/debate_r1_sub150_2024.json",
-    "GLM": "results/review/panel/debate_glm_sub150_2024.json",
+    "V3": "experiments/results/review/panel/debate_2024.json",
+    "R1": "experiments/results/review/panel/debate_r1_sub150_2024.json",
+    "GLM": "experiments/results/review/panel/debate_glm_sub150_2024.json",
 }
-OUT_PATH = "results/review/study3_hetero_panels.json"
+OUT_PATH = "experiments/results/review/study3_hetero_panels.json"
 STRATA = ["clear_accept", "borderline", "clear_reject"]
 STANCE_MAP = {"accept": 1, "weak_accept": 1, "reject": 0, "weak_reject": 0}
 B = 500

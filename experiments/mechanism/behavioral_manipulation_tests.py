@@ -16,8 +16,8 @@ try:
 except ImportError:  # Direct script execution.
     from statistical_tests import compare_maps, deduplicate, holm, load
 
-from core.mechanism.behavioral_metrics import evidence_copy_score, evidence_novelty, unsupported_flip
-from core.mechanism.schema import AEICReport
+from experiments.core.mechanism.behavioral_metrics import evidence_copy_score, evidence_novelty, unsupported_flip
+from experiments.core.mechanism.schema import AEICReport
 
 
 ENDPOINTS = ("unsupported_transition_rate", "supported_flip_rate",

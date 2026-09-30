@@ -4,11 +4,11 @@
 Usage:
   # 评估一个config在所有已有signals上的泛化
   python experiments/eval_generalization.py \
-      --config results/configs/opt_001.json
+      --config experiments/results/configs/opt_001.json
 
   # 完整流水线：优化+泛化+日志
   python experiments/eval_generalization.py \
-      --config results/configs/opt_001.json \
+      --config experiments/results/configs/opt_001.json \
       --train_datasets StrategyQA \
       --train_accuracy 0.815
 """
@@ -24,13 +24,13 @@ from typing import Dict, List, Optional
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import (
     consensus_from_signals, evaluate_config, compute_ic_metric,
 )
 
 
-LOG_PATH = "results/optimization_log.json"
+LOG_PATH = "experiments/results/optimization_log.json"
 
 
 def load_log() -> Dict:

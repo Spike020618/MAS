@@ -102,7 +102,7 @@ experiments/
 core/
   adaptive_executor.py     # 自适应执行器 + classify_topology()
 
-results/
+experiments/results/
   cache/{dataset}_{topology}.json   # AEIC原始缓存
   signals/{dataset}_{topology}.json # 预计算信号
   configs/opt_{topology}.json       # 各拓扑θ*

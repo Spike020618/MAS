@@ -23,8 +23,8 @@ import sys
 import numpy as np
 from scipy import stats
 
-PANEL_DIR = "results/review/panel"
-OUT_PATH = "results/review/study1_stats.json"
+PANEL_DIR = "experiments/results/review/panel"
+OUT_PATH = "experiments/results/review/study1_stats.json"
 STRATA = ["clear_accept", "borderline", "clear_reject"]
 
 

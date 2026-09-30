@@ -1,0 +1,18 @@
+%======================================================================
+\section{Identification and Claim Boundaries}
+\label{sec:identification}
+%======================================================================
+
+AEIC-MD uses a Stackelberg \emph{ordering}, not a claimed closed-form equilibrium: the designer commits to $m$, then followers respond. Because the LLM policy is a black box, the empirical object is the induced action distribution $\pi(a\mid x,m,h)$.
+
+\paragraph{Follower-response contrast.}
+For paired task instances, changing $m$ while fixing the question, seed, panel configuration, rounds, and information policy identifies the intention-to-treat effect of the announced rule on the implemented model policy. A positive difference in high-effort actions establishes rule responsiveness; it does not by itself prove utility maximization or incentive compatibility for arbitrary agents.
+
+\paragraph{Outcome-only control.}
+The contrast between Static AEIC and Outcome Only separates process observability from the mere presence of reward language. If both rules offered incentives but only the process rule changed effort and accuracy, the evidence favors the locally checkable report interface as the operative component. It does not isolate a unique contribution for each of the four AEIC fields; the registered signal ablations are descriptive bounds on the implemented contract.
+
+\paragraph{Dose response.}
+For a fixed backend and domain, Eq.~\eqref{eq:followerutility} predicts that increasing visible reward should weakly increase high-effort choices and increasing visible effort cost should weakly decrease them. We test these directional implications without fitting a structural utility model. The boundary suite combines frozen low/high settings with a same-domain development center point, so it supports monotonicity rather than an unbiased estimate of the confirmatory treatment effect.
+
+\paragraph{External validity.}
+Prompt-mediated costs and credits have semantics supplied by the backend. Consequently, a contract that changes $\pi$ for one model family need not transfer to another. We therefore treat the held-out backend as a decisive scope test and report failure to transfer in the main text. We do not claim general equilibrium existence, global leader optimality, monetary incentive compatibility, or topology-independent effectiveness.

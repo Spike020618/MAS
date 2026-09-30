@@ -35,12 +35,12 @@ from experiments.study2a_calibrated_aggregation import (
     load_panel, stratified_split, panel_features, theta_aggregate, STRATA,
 )
 
-PARALLEL_PATH = "results/review/panel/parallel_2024.json"
-DEBATE_PATH = "results/review/panel/debate_2024.json"
-REG_PATH = "results/review/panel/debate_regulated_v3_full300_2024.json"
-STAR_PATH = "results/review/panel/star_2024.json"
-THETA_PATH = "results/review/study2a_theta_star.json"
-OUT_PATH = "results/review/study2c_routing.json"
+PARALLEL_PATH = "experiments/results/review/panel/parallel_2024.json"
+DEBATE_PATH = "experiments/results/review/panel/debate_2024.json"
+REG_PATH = "experiments/results/review/panel/debate_regulated_v3_full300_2024.json"
+STAR_PATH = "experiments/results/review/panel/star_2024.json"
+THETA_PATH = "experiments/results/review/study2a_theta_star.json"
+OUT_PATH = "experiments/results/review/study2c_routing.json"
 
 ACTIONS = ["theta_indep", "debate", "debate_reg", "meta"]
 COST = {"theta_indep": 5, "debate": 15, "debate_reg": 15, "meta": 6}

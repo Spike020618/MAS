@@ -15,7 +15,7 @@
     "resource_tiered": false,
     "similarity": "lexical",
     "experiment_id": "aeic-md-v12-fixed-backend-control",
-    "out": "results/mechanism/control/fixed_backend_control_v12.jsonl"
+    "out": "experiments/results/mechanism/control/fixed_backend_control_v12.jsonl"
   },
   "planned_contrasts": [
     {"name": "static_vs_none_fixed_backend", "left": "independent__no_mechanism@0.2", "right": "independent__static_aeic@0.2"}

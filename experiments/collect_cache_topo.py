@@ -11,7 +11,7 @@ Usage:
   python experiments/collect_cache_topo.py --dataset MMLU-Hard --topology sequential
 
   # 仅预计算信号（已有缓存时）
-  python experiments/collect_cache_topo.py --precompute results/cache/MMLU-Hard_sequential.json
+  python experiments/collect_cache_topo.py --precompute experiments/results/cache/MMLU-Hard_sequential.json
 
   # Smoke test: 5题验证
   python experiments/collect_cache_topo.py --dataset StrategyQA --topology star --n_samples 5 --n_agents 3
@@ -28,10 +28,10 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.llm import MultiLLMPool, AGENT_PERSONAS
-from core.orchestrator import Orchestrator
-from core.similarity import SimilarityCalculator
-from core.topology import make_topology
+from experiments.core.llm import MultiLLMPool, AGENT_PERSONAS
+from experiments.core.orchestrator import Orchestrator
+from experiments.core.similarity import SimilarityCalculator
+from experiments.core.topology import make_topology
 
 TOPOLOGIES = ["sequential", "star", "debate", "agentverse", "hierarchical"]
 DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
@@ -183,7 +183,7 @@ def _save_cache(cache: dict, path: str):
 
 def precompute_signals(cache_path: str):
     """Phase 2: 从 AEIC 缓存计算 IC/EC/EQ/EV/stance/agreement（使用实际拓扑W）。"""
-    from core.trust import (
+    from experiments.core.trust import (
         compute_ic_consistency, compute_ec_relevance,
         compute_evidence_quality, compute_evidence_consensus,
         compute_neighbor_agreement, extract_stance,
@@ -268,8 +268,8 @@ def verify_code(dataset: str, topology: str, n_agents: int):
 
     # 4. 验证输出路径
     print(f"\n[4] Output paths:")
-    cache_path = f"results/cache/{dataset}_{topology}.json"
-    signal_path = f"results/signals/{dataset}_{topology}.json"
+    cache_path = f"experiments/results/cache/{dataset}_{topology}.json"
+    signal_path = f"experiments/results/signals/{dataset}_{topology}.json"
     print(f"  Cache: {cache_path}")
     print(f"  Signals: {signal_path}")
 

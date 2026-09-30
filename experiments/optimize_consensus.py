@@ -6,11 +6,11 @@
 
 Usage:
   python experiments/optimize_consensus.py \
-      --signals results/signals/StrategyQA.json
+      --signals experiments/results/signals/StrategyQA.json
 
   # 多数据集联合训练
   python experiments/optimize_consensus.py \
-      --signals results/signals/MMLU-Hard.json results/signals/StrategyQA.json
+      --signals experiments/results/signals/MMLU-Hard.json experiments/results/signals/StrategyQA.json
 """
 from __future__ import annotations
 
@@ -24,9 +24,9 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
-from core.stackelberg import AgentBid, StackelbergGame
-from core.trust import extract_stance
+from experiments.core.consensus_config import ConsensusConfig
+from experiments.core.stackelberg import AgentBid, StackelbergGame
+from experiments.core.trust import extract_stance
 
 
 def compute_weights(signals: Dict, config: ConsensusConfig,
@@ -385,7 +385,7 @@ def main():
     parser.add_argument("--init", default=None,
                         help="Init config JSON for fine-tuning")
     parser.add_argument("--out", default=None,
-                        help="Output config path (default: results/configs/optimized_config.json)")
+                        help="Output config path (default: experiments/results/configs/optimized_config.json)")
     parser.add_argument("--lambda_ic", type=float, default=0.0,
                         help="IC incentive weight (0=pure accuracy, >0=accuracy+λ·IC)")
     parser.add_argument("--cv", action="store_true",

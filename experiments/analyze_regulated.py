@@ -22,9 +22,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from experiments.analyze_cross_model import analyze_model, _load_papers
 
-UNREG_PATH = "results/review/panel/debate_2024.json"
-REG_PATH = "results/review/panel/debate_regulated_v3_full300_2024.json"
-OUT_PATH = "results/review/regulated_v3_analysis.json"
+UNREG_PATH = "experiments/results/review/panel/debate_2024.json"
+REG_PATH = "experiments/results/review/panel/debate_regulated_v3_full300_2024.json"
+OUT_PATH = "experiments/results/review/regulated_v3_analysis.json"
 
 
 def minority_fate(papers: dict, ids: list) -> dict:

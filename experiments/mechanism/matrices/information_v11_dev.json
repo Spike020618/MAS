@@ -14,7 +14,7 @@
     "resource_tiered": true,
     "similarity": "embedding",
     "experiment_id": "aeic-md-v11-information-dev",
-    "out": "results/mechanism/pilot/information_v11_dev.jsonl"
+    "out": "experiments/results/mechanism/pilot/information_v11_dev.jsonl"
   },
   "contrasts": [
     {"name": "evidence_static_vs_none", "left": "evidence_update__no_mechanism@0.2", "right": "evidence_update__static_aeic@0.2"},

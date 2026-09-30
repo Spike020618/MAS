@@ -20,13 +20,13 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import evaluate_config, compute_ic_metric, objective
 
 TOPOLOGIES = ["parallel", "sequential", "star", "debate", "agentverse"]
 DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
-SIGNALS_DIR = "results/signals"
-CONFIGS_DIR = "results/configs"
+SIGNALS_DIR = "experiments/results/signals"
+CONFIGS_DIR = "experiments/results/configs"
 
 
 def load_topology_signals(topology: str, datasets: list = None,

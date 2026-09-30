@@ -27,8 +27,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.llm import LLMClient, install_dns_fallback
-from core.review_prompts import (
+from experiments.core.llm import LLMClient, install_dns_fallback
+from experiments.core.review_prompts import (
     REVIEWER_PERSONAS, build_review_messages, build_meta_review_messages,
     format_peer_positions, parse_aeic_review, parse_stance_rating,
     parse_meta_decision, PANEL_DISCUSSION_CONTEXT,
@@ -36,7 +36,7 @@ from core.review_prompts import (
 )
 from experiments.review_dataset import load_review_papers
 
-PANEL_DIR = "results/review/panel"
+PANEL_DIR = "experiments/results/review/panel"
 CONDITIONS = ["parallel", "debate", "debate_regulated", "star"]
 
 # 运行配置（main() 启动时设定）
@@ -212,7 +212,7 @@ def main():
     args = ap.parse_args()
     _BACKEND = args.backend
     # 系统 DNS 劣化时对任意后端域名装公共 DNS 旁路（幂等）
-    from core.llm import LLM_BACKENDS
+    from experiments.core.llm import LLM_BACKENDS
     from urllib.parse import urlparse
     _host = urlparse(LLM_BACKENDS[_BACKEND]["base_url"]).hostname
     if _host:

@@ -21,11 +21,11 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.consensus_config import ConsensusConfig
+from experiments.core.consensus_config import ConsensusConfig
 from experiments.optimize_consensus import evaluate_config
 
 DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
-SIGNALS_DIR = "results/signals"
+SIGNALS_DIR = "experiments/results/signals"
 
 
 def _load_signals(dataset: str, topology: str) -> dict:
@@ -72,7 +72,7 @@ def evaluate_majority_vote(questions: list) -> dict:
 
 def evaluate_agentverse_solver(questions: list) -> dict:
     """AgentVerse: solver（agent 0）修正后的决策。"""
-    from core.trust import extract_stance
+    from experiments.core.trust import extract_stance
 
     correct = 0
     total = 0
@@ -145,7 +145,7 @@ def evaluate_majvote_on_topology(dataset: str, topology: str) -> dict:
 def run_full_comparison():
     """运行完整对比实验。"""
     topologies = ["parallel", "sequential", "star", "debate"]
-    configs_dir = "results/configs"
+    configs_dir = "experiments/results/configs"
 
     results = {}
     for ds in DATASETS:
@@ -239,7 +239,7 @@ def verify():
     # 检查 config 文件
     print("Configs:")
     for topo in topologies:
-        cfg_path = f"results/configs/opt_{topo}.json"
+        cfg_path = f"experiments/results/configs/opt_{topo}.json"
         exists = os.path.exists(cfg_path)
         print(f"  {cfg_path}: {'OK' if exists else 'MISSING'}")
         if not exists:
@@ -252,7 +252,7 @@ def verify():
 def main():
     parser = argparse.ArgumentParser(description="Real Baseline Evaluation")
     parser.add_argument("--verify", action="store_true")
-    parser.add_argument("--output", default="results/comparison_results.json")
+    parser.add_argument("--output", default="experiments/results/comparison_results.json")
     args = parser.parse_args()
 
     if args.verify:

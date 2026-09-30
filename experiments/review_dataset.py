@@ -25,8 +25,8 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-PARQUET_PATH = "results/review/iclr26v1.parquet"
-OUT_DIR = "results/review"
+PARQUET_PATH = "experiments/results/review/iclr26v1.parquet"
+OUT_DIR = "experiments/results/review"
 
 # 分数区间（ICLR 1-10 评分制）
 BORDERLINE_MEAN_ACCEPT_MAX = 5.5   # poster 接收但均分低于此 → 争议接收

@@ -25,8 +25,8 @@ from collections import defaultdict
 
 import numpy as np
 
-PANEL_DIR = "results/review/panel"
-OUT_PATH = "results/review/study1_analysis.json"
+PANEL_DIR = "experiments/results/review/panel"
+OUT_PATH = "experiments/results/review/study1_analysis.json"
 STRATA = ["clear_accept", "borderline", "clear_reject"]
 
 

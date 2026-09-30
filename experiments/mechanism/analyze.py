@@ -12,8 +12,8 @@ from typing import Dict, List, Tuple
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from core.mechanism.behavioral_metrics import evidence_novelty, unsupported_flip
-from core.mechanism.schema import AEICReport
+from experiments.core.mechanism.behavioral_metrics import evidence_novelty, unsupported_flip
+from experiments.core.mechanism.schema import AEICReport
 
 
 HIGH_EFFORT = {"aeic_effort", "verify"}

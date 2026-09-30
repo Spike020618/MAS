@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.generative_aggregator import normalize_math_answer, aggregate_generative_answers
+from experiments.core.generative_aggregator import normalize_math_answer, aggregate_generative_answers
 
 def test_aggregation():
     # Simulated outputs from 5 agents for a math problem

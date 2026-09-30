@@ -33,7 +33,7 @@ def main() -> None:
     parser.add_argument("--check-only", action="store_true")
     args = parser.parse_args()
     registry = json.loads(args.registry.read_text(encoding="utf-8"))
-    frozen_root = ROOT / "results/mechanism/frozen"
+    frozen_root = ROOT / "experiments/results/mechanism/frozen"
     statuses = []
     for suite in registry["suites"]:
         matrix = ROOT / suite["matrix"]

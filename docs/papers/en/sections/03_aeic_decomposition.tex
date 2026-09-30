@@ -1,0 +1,18 @@
+%======================================================================
+\section{AEIC as an Observable Report Space}
+\label{sec:aeic}
+%======================================================================
+
+For question $x$, agent $i$ submits
+\begin{equation}
+ r_i=(A_i,E_i,I_i,C_i),
+\end{equation}
+where $A_i$ states the operative assumptions, $E_i$ is a list of specific evidence items, $I_i$ connects evidence to the answer, and $C_i$ contains an explicit final stance. The report is serialized as a strict JSON object with exactly these four fields. This design supplies three observables that free-form deliberation usually conflates: whether the report is structurally complete, what evidence is exposed to later agents, and what answer is finally adopted.
+
+AEIC is not treated as proof of correctness. A complete report may be coherently wrong, and an agent may imitate a peer while filling every field. Instead, AEIC provides a locally checkable surface on which a mechanism can condition credit. For a report $r$, define completeness
+\begin{equation}
+ q_{\mathrm{comp}}(r)=\frac{1}{4}\sum_{z\in\{A,E,I,C\}}\mathbf{1}[z\text{ is non-empty}],
+\end{equation}
+and let $q_C(r)$ indicate whether $C$ yields a valid task stance. The implemented static rule uses only these process-level signals. It never receives the ground-truth answer as an input to the follower's choice prompt.
+
+The distinction between \emph{observable process} and \emph{truth} is deliberate. Outcome-only credit requires the environment to know correctness after the task, whereas process credit can be announced and checked from the report itself. The comparison between these two rules asks whether a reward attached to a delayed outcome has the same behavioral effect as one attached to an immediately legible production process.

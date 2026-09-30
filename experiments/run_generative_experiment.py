@@ -6,10 +6,10 @@ import re
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.generative_aggregator import normalize_math_answer, aggregate_generative_answers
+from experiments.core.generative_aggregator import normalize_math_answer, aggregate_generative_answers
 
 def run_generative_experiment():
-    cache_dir = "results/cache"
+    cache_dir = "experiments/results/cache"
     datasets = ["GSM8K", "GSM-Hard"]
     
     print("=== Direction 3: Generative Consensus Evaluation ===\n")

@@ -6,7 +6,7 @@ import numpy as np
 from collections import defaultdict
 import scipy.stats as stats
 
-with open("results/memory_diverse/memory_diverse_results.json") as f:
+with open("experiments/results/memory_diverse/memory_diverse_results.json") as f:
     data = json.load(f)
 exps = data["experiments"]
 

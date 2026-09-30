@@ -28,7 +28,7 @@ from torch.utils.data import DataLoader, Dataset
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 
-SIGNALS_DIR = "results/signals"
+SIGNALS_DIR = "experiments/results/signals"
 DATASETS = ["MMLU-Hard", "StrategyQA", "TruthfulQA"]
 TOPOS = ["parallel", "sequential", "star", "debate", "hierarchical"]
 
@@ -426,10 +426,10 @@ def main():
         "router_best_hp_cfg": best_hp_cfg,
         "per_topo_acc": {t: float(cm[:, i].mean()) for i, t in enumerate(TOPOS)},
     }
-    os.makedirs("results/configs", exist_ok=True)
-    with open("results/configs/router_v10_results.json", "w") as f:
+    os.makedirs("experiments/results/configs", exist_ok=True)
+    with open("experiments/results/configs/router_v10_results.json", "w") as f:
         json.dump(results, f, indent=2)
-    print(f"\nSaved to results/configs/router_v10_results.json")
+    print(f"\nSaved to experiments/results/configs/router_v10_results.json")
 
 
 if __name__ == "__main__":

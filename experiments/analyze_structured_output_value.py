@@ -139,11 +139,11 @@ def check_correct(predicted, ground_truth):
 
 def analyze_dataset_topology(dataset, topology):
     """Analyze C-field vs I-field extraction for one dataset-topology pair."""
-    cache_path = f"results/cache/{dataset}_{topology}.json"
+    cache_path = f"experiments/results/cache/{dataset}_{topology}.json"
     if not os.path.exists(cache_path):
         # Try parallel = base dataset
         if topology == "parallel":
-            cache_path = f"results/cache/{dataset}.json"
+            cache_path = f"experiments/results/cache/{dataset}.json"
         if not os.path.exists(cache_path):
             return None
 
@@ -269,7 +269,7 @@ def main():
     }
 
     # Save
-    out_path = "results/structured_output_ablation.json"
+    out_path = "experiments/results/structured_output_ablation.json"
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
 

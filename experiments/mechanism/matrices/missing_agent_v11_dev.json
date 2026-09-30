@@ -16,7 +16,7 @@
     "resource_tiered": true,
     "similarity": "embedding",
     "experiment_id": "aeic-md-v11-missing-agent-dev",
-    "out": "results/mechanism/pilot/missing_agent_v11_dev.jsonl"
+    "out": "experiments/results/mechanism/pilot/missing_agent_v11_dev.jsonl"
   },
   "contrasts": [
     {"name": "agents4_vs_agents5", "left": "independent__static_aeic@0.2__variant@agents5", "right": "independent__static_aeic@0.2__variant@agents4"},

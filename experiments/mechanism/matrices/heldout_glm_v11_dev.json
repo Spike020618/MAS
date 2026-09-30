@@ -15,7 +15,7 @@
     "resource_tiered": true,
     "similarity": "embedding",
     "experiment_id": "aeic-md-v11-heldout-glm-dev",
-    "out": "results/mechanism/pilot/heldout_glm_v11_dev.jsonl"
+    "out": "experiments/results/mechanism/pilot/heldout_glm_v11_dev.jsonl"
   },
   "contrasts": [
     {"name": "heldout_static_vs_none", "left": "independent__no_mechanism@0.2", "right": "independent__static_aeic@0.2"}

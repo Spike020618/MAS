@@ -32,10 +32,10 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(line_buffering=True)
 
-from core.llm import MultiLLMPool
-from core.orchestrator import Orchestrator
-from core.similarity import SimilarityCalculator
-from core.trust import extract_stance, majority_vote
+from experiments.core.llm import MultiLLMPool
+from experiments.core.orchestrator import Orchestrator
+from experiments.core.similarity import SimilarityCalculator
+from experiments.core.trust import extract_stance, majority_vote
 from experiments.exp_orchestrator import load_questions
 from experiments.collect_cache_topo import get_topology_W
 
@@ -266,7 +266,7 @@ def main():
     parser.add_argument("--n_samples", type=int, default=50)
     parser.add_argument("--n_agents", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--out_dir", default="results/online_stackelberg")
+    parser.add_argument("--out_dir", default="experiments/results/online_stackelberg")
     parser.add_argument("--conditions", nargs="+",
                         choices=[c[3] for c in CONDITIONS],
                         default=None,

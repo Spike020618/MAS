@@ -8,7 +8,7 @@ Compares three conditions:
 
 Usage:
   python experiments/analyze_dynamic_results.py
-  python experiments/analyze_dynamic_results.py --results_path results/online_stackelberg/online_ab_results.json
+  python experiments/analyze_dynamic_results.py --results_path experiments/results/online_stackelberg/online_ab_results.json
 """
 from __future__ import annotations
 
@@ -241,7 +241,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Analyze Dynamic Sycophancy Regulation results")
     parser.add_argument("--results_path",
-                        default="results/online_stackelberg/online_ab_results.json")
+                        default="experiments/results/online_stackelberg/online_ab_results.json")
     args = parser.parse_args()
 
     if not os.path.exists(args.results_path):
