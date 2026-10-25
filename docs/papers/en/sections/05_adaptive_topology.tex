@@ -23,3 +23,9 @@ All mechanisms for a question share the question-level seed. The final panel dec
 
 \paragraph{Frozen provenance.}
 Records use a versioned schema that requires the offer, chosen action, report, visible peers, reward, realized cost, reputation snapshots, raw response, action trace, latency, and token use before a record can be marked complete. Each suite passes an expected-versus-present matrix check, is frozen with SHA-256 provenance, and is independently recomputed from canonical question-level JSONL. The final manifest contains eight complete suites and 5,850 question-level records; no suite has missing, incomplete, unexpected, route-invalid, or schema-invalid records.
+
+\paragraph{Failure detection and resumption.}
+Every unit is keyed by condition, dataset, item, and seed. On restart, the collector validates configuration hashes, schemas, and the expected item set, then reruns only missing or explicitly failed units. Duplicate keys, cross-condition input mismatch, answer leakage into prompts, missing terminal responses, and anomalous token accounting fail validation. API timeouts use bounded backoff; exhausted units preserve their error status rather than masquerading as successes. Analysis reads only validated frozen JSONL and checks every denominator.
+
+\paragraph{Information isolation.}
+Adapters construct the question and authorized history, while answer keys are passed only to settlement and offline evaluation. Choice, generation, and repair calls never receive the key. Agents in a round are committed as a batch; history and reputation are updated only after the full round, preventing order-dependent same-round leakage.

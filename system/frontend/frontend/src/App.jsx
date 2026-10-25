@@ -20,6 +20,16 @@ function App() {
       .catch(() => setApiAvailable(false))
     checkApi()
     const apiTimer = window.setInterval(checkApi, 10000)
+    let lastMobileSequence = 0
+    const pollMobileResult = () => fetch(`${apiBase}/agent/latest_result?after=${lastMobileSequence}`, { cache: 'no-store' })
+      .then(response => response.ok ? response.json() : null)
+      .then(data => {
+        if (!data?.sequence || data.sequence <= lastMobileSequence || !data.result) return
+        lastMobileSequence = data.sequence
+        setSearchResults(data.result)
+      })
+      .catch(() => {})
+    const mobileTimer = window.setInterval(pollMobileResult, 2000)
 
     const client = new WebSocketClient()
 
@@ -96,6 +106,7 @@ function App() {
     return () => {
       if (client) client.disconnect()
       window.clearInterval(apiTimer)
+      window.clearInterval(mobileTimer)
     }
   }, [])
 

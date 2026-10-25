@@ -20,8 +20,11 @@ case "$MODE" in
   test)
     python3 -m unittest experiments.tests.test_deepseek_recsys system.test_game_consensus_recsys experiments.tests.test_mechanism
     ;;
+  acceptance)
+    python3 -m experiments.run_system_acceptance
+    ;;
   *)
-    echo "Usage: $0 {doctor|demo|api|test}" >&2
+    echo "Usage: $0 {doctor|demo|api|test|acceptance}" >&2
     exit 2
     ;;
 esac

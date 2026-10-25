@@ -11,35 +11,35 @@ const SOURCE_LABEL = {
 
 const defaultMedias = [
   {
-    name: '4K 2016首尔车展模型展示', director: '',
-    actors: '', genres: '汽车',
-    year: 2019, rating: 0, description: '超高清4K画质展示首尔车展上的精美汽车模型',
-    file_name: 'test.mp4', views: '8.2万', duration: '10:25',
-    img: 'https://picsum.photos/640/360?random=1',
+    id: '115713', name: 'Ex Machina', director: '',
+    actors: '', genres: '剧情 · 科幻 · 惊悚',
+    year: 2015, rating: 4.0, description: '人工智能、意识与人机关系主题的思想性科幻片',
+    file_name: 'test.mp4', views: '1.2万', duration: '-',
+    img: 'https://picsum.photos/640/360?random=21',
     url: '/agent/media/1'
   },
   {
-    name: '8K 极致画质演示', director: '',
-    actors: '', genres: '演示',
-    year: 2023, rating: 0, description: '50fps流畅播放的8K超高清演示视频',
-    file_name: 'test.mp4', views: '15.6万', duration: '25:10',
-    img: 'https://picsum.photos/640/360?random=2',
+    id: '106920', name: 'Her', director: '',
+    actors: '', genres: '剧情 · 爱情 · 科幻',
+    year: 2013, rating: 3.9, description: '从亲密关系与技术依赖切入的柔和科幻作品',
+    file_name: 'test.mp4', views: '1.0万', duration: '-',
+    img: 'https://picsum.photos/640/360?random=22',
     url: '/agent/media/1'
   },
   {
-    name: '4K 世界杯精彩集锦', director: '',
-    actors: '', genres: '体育',
-    year: 2023, rating: 0, description: '59.94fps高帧率世界杯比赛精彩瞬间',
-    file_name: 'test.mp4', views: '52.3万', duration: '15:42',
-    img: 'https://picsum.photos/640/360?random=3',
+    id: '79132', name: 'Inception', director: '',
+    actors: '', genres: '动作 · 剧情 · 科幻 · 悬疑',
+    year: 2010, rating: 4.2, description: '以梦境结构、记忆与现实边界为核心的科幻悬疑片',
+    file_name: 'test.mp4', views: '3.8万', duration: '-',
+    img: 'https://picsum.photos/640/360?random=23',
     url: '/agent/media/1'
   },
   {
-    name: '4K H.265高效编码演示', director: '',
-    actors: '', genres: '技术',
-    year: 2023, rating: 0, description: 'H.265编码技术展示，相同画质更小体积',
-    file_name: 'test.mp4', views: '4.1万', duration: '03:25',
-    img: 'https://picsum.photos/640/360?random=4',
+    id: '60069', name: 'WALL·E', director: '',
+    actors: '', genres: '动画 · 科幻 · 爱情',
+    year: 2008, rating: 4.0, description: '以机器人、环境与孤独为主题的动画科幻电影',
+    file_name: 'test.mp4', views: '2.7万', duration: '-',
+    img: 'https://picsum.photos/640/360?random=24',
     url: '/agent/media/1'
   }
 ]

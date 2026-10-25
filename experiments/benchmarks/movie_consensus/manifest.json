@@ -1,0 +1,22 @@
+{
+  "version": "movie-consensus.v1",
+  "seed": 20260907,
+  "splits": {
+    "train": {
+      "source": "experiments/data/raw/redial/train.jsonl",
+      "eligible": 7348,
+      "selected": 30,
+      "output": "experiments/benchmarks/movie_consensus/dev.jsonl",
+      "sha256": "1a430a7af8a739fe82841e8796c8f0a0045a2c5dcde6b50b86940dc6afb20388"
+    },
+    "test": {
+      "source": "experiments/data/raw/redial/test.jsonl",
+      "eligible": 1203,
+      "selected": 100,
+      "output": "experiments/benchmarks/movie_consensus/test.jsonl",
+      "sha256": "f1dcbb50c6a42197d571ae4f2ccd7397f635ae990f0a47ac70739ba483787b37"
+    }
+  },
+  "mapping_review_rows": 5511,
+  "catalog_sha256": "972fc9d392cfb785068984568575401802cdf2ac901db1f8e8ad8d0429cfc883"
+}

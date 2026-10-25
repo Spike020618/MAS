@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import argparse
+import cgi
 import json
+import mimetypes
+import socket
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from dataclasses import fields
@@ -49,7 +52,24 @@ class ConsensusHTTPServer(ThreadingHTTPServer):
 
     def __init__(self, address, workflow=None):
         self.workflow = workflow or ConsensusWorkflow.from_environment()
+        self.trace_dir = Path(__file__).resolve().parents[2] / "experiments/results/system_traces"
+        self.frontend_dist = Path(__file__).resolve().parents[1] / "frontend/frontend/dist"
+        self.templates_dir = Path(__file__).resolve().parents[1] / "frontend/templates"
+        self.latest_result = None
+        self.latest_sequence = 0
         super().__init__(address, ConsensusHandler)
+
+    def archive(self, response) -> Path:
+        """Persist every successful decision package for later audit."""
+        self.trace_dir.mkdir(parents=True, exist_ok=True)
+        path = self.trace_dir / f"{response.request_id}.json"
+        path.write_text(json.dumps(response.to_dict(), ensure_ascii=False, sort_keys=True),
+                        encoding="utf-8")
+        return path
+
+    def publish(self, payload: Dict[str, Any]) -> None:
+        self.latest_sequence += 1
+        self.latest_result = payload
 
 
 class ConsensusHandler(BaseHTTPRequestHandler):
@@ -67,6 +87,56 @@ class ConsensusHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _browser_origin(self) -> str:
+        host = (self.headers.get("Host") or "").split(":", 1)[0]
+        if host in {"", "localhost", "127.0.0.1", "0.0.0.0"}:
+            probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            try:
+                probe.connect(("8.8.8.8", 80))
+                host = probe.getsockname()[0]
+            except OSError:
+                host = "127.0.0.1"
+            finally:
+                probe.close()
+        return f"http://{host}:{self.server.server_address[1]}"
+
+    def _file(self, path: Path, cache: bool = False):
+        if not path.is_file():
+            self._json(404, {"error": "not_found"})
+            return
+        body = path.read_bytes()
+        mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+        self.send_response(200)
+        self.send_header("Content-Type", mime + ("; charset=utf-8" if mime.startswith("text/") else ""))
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "public, max-age=3600" if cache else "no-store")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _mobile_payload(self, message: str, source: str) -> Dict[str, Any]:
+        known_genres = ("动作", "科幻", "剧情", "喜剧", "爱情", "动画", "冒险", "悬疑", "历史", "灾难")
+        preferred = [genre for genre in known_genres if genre in message]
+        response = self.server.workflow.run(SearchRequest(query=message, preferred_genres=preferred))
+        self.server.archive(response)
+        medias = []
+        for index, decision in enumerate(response.decisions):
+            candidate = decision.candidate
+            medias.append({
+                "id": candidate.movie_id, "name": candidate.title, "year": candidate.year,
+                "genres": ", ".join(candidate.genres),
+                "rating": round(float(candidate.metadata.get("rating", decision.score * 10)), 1),
+                "description": "；".join(e.claim for e in decision.accepted_evidence) or "已通过语义共识校验",
+                "views": "-", "duration": "-",
+                "img": f"https://picsum.photos/640/360?random={index + 1}", "url": "/agent/media/1",
+            })
+        raw = response.to_dict()
+        trace = raw["trace"]
+        trace["decisions"] = raw["decisions"]
+        return {"status": "success", "type": "media_search", "source": source,
+                "query": message, "medias": [m["name"] for m in medias],
+                "medias_info": medias, "chat": f"已为你找到 {len(medias)} 部相关影片。",
+                "trace": trace}
+
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -76,17 +146,52 @@ class ConsensusHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path in ("/", "/index.html"):
-            body = INDEX_HTML.encode("utf-8")
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.send_header("Content-Length", str(len(body)))
-            self.send_header("Cache-Control", "no-store")
-            self.end_headers()
-            self.wfile.write(body)
+            built = self.server.frontend_dist / "index.html"
+            if built.is_file():
+                self._file(built)
+            else:
+                body = INDEX_HTML.encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                self.wfile.write(body)
+        elif self.path.startswith("/assets/"):
+            relative = Path(urlparse(self.path).path).relative_to("/")
+            asset = (self.server.frontend_dist / relative).resolve()
+            root = self.server.frontend_dist.resolve()
+            if root not in asset.parents:
+                self._json(403, {"error": "forbidden"})
+            else:
+                self._file(asset, cache=True)
         elif self.path == "/health":
             self._json(200, {"status": "ok", "service": "game-consensus-recsys"})
         elif self.path == "/agent/server_ip":
-            self._json(200, {"status": "success", "host": self.server.server_address[0], "port": self.server.server_address[1]})
+            origin = self._browser_origin()
+            self._json(200, {"status": "success", "ip": urlparse(origin).hostname,
+                             "host": urlparse(origin).hostname,
+                             "port": self.server.server_address[1], "origin": origin})
+        elif self.path == "/agent/uploade_page":
+            self._file(self.server.templates_dir / "uploade.html")
+        elif self.path == "/agent/voice_page":
+            self._file(self.server.templates_dir / "voice.html")
+        elif self.path.startswith("/agent/latest_result"):
+            after = int((parse_qs(urlparse(self.path).query).get("after") or [0])[0])
+            result = self.server.latest_result if self.server.latest_sequence > after else None
+            self._json(200, {"sequence": self.server.latest_sequence, "result": result})
+        elif self.path.startswith("/agent/voice_page_search"):
+            params = parse_qs(urlparse(self.path).query)
+            message = (params.get("message") or [""])[0].strip()
+            if not message:
+                self._json(422, {"status": "error", "chat": "请输入搜索关键词"})
+                return
+            try:
+                payload = self._mobile_payload(message, "voice_page_search")
+                self.server.publish(payload)
+                self._json(200, payload)
+            except Exception as error:
+                self._json(503, {"status": "error", "chat": f"推荐服务暂时不可用：{type(error).__name__}"})
         elif self.path.startswith("/agent/media_search"):
             # Compatibility endpoint used by the existing Youku-style frontend.
             params = parse_qs(urlparse(self.path).query)
@@ -113,6 +218,7 @@ class ConsensusHandler(BaseHTTPRequestHandler):
                         "img": f"https://picsum.photos/640/360?random={index + 1}",
                         "url": "/agent/media/1",
                     })
+                self.server.archive(response)
                 compact_trace = {
                     "mechanism": response.trace.mechanism,
                     "topology": response.trace.topology,
@@ -121,15 +227,38 @@ class ConsensusHandler(BaseHTTPRequestHandler):
                     "reputations_before": response.trace.reputations_before,
                     "reputations_after": response.trace.reputations_after,
                     "reports": [{"agent_id": report.agent_id, "role": report.role, "action": report.action, "candidate_id": report.candidate_id, "assumption": report.assumption, "evidence": [item.__dict__ for item in report.evidence], "inference": report.inference, "verdict": report.verdict.value, "utility": report.utility, "confidence": report.confidence, "token_cost": report.token_cost, "latency_ms": report.latency_ms} for report in response.trace.reports],
-                    "decisions": [{"candidate_id": decision.candidate.movie_id, "title": decision.candidate.title, "score": decision.score, "decision_consensus": decision.decision_consensus, "evidence_consensus": decision.evidence_consensus, "residual_dissent": decision.residual_dissent, "accepted_evidence": [item.__dict__ for item in decision.accepted_evidence], "contributing_agents": decision.contributing_agents} for decision in response.decisions],
+                    "decisions": [{"candidate_id": decision.candidate.movie_id, "title": decision.candidate.title, "score": decision.score, "decision_consensus": decision.decision_consensus, "evidence_consensus": decision.evidence_consensus, "residual_dissent": decision.residual_dissent, "accepted_evidence": [item.__dict__ for item in decision.accepted_evidence], "contributing_agents": decision.contributing_agents, "score_components": decision.score_components, "agent_coverage": decision.agent_coverage} for decision in response.decisions],
                 }
-                self._json(200, {"status": "success", "query": message, "medias": [m["name"] for m in medias], "medias_info": medias, "chat": f"已为你找到 {len(medias)} 部相关影片。", "trace": compact_trace})
+                payload = {"status": "success", "type": "media_search", "source": "media_search", "query": message, "medias": [m["name"] for m in medias], "medias_info": medias, "chat": f"已为你找到 {len(medias)} 部相关影片。", "trace": compact_trace}
+                self.server.publish(payload)
+                self._json(200, payload)
             except Exception as error:
                 self._json(503, {"status": "error", "chat": f"推荐服务暂时不可用：{type(error).__name__}"})
         else:
             self._json(404, {"error": "not_found"})
 
     def do_POST(self):
+        if self.path == "/agent/upload":
+            try:
+                content_type = self.headers.get("Content-Type", "")
+                if not content_type.startswith("multipart/form-data"):
+                    raise ValueError("multipart/form-data required")
+                form = cgi.FieldStorage(fp=self.rfile, headers=self.headers,
+                                        environ={"REQUEST_METHOD": "POST", "CONTENT_TYPE": content_type})
+                message = str(form.getfirst("text", "")).strip()
+                image = form["image"] if "image" in form else None
+                if not message:
+                    filename = getattr(image, "filename", "") if image is not None else ""
+                    self._json(200, {"status": "success", "message": "图片已接收，请补充文字描述以进行影视检索。", "medias_info": [], "filename": filename})
+                    return
+                payload = self._mobile_payload(message, "mobile_upload")
+                self.server.publish(payload)
+                self._json(200, payload)
+            except (ValueError, TypeError) as error:
+                self._json(422, {"status": "error", "message": str(error)})
+            except Exception as error:
+                self._json(503, {"status": "error", "message": f"服务暂时不可用：{type(error).__name__}"})
+            return
         if self.path != "/v1/search":
             self._json(404, {"error": "not_found"})
             return
@@ -143,6 +272,7 @@ class ConsensusHandler(BaseHTTPRequestHandler):
             if unknown:
                 raise ValueError(f"unknown fields: {', '.join(unknown)}")
             response = self.server.workflow.run(SearchRequest(**raw))
+            self.server.archive(response)
             self._json(200, response.to_dict())
         except (ValueError, TypeError, json.JSONDecodeError, UnicodeDecodeError) as error:
             self._json(422, {"error": "invalid_request", "detail": str(error)})

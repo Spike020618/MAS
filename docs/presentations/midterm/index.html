@@ -95,13 +95,13 @@
 
   <section class="slide" data-title="创新对比">
     <div class="slide-header"><div><span class="eyebrow">一、研究内容 · 创新定位</span><span class="accent-line"></span></div><span class="tag">04 / 31</span></div>
-    <h2 data-anim="rise-in">研究内容：博弈驱动的去中心化语义共识机制</h2><p class="subtitle">AEIC-MD 统一机制设计、系统实验与影视推荐应用验证，整项工作只有一个核心创新点</p>
+    <h2 data-anim="rise-in">研究内容：博弈驱动的去中心化语义共识机制</h2><p class="subtitle">AEIC机制 统一机制设计、系统实验与影视推荐应用验证，整项工作只有一个核心创新点</p>
     <table class="innovation-table"><thead><tr><th>方法族</th><th>结构化中间过程</th><th>规则在生成前公开</th><th>Agent 主动选择行动</th><th>行动控制真实资源路径</th><th>可识别 follower response</th></tr></thead><tbody>
       <tr><td>多数投票 / Self-consistency</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
       <tr><td>CoT / ReAct / 结构化 Prompt</td><td class="yes">✓</td><td class="no">—</td><td class="partial">部分</td><td class="partial">部分</td><td class="no">—</td></tr>
       <tr><td>Outcome-only 奖励 / 事后评分</td><td class="no">—</td><td class="partial">可有</td><td class="no">—</td><td class="no">—</td><td class="partial">结果响应</td></tr>
       <tr><td>拓扑 / 路由 / Debate</td><td class="partial">可有</td><td class="partial">信息规则</td><td class="no">—</td><td class="partial">系统调度</td><td class="no">—</td></tr>
-      <tr><td>本文 AEIC-MD</td><td class="yes">✓ AEIC</td><td class="yes">✓ 合同承诺</td><td class="yes">✓ 四类行动</td><td class="yes">✓ Prompt/Token/验证</td><td class="yes">✓ 配对实验</td></tr>
+      <tr><td>本文 AEIC机制</td><td class="yes">✓ AEIC</td><td class="yes">✓ 合同承诺</td><td class="yes">✓ 四类行动</td><td class="yes">✓ Prompt/Token/验证</td><td class="yes">✓ 配对实验</td></tr>
     </tbody></table>
     <div class="innovation-core"><article><b>研究内容 1 · 去中心化机制</b><p>构造 AEIC 报告空间、公开合同、局部行动、验证结算与博弈共识闭环。</p></article><article><b>研究内容 2 · 实验验证</b><p>通过三域配对实验、奖励成本扫描、信息环境、组件扰动和稳健性实验识别 follower response。</p></article><article><b>研究内容 3 · 影视推荐应用</b><p>在影视推荐系统中验证规划、检索、审议、共识、解释和 Trace 的完整链路。</p></article></div>
     <aside class="notes"><p>整项研究只有一个核心创新点，即 AEIC 介导的博弈驱动审议机制，但围绕它完成三部分研究内容。第一部分是方法设计，包括 AEIC 报告空间、公开合同、行动选择、验证结算和共识闭环；第二部分是实验验证，通过三类规则、三个任务域和扩展实验检验 follower response、集体结果与适用边界；第三部分是系统应用，把同一机制放进影视搜索推荐系统。与多数投票相比，我们控制生成前的行动；与普通结构化 Prompt 相比，AEIC 是可结算报告空间；与事后奖励相比，合同在生成前公开，行动还会真实改变 Prompt、Token 和验证路径。</p></aside>
@@ -109,10 +109,10 @@
 
   <section class="slide" data-title="系统架构">
     <div class="slide-header"><div><span class="eyebrow">二、方法设计</span><span class="accent-line"></span></div><span class="tag">5 / 31</span></div>
-    <h2 data-anim="rise-in">逻辑去中心化的 AEIC-MD 总体框架</h2><p class="subtitle">各 Agent 基于局部状态独立选择行动和生成报告，再通过受控信息交换形成可审计共识</p>
-    <div class="poster"><img src="assets/fig_aeic_overview.png" alt="AEIC-MD 总体架构"></div>
+    <h2 data-anim="rise-in">逻辑去中心化的 AEIC机制 总体框架</h2><p class="subtitle">各 Agent 基于局部状态独立选择行动和生成报告，再通过受控信息交换形成可审计共识</p>
+    <div class="poster"><img src="assets/fig_aeic_overview.png" alt="AEIC机制 总体架构"></div>
     <div class="takeaway"><b>去中心化口径：</b>决策与报告逻辑由 Agent 基于局部信息独立完成；实验程序仅负责同步、规则执行和日志复现。当前实现属于模拟去中心化，不等同于跨节点 P2P 基础设施。</div>
-    <aside class="notes"><p>整篇毕业设计只有一个创新点：AEIC-MD。这里的去中心化指决策和语义报告的逻辑去中心化：各 Agent 独立持有局部状态，独立选择行动、生成 AEIC 报告，再通过受控信息策略交互；不存在一个替所有 Agent 生成结论的中央 Judge。当前实验仍由统一程序负责同步、规则执行和日志记录，所以应准确称为模拟去中心化或逻辑去中心化，而不是已经完成跨机器、无中心基础设施的 P2P 部署。影视推荐系统是同一机制的应用验证载体。</p></aside>
+    <aside class="notes"><p>整篇毕业设计只有一个创新点：AEIC机制。这里的去中心化指决策和语义报告的逻辑去中心化：各 Agent 独立持有局部状态，独立选择行动、生成 AEIC 报告，再通过受控信息策略交互；不存在一个替所有 Agent 生成结论的中央 Judge。当前实验仍由统一程序负责同步、规则执行和日志记录，所以应准确称为模拟去中心化或逻辑去中心化，而不是已经完成跨机器、无中心基础设施的 P2P 部署。影视推荐系统是同一机制的应用验证载体。</p></aside>
   </section>
 
   <section class="slide" data-title="AEIC">
@@ -132,7 +132,7 @@
   <section class="slide" data-title="博弈机制">
     <div class="slide-header"><div><span class="eyebrow">二、方法设计 · 博弈时序</span><span class="accent-line"></span></div><span class="tag">8 / 31</span></div>
     <h2 data-anim="rise-in">公开合同与行动选择</h2><p class="subtitle">规则在生成前公开；Low、AEIC、Verify、Imitate 四种行动触发不同提示、Token 与验证过程</p>
-    <div class="poster"><img src="assets/fig_runtime_sequence.png" alt="AEIC-MD 运行时序"></div>
+    <div class="poster"><img src="assets/fig_runtime_sequence.png" alt="AEIC机制 运行时序"></div>
     <aside class="notes"><p>博弈机制最关键的是时间顺序。Leader 先公开信用规则、成本、信息可见性和验证预算，Follower 观察规则后选择行动，然后才生成报告和执行验证，最后系统根据实际贡献结算。行动空间包括低努力、完整 AEIC、追加验证和参考模仿。因为行动会触发真实的提示、Token 上限和验证过程，所以我们能够直接分析公开规则是否改变了 Agent 的行为。</p></aside>
   </section>
 
@@ -290,8 +290,8 @@
   <section class="slide" data-title="共识审计证据">
     <div class="slide-header"><div><span class="eyebrow">四、系统实现 · 运行证据 3/3</span><span class="accent-line"></span></div><span class="tag">27 / 31</span></div>
     <h2 data-anim="rise-in">Top-K 排序保留相关性、共识与证据分解</h2><p class="subtitle">最终结果不是单一总分：每个候选都能追溯检索信号、决策共识、证据共识与报告层异议</p>
-    <div class="system-evidence"><figure><img src="assets/system-screenshots/03_candidate_consensus.png" alt="候选级共识审计截图"></figure><div class="evidence-caption"><h3>可验证结论</h3><p>Top-3 对每部影片分别展示检索相关、决策共识和证据共识，并保留已接受证据；完整运行可由同一 request_id 的 Trace 复核。</p></div></div>
-    <aside class="notes"><p>第三张证据展示候选级共识审计。最终 Top-3 为 It's Such a Beautiful Day、Another Earth 和 Transcendence。系统没有只返回一个不可解释的总分，而是同时呈现检索相关、决策共识和证据共识，并保存已接受证据与报告层异议。三张截图来自同一 request id，完整 Trace 已存档，可以现场复核。</p></aside>
+    <div class="system-evidence"><figure><img src="assets/system-screenshots/03_candidate_consensus.png" alt="候选级共识审计截图"></figure><div class="evidence-caption"><h3>可验证结论</h3><p>Top-3 对每部影片分别展示检索相关、决策共识和证据共识，并保留已接受证据；另存JSON Trace用于复核同配置运行。</p></div></div>
+    <aside class="notes"><p>第三张证据展示候选级共识审计。最终 Top-3 为 Ex Machina、Her 和 The Martian。系统没有只返回一个不可解释的总分，而是同时呈现检索相关、决策共识和证据共识，并保存已接受证据与报告层异议。四张截图由同一整页真实运行裁切，另存Trace用于复核同配置运行。</p></aside>
   </section>
 
   <section class="slide" data-title="最终推荐效果">
@@ -305,7 +305,7 @@
     <div class="slide-header"><div><span class="eyebrow">五、中期进展</span><span class="accent-line"></span></div><span class="tag">29 / 31</span></div>
     <h2 data-anim="rise-in">已完成工作与未来计划</h2><p class="subtitle">研究主体已经完成；未来工作沿博弈求解、个性化应用评测和成果交付三条任务收口</p>
     <div class="completion">
-      <article class="done-panel"><h3>已经完成的主体</h3><div class="completion-list"><article><b>方法设计</b><span>AEIC、公开合同、行动空间、信誉与共识闭环</span></article><article><b>主实验</b><span>三种规则、三个数据集和 450 个配对问题</span></article><article><b>扩展实验</b><span>机制响应、信息环境、组件扰动与稳健性验证</span></article><article><b>统计分析</b><span>配对检验、Holm 校正、领域分析与敏感性分析</span></article><article><b>系统原型</b><span>影视目录检索、多角色审议、共识与运行记录</span></article><article><b>运行证据</b><span>主案例四张真实截图与同一 request_id Trace 已固化</span></article><article><b>论文成果</b><span>论文已撰写完毕，正在投递</span></article><article><b>系统测试</b><span>核心逻辑与 HTTP 接口测试通过</span></article></div></article>
+      <article class="done-panel"><h3>已经完成的主体</h3><div class="completion-list"><article><b>方法设计</b><span>AEIC、公开合同、行动空间、信誉与共识闭环</span></article><article><b>主实验</b><span>三种规则、三个数据集和 450 个配对问题</span></article><article><b>扩展实验</b><span>机制响应、信息环境、组件扰动与稳健性验证</span></article><article><b>统计分析</b><span>配对检验、Holm 校正、领域分析与敏感性分析</span></article><article><b>系统原型</b><span>影视目录检索、多角色审议、共识与运行记录</span></article><article><b>运行证据</b><span>主案例整页截图、四张裁切图与同配置Trace已固化</span></article><article><b>论文成果</b><span>论文已撰写完毕，正在投递</span></article><article><b>系统测试</b><span>核心逻辑与 HTTP 接口测试通过</span></article></div></article>
       <article class="finish-panel"><h3>未来计划</h3><ol><li><b>机制求解：</b>估计 follower 响应面，定义 Leader 效用并搜索有限合同空间。</li><li><b>个性化应用：</b>增强短期偏好、长期画像与混合召回，完成影视应用评测。</li><li><b>论文与成果：</b>整合毕业论文，推进论文投递、专利申请与系统验收。</li><li><b>答辩交付：</b>根据反馈完善系统、演示脚本和评审问答。</li></ol></article>
     </div>
     <aside class="notes"><p>这页是中期完成度的核心。方法设计、主实验、扩展实验、统计分析、论文和影视系统主链路已经完成，论文已撰写完毕并正在投递，主案例的四张真实截图与 Trace 也已经固化。后续不是重新换方向，而是在现有主线上完成经验合同求解、个性化应用评测和毕业论文整合。</p></aside>

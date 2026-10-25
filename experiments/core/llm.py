@@ -19,9 +19,15 @@ import requests
 
 def _load_env():
     """Load .env file if python-dotenv is not available."""
-    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
-    if os.path.exists(env_path):
-        with open(env_path) as f:
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.abspath(os.path.join(here, "..", "..", ".env")),
+        os.path.abspath(os.path.join(here, "..", ".env")),
+    ]
+    for env_path in candidates:
+        if not os.path.exists(env_path):
+            continue
+        with open(env_path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
@@ -308,8 +314,9 @@ class LLMClient:
                 raise
             except requests.exceptions.HTTPError as e:
                 if resp.status_code == 429:
-                    time.sleep(3 * (attempt + 1))
-                    continue
+                    if attempt < 4:
+                        time.sleep(3 * (attempt + 1))
+                        continue
                 # Provider validation messages are essential for diagnosing
                 # backend-compatibility failures. Bound and normalize the body;
                 # request headers (including credentials) are never included.

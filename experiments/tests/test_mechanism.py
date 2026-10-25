@@ -1,7 +1,7 @@
 import unittest
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from experiments.core.mechanism.behavioral_metrics import (
     evidence_copy_score,
@@ -59,6 +59,26 @@ class MechanismSchemaTests(unittest.TestCase):
         self.assertEqual(rec.validate(), [])
 
 
+class LLMClientReliabilityTests(unittest.TestCase):
+    def test_exhausted_rate_limit_raises_instead_of_returning_none(self):
+        import requests
+        from experiments.core.llm import LLMClient
+
+        response = MagicMock()
+        response.status_code = 429
+        response.text = '{"error":"rate limited"}'
+        response.raise_for_status.side_effect = requests.exceptions.HTTPError("429")
+        session = MagicMock()
+        session.post.return_value = response
+        client = LLMClient(api_key="test", base_url="https://example.invalid",
+                           model="test-model")
+        client._session = session
+        with patch("experiments.core.llm.time.sleep"), self.assertRaises(
+                requests.exceptions.HTTPError):
+            client.chat([{"role": "user", "content": "test"}])
+        self.assertEqual(session.post.call_count, 5)
+
+
 class BehavioralMetricTests(unittest.TestCase):
     def test_novelty_and_copying(self):
         report = AEICReport("", ["Mars has exactly two moons"], "", "yes")
@@ -110,6 +130,15 @@ class ContractTests(unittest.TestCase):
 
 
 class StorageTests(unittest.TestCase):
+    def test_corrupt_checkpoint_reports_line_number(self):
+        from experiments.core.mechanism.storage import CorruptRecordStoreError
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "records.jsonl"
+            path.write_text('{"experiment_id":"ok"}\n{broken\n', encoding="utf-8")
+            with self.assertRaisesRegex(CorruptRecordStoreError, "line 1|line 2"):
+                RecordStore(path).load()
+
     def test_terminal_manifest_detects_recomputed_mismatch(self):
         import json
         from experiments.mechanism.build_frozen_manifest import inspect_bundle
@@ -374,6 +403,40 @@ class CollectionRecoveryTests(unittest.TestCase):
 
         self.assertEqual(safe_name("MMLU-Hard / cost@0.5"), "mmlu-hard_cost_0.5")
 
+    def test_matrix_jobs_have_stable_indices(self):
+        from experiments.mechanism.run_matrix import merged_jobs
+
+        matrix = {
+            "defaults": {
+                "split": "dev", "n_samples": 1, "behavior": "independent",
+                "reward_scale": 0.2, "n_agents": 1, "n_rounds": 1,
+                "seed": 1, "max_attempts": 2, "experiment_id": "x",
+                "out": "x.jsonl", "backends": ["deepseek"],
+            },
+            "jobs": [
+                {"dataset": "StrategyQA", "mechanism": "no_mechanism", "label": "none"},
+                {"dataset": "StrategyQA", "mechanism": "static_aeic", "label": "static"},
+            ],
+        }
+        jobs = merged_jobs(matrix)
+        self.assertEqual([x["_matrix_job_index"] for x in jobs], [1, 2])
+        self.assertEqual([x["_matrix_job_label"] for x in jobs], ["none", "static"])
+
+    def test_resume_rejects_completed_units_after_gap(self):
+        from experiments.mechanism.runtime import contiguous_resume_prefix
+
+        self.assertEqual(contiguous_resume_prefix(["1", "2", "3"], {"1": {}}), ["1"])
+        with self.assertRaisesRegex(RuntimeError, "non-contiguous"):
+            contiguous_resume_prefix(["1", "2", "3"], {"1": {}, "3": {}})
+
+    def test_error_classification(self):
+        from experiments.mechanism.runtime import classify_error
+
+        self.assertEqual(classify_error("HTTPError: HTTP 429 from deepseek"), "transient")
+        self.assertEqual(classify_error("TimeoutError: timed out"), "transient")
+        self.assertEqual(classify_error("HTTPError: HTTP 401"), "protocol")
+        self.assertEqual(classify_error("JSONDecodeError: malformed"), "data")
+
     def test_hidden_history_is_not_disclosed_in_choice_prompt(self):
         from experiments.mechanism.collect import build_choice_prompt
 
@@ -401,6 +464,27 @@ class CollectionRecoveryTests(unittest.TestCase):
             record.condition,
             "independent__static_aeic@0.2__cost@1.5__variant@agents3",
         )
+
+    def test_each_offer_hash_uses_that_agents_visible_reputation(self):
+        from experiments.mechanism.collect import run_record
+
+        controller = MechanismController(2)
+        controller.reputation[0] = 1.0
+        controller.reputation[1] = 2.0
+        response = (
+            AgentAction.LOW_EFFORT,
+            '{"A":"a","E":["e"],"I":"i","C":"Yes"}',
+            [{"stage": "low_effort", "prompt_tokens": 1,
+              "completion_tokens": 1, "latency_s": 0.1, "status": 200}],
+        )
+        with patch("experiments.mechanism.collect.generate_one", return_value=response):
+            record = run_record(
+                "q", "yes", "D", "q1", "independent", "static_aeic",
+                ["deepseek"], 2, 1, 42, controller, 0.2, 1.0,
+                None, "cumulative", None, False, False, "test",
+            )
+        hashes = [item.offered.prompt_hash for item in record.rounds]
+        self.assertEqual(len(set(hashes)), 2)
 
     def _round(self, agent_id, stance, evidence):
         offer = CONTRACTS["no_mechanism"].to_offer("prompt")
@@ -467,6 +551,47 @@ class CollectionRecoveryTests(unittest.TestCase):
             )
         self.assertEqual(trace[-1]["stage"], "format_repair_retry")
         self.assertIn('"C":"Yes"', raw)
+
+
+class ReportInterfaceTests(unittest.TestCase):
+    def test_protocol_prompts_keep_question_and_distinct_schema(self):
+        from experiments.mechanism.report_interface import protocol_prompt
+
+        prompts = {name: protocol_prompt("Does it work?", name)
+                   for name in ("free_text", "generic_structure", "aeic")}
+        self.assertTrue(all("Does it work?" in value for value in prompts.values()))
+        self.assertNotIn('"A"', prompts["free_text"])
+        self.assertIn('"analysis"', prompts["generic_structure"])
+        self.assertIn('"E"', prompts["aeic"])
+
+    def test_aeic_observation_exposes_evidence_boundary(self):
+        from experiments.mechanism.report_interface import observe_interface
+
+        observed = observe_interface(
+            '{"A":"a","E":["e1","e2"],"I":"i","C":"Yes: c"}', "aeic"
+        )
+        self.assertTrue(observed.parse_success)
+        self.assertTrue(observed.evidence_boundary_explicit)
+        self.assertEqual(observed.evidence_items, ["e1", "e2"])
+        self.assertEqual(observed.stance, "yes")
+
+    def test_generic_structure_does_not_claim_explicit_evidence(self):
+        from experiments.mechanism.report_interface import observe_interface
+
+        observed = observe_interface(
+            '{"analysis":"because evidence","answer":"No: c"}', "generic_structure"
+        )
+        self.assertTrue(observed.parse_success)
+        self.assertFalse(observed.evidence_boundary_explicit)
+        self.assertEqual(observed.stance, "no")
+
+    def test_malformed_structured_response_is_retained_as_failed_observation(self):
+        from experiments.mechanism.report_interface import observe_interface
+
+        observed = observe_interface("Yes, but malformed", "aeic")
+        self.assertFalse(observed.parse_success)
+        self.assertTrue(observed.stance_extractable)
+        self.assertIsNotNone(observed.parse_error)
 
 
 class AdaptiveControllerTests(unittest.TestCase):

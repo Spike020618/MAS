@@ -1,0 +1,98 @@
+{
+  "matrix_version": "selected-contract-v13.0-test",
+  "purpose": "One-shot held-out validation of the balanced dev-selected finite-grid contract",
+  "selection_source": "experiments/results/mechanism/stackelberg/follower_response_v13_dev.json",
+  "selection_matrix_sha256": "a5748c252f2b59e8e8d9858fd43b8ecab3bae8d21ca35b1a15990d3312aa22a3",
+  "selected_contract": {
+    "reward_scale": 0.2,
+    "cost_scale": 1.5,
+    "dev_contract_id": "r0.2_c1.5"
+  },
+  "defaults": {
+    "split": "test",
+    "n_samples": 150,
+    "behavior": "independent",
+    "n_agents": 5,
+    "n_rounds": 3,
+    "seed": 20261016,
+    "max_attempts": 3,
+    "backends": [
+      "deepseek"
+    ],
+    "resource_tiered": true,
+    "deepseek_only_tiers": true,
+    "similarity": "lexical",
+    "experiment_id": "aeic-stackelberg-v13-selected-contract-test",
+    "out": "experiments/results/mechanism/stackelberg/selected_contract_v13_test.jsonl"
+  },
+  "jobs": [
+    {
+      "dataset": "StrategyQA",
+      "mechanism": "no_mechanism",
+      "reward_scale": 1.0,
+      "cost_scale": 1.0,
+      "label": "no_mechanism"
+    },
+    {
+      "dataset": "StrategyQA",
+      "mechanism": "static_aeic",
+      "reward_scale": 0.2,
+      "cost_scale": 1.0,
+      "label": "static_center"
+    },
+    {
+      "dataset": "StrategyQA",
+      "mechanism": "static_aeic",
+      "reward_scale": 0.2,
+      "cost_scale": 1.5,
+      "label": "selected_contract"
+    },
+    {
+      "dataset": "MMLU-Hard",
+      "mechanism": "no_mechanism",
+      "reward_scale": 1.0,
+      "cost_scale": 1.0,
+      "label": "no_mechanism"
+    },
+    {
+      "dataset": "MMLU-Hard",
+      "mechanism": "static_aeic",
+      "reward_scale": 0.2,
+      "cost_scale": 1.0,
+      "label": "static_center"
+    },
+    {
+      "dataset": "MMLU-Hard",
+      "mechanism": "static_aeic",
+      "reward_scale": 0.2,
+      "cost_scale": 1.5,
+      "label": "selected_contract"
+    },
+    {
+      "dataset": "TruthfulQA",
+      "mechanism": "no_mechanism",
+      "reward_scale": 1.0,
+      "cost_scale": 1.0,
+      "label": "no_mechanism"
+    },
+    {
+      "dataset": "TruthfulQA",
+      "mechanism": "static_aeic",
+      "reward_scale": 0.2,
+      "cost_scale": 1.0,
+      "label": "static_center"
+    },
+    {
+      "dataset": "TruthfulQA",
+      "mechanism": "static_aeic",
+      "reward_scale": 0.2,
+      "cost_scale": 1.5,
+      "label": "selected_contract"
+    }
+  ],
+  "confirmatory_contrasts": [
+    "selected_contract_vs_no_mechanism",
+    "selected_contract_vs_static_center"
+  ],
+  "claim_boundary": "The selected contract maximizes development-sample utility over the observed finite grid. Follower best response is unverified; this matrix cannot certify a Stackelberg equilibrium."
+}

@@ -33,8 +33,9 @@ from experiments.core.mechanism.contracts import (
 )
 from experiments.core.mechanism.controller import MechanismController
 from experiments.core.mechanism.behavioral_metrics import majority_stance
-from experiments.core.mechanism.schema import AEICReport, AgentRound, ExperimentRecord
+from experiments.core.mechanism.schema import AEICReport, AgentAction, AgentRound, ExperimentRecord
 from experiments.core.mechanism.storage import RecordStore
+from experiments.mechanism.runtime import classify_error, contiguous_resume_prefix
 from experiments.core.trust import extract_stance, majority_vote
 from experiments.core.similarity import SimilarityCalculator
 
@@ -45,7 +46,7 @@ _thread_local = threading.local()
 
 def load_local_questions(dataset: str, n_samples: int, split: str) -> List[dict]:
     """Load the frozen local question cache; never contact a dataset host."""
-    path = ROOT / "results" / "cache" / f"{dataset}.json"
+    path = ROOT / "experiments" / "results" / "cache" / f"{dataset}.json"
     if not path.exists():
         raise FileNotFoundError(
             f"local question cache missing: {path}; prepare it explicitly before collection"
@@ -181,7 +182,11 @@ def _call_json(client: LLMClient, messages: list, temperature: float,
 
 def generate_one(question: str, agent_id: int, backend: str, contract_text: str,
                  context: str, reputation: Optional[float], dry_run: bool,
-                 resource_tiered: bool = False):
+                 resource_tiered: bool = False, fixed_resources: bool = False,
+                 deepseek_only_tiers: bool = False,
+                 matched_profile: Optional[dict] = None):
+    if resource_tiered and fixed_resources:
+        raise ValueError("resource_tiered and fixed_resources are mutually exclusive")
     if dry_run:
         choice = '{"ACTION":"aeic_effort"}'
         raw = ('{"A":"mock premise","E":["mock evidence"],'
@@ -203,25 +208,34 @@ def generate_one(question: str, agent_id: int, backend: str, contract_text: str,
     )
     action = parse_action(choice_raw)
     execution_backend = backend
-    if resource_tiered and action.value == "low_effort":
+    if matched_profile:
+        execution_backend = str(matched_profile["backend"])
+    elif resource_tiered and action.value == "low_effort" and not deepseek_only_tiers:
         execution_backend = "zhipu_flash"
     elif resource_tiered and action.value == "verify":
         execution_backend = "deepseek_reasoner"
     client = client_for(execution_backend)
-    limit = {"low_effort": 350, "aeic_effort": 1000,
-             "defer_imitate": 500, "verify": 1000}[action.value]
+    limit = (int(matched_profile["max_tokens_per_call"]) if matched_profile else
+             800 if fixed_resources else
+             {"low_effort": 350, "aeic_effort": 1000,
+              "defer_imitate": 500, "verify": 1000}[action.value])
+    execution_action = AgentAction.AEIC_EFFORT if matched_profile else action
     draft_raw, draft_meta = _call_json(
         client, [system, {"role": "user", "content": execution_prompt(
-            question, context, action)}], persona["temperature"], limit,
-        "verify_draft" if action.value == "verify" else action.value,
+            question, context, execution_action)}], persona["temperature"], limit,
+        "matched_compute_draft" if matched_profile else
+        ("verify_draft" if action.value == "verify" else action.value),
     )
     trace = [choice_meta, draft_meta]
     final_raw = draft_raw
-    if action.value == "verify":
+    repeat_revision = (int(matched_profile.get("execution_calls", 1)) > 1
+                       if matched_profile else action.value == "verify" and not fixed_resources)
+    if repeat_revision:
         final_raw, verify_meta = _call_json(
             client, [system, {"role": "user", "content": execution_prompt(
-                question, context, action, draft_raw)}],
-            max(0.1, persona["temperature"] - 0.1), 1000, "verify_revision",
+                question, context, AgentAction.VERIFY, draft_raw)}],
+            max(0.1, persona["temperature"] - 0.1), limit,
+            "matched_compute_revision" if matched_profile else "verify_revision",
         )
         trace.append(verify_meta)
     try:
@@ -278,7 +292,10 @@ def run_record(question: str, ground_truth: str, dataset: str, question_id: str,
                variant_tag: Optional[str],
                dry_run: bool,
                resource_tiered: bool,
-               experiment_id: str) -> ExperimentRecord:
+               experiment_id: str,
+               fixed_resources: bool = False,
+               deepseek_only_tiers: bool = False,
+               resource_profiles: Optional[dict] = None) -> ExperimentRecord:
     reward_suffix = f"@{reward_scale:g}" if reward_scale != 1.0 else ""
     cost_suffix = f"__cost@{cost_scale:g}" if cost_scale != 1.0 else ""
     signal_suffix = f"__signals@{signal_mask}" if signal_mask else ""
@@ -303,21 +320,27 @@ def run_record(question: str, ground_truth: str, dataset: str, question_id: str,
             with ThreadPoolExecutor(max_workers=n_agents) as executor:
                 for agent_id in range(n_agents):
                     context, visible_evidence = peer_context(behavior, previous, agent_id)
-                    contexts[agent_id] = (context, visible_evidence)
                     spec = controller.adaptive_spec(base_spec, agent_id)
                     contract_text = render_contract(spec)
                     visible_reputation = (None if history_policy == "hidden"
                                           else controller.reputation[agent_id])
+                    contexts[agent_id] = (context, visible_evidence, visible_reputation)
+                    profile_key = f"{dataset}|{question_id}|{round_id}|{agent_id}"
+                    matched_profile = ((resource_profiles or {}).get(profile_key)
+                                       if resource_profiles is not None else None)
+                    if resource_profiles is not None and matched_profile is None:
+                        raise ValueError(f"matched compute profile missing: {profile_key}")
                     jobs.append((agent_id, spec, contract_text, executor.submit(
                         generate_one, question, agent_id, model_assignments[str(agent_id)],
                         contract_text, context, visible_reputation, dry_run,
-                        resource_tiered,
+                        resource_tiered, fixed_resources, deepseek_only_tiers,
+                        matched_profile,
                     )))
                 current = []
                 for agent_id, spec, contract_text, future in jobs:
                     action, raw, action_trace = future.result()
                     report = parse_aeic(raw)
-                    context, visible_evidence = contexts[agent_id]
+                    context, visible_evidence, visible_reputation = contexts[agent_id]
                     previous_item = next((x for x in previous if x.agent_id == agent_id), None)
                     offer = spec.to_offer(build_choice_prompt(
                         question, contract_text, context, visible_reputation
@@ -395,7 +418,13 @@ def main() -> None:
     parser.add_argument("--similarity", default="embedding",
                         choices=["embedding", "tfidf", "lexical"])
     parser.add_argument("--resource-tiered", action="store_true",
-                        help="low=zhipu_flash, regular=assigned backend, verify=deepseek_reasoner")
+                        help="Enable action-specific token, call, and backend tiers")
+    parser.add_argument("--deepseek-only-tiers", action="store_true",
+                        help="With --resource-tiered, use deepseek-chat for low/regular and deepseek-reasoner for verify")
+    parser.add_argument("--fixed-resources", action="store_true",
+                        help="all declared actions use one call, assigned backend, and max_tokens=800")
+    parser.add_argument("--resource-schedule", type=Path,
+                        help="Exogenous per-question/agent compute schedule from Full Mechanism traces")
     parser.add_argument("--experiment-id", default="aeic-md-v10-pilot",
                         help="Protocol/cohort identifier; change it for formal or ablation runs")
     parser.add_argument("--max-attempts", type=int, default=3,
@@ -409,6 +438,13 @@ def main() -> None:
         parser.error("--max-attempts must be >= 1")
     if args.max_infra_attempts < 1:
         parser.error("--max-infra-attempts must be >= 1")
+    if args.resource_tiered and args.fixed_resources:
+        parser.error("--resource-tiered and --fixed-resources are mutually exclusive")
+    if args.deepseek_only_tiers and not args.resource_tiered:
+        parser.error("--deepseek-only-tiers requires --resource-tiered")
+    if args.resource_schedule and (args.resource_tiered or args.fixed_resources
+                                   or args.mechanism != "no_mechanism"):
+        parser.error("--resource-schedule requires no_mechanism and cannot combine with other resource modes")
     if args.cost_scale <= 0:
         parser.error("--cost-scale must be > 0")
     if args.signal_mask:
@@ -440,7 +476,9 @@ def main() -> None:
             if host:
                 install_dns_fallback(host)
         if args.resource_tiered:
-            for backend in ("zhipu_flash", "deepseek_reasoner"):
+            tier_backends = (("deepseek_reasoner",) if args.deepseek_only_tiers
+                             else ("zhipu_flash", "deepseek_reasoner"))
+            for backend in tier_backends:
                 host = urlparse(LLM_BACKENDS[backend]["base_url"]).hostname
                 if host:
                     install_dns_fallback(host)
@@ -463,6 +501,12 @@ def main() -> None:
         args.n_agents, similarity_fn=similarity_fn,
         flip_threshold=args.flip_threshold,
     )
+    resource_profiles = None
+    if args.resource_schedule:
+        payload = json.loads(args.resource_schedule.read_text(encoding="utf-8"))
+        resource_profiles = payload.get("profiles")
+        if not isinstance(resource_profiles, dict) or not resource_profiles:
+            raise ValueError("resource schedule contains no profiles")
     limit = len(questions) if args.question_ids else args.n_samples
     reward_suffix = f"@{args.reward_scale:g}" if args.reward_scale != 1.0 else ""
     cost_suffix = f"__cost@{args.cost_scale:g}" if args.cost_scale != 1.0 else ""
@@ -474,20 +518,24 @@ def main() -> None:
                          f"{signal_suffix}{history_suffix}{variant_suffix}")
     effective_experiment_id = args.experiment_id + ("-dry" if args.dry_run else "")
 
-    # Restore the longitudinal state at a question boundary. This makes an
-    # interrupted adaptive/Stackelberg sequence exactly resumable.
-    order = {str(item.get("question_id", i)): i for i, item in enumerate(questions[:limit])}
-    eligible = [
-        item for item in store.load().values()
+    # Restore the longitudinal state only from a contiguous completed prefix.
+    # A later checkpoint after a gap belongs to a different history and must
+    # never be used to resume an earlier missing question.
+    ordered_ids = [str(item.get("question_id", i))
+                   for i, item in enumerate(questions[:limit])]
+    stored_records = store.load()
+    eligible = {
+        str(item["question_id"]): item for item in stored_records.values()
         if item.get("completed") is True
         and item.get("experiment_id") == effective_experiment_id
         and item.get("dataset") == args.dataset
         and item.get("condition") == current_condition
         and int(item.get("seed", -1)) == args.seed
-        and str(item.get("question_id")) in order
-    ]
-    if eligible:
-        latest = max(eligible, key=lambda item: order[str(item["question_id"])])
+        and str(item.get("question_id")) in set(ordered_ids)
+    }
+    completed_prefix = contiguous_resume_prefix(ordered_ids, eligible)
+    if completed_prefix:
+        latest = eligible[completed_prefix[-1]]
         latest_round = max((x.get("round_id", 0) for x in latest.get("rounds", [])), default=0)
         for item in latest.get("rounds", []):
             if item.get("round_id") == latest_round and item.get("reputation_after") is not None:
@@ -495,11 +543,12 @@ def main() -> None:
         print(f"restored reputation after question {latest['question_id']}: "
               f"{controller.reputation_snapshot()}")
 
+    completed_keys = store.completed_keys()
     for index, item in enumerate(questions[:limit]):
         qid = str(item.get("question_id", index))
         probe = (effective_experiment_id,
                  args.dataset, current_condition, qid, args.seed)
-        if probe in store.completed_keys():
+        if probe in completed_keys:
             continue
         if args.history_policy == "reset":
             for agent_id in range(args.n_agents):
@@ -523,18 +572,24 @@ def main() -> None:
                 dry_run=args.dry_run,
                 resource_tiered=args.resource_tiered,
                 experiment_id=args.experiment_id,
+                fixed_resources=args.fixed_resources,
+                deepseek_only_tiers=args.deepseek_only_tiers,
+                resource_profiles=resource_profiles,
             )
-            infrastructure_error = bool(
-                record.error and record.error.startswith(("ConnectionError:", "Timeout:"))
-            )
+            error_class = classify_error(record.error)
+            infrastructure_error = error_class == "transient"
             if infrastructure_error and infra_attempt < args.max_infra_attempts:
                 infra_attempt += 1
-                print(f"{qid} infrastructure retry {infra_attempt}: {record.error}")
+                print(f"{qid} transient retry {infra_attempt}: {record.error}")
                 time.sleep(min(2 ** min(infra_attempt - 1, 3), 8))
                 continue
             store.upsert(record)
             print(f"{qid} attempt {attempt}: {'complete' if record.completed else record.error}")
             if record.completed:
+                completed_keys.add(probe)
+                break
+            if error_class == "protocol":
+                print(f"{qid} non-retryable protocol error; stopping immediately")
                 break
             if attempt < args.max_attempts:
                 time.sleep(min(2 ** (attempt - 1), 4))

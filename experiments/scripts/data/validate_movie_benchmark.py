@@ -13,7 +13,8 @@ def rows(path: Path) -> list[dict]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--catalog", type=Path, default=Path("experiments/data/processed/movie_catalog.jsonl"))
-    parser.add_argument("--benchmark", type=Path, default=Path("benchmarks/movie_consensus"))
+    parser.add_argument("--benchmark", type=Path,
+                        default=Path("experiments/benchmarks/movie_consensus"))
     args = parser.parse_args()
     catalog = {x["movie_id"] for x in rows(args.catalog)}
     dev, test = rows(args.benchmark / "dev.jsonl"), rows(args.benchmark / "test.jsonl")
@@ -26,8 +27,17 @@ def main() -> None:
             errors.append(f"{split}: duplicate case ids")
         for item in data:
             relevant = item.get("relevant_movie_ids") or []
+            context_ids = set(item.get("context_movie_ids") or [])
+            liked_ids = set(item.get("liked_context_movie_ids") or [])
+            excluded_ids = set(item.get("excluded_seen_movie_ids") or [])
             if not relevant:
                 errors.append(f"{item.get('case_id')}: empty relevance")
+            if set(relevant) & context_ids:
+                errors.append(f"{item.get('case_id')}: target leaked into context")
+            if not liked_ids.issubset(context_ids):
+                errors.append(f"{item.get('case_id')}: liked profile contains post-cutoff movie")
+            if not excluded_ids.issubset(context_ids):
+                errors.append(f"{item.get('case_id')}: seen exclusions contain post-cutoff movie")
             unknown = set(relevant + (item.get("excluded_seen_movie_ids") or [])) - catalog
             if unknown:
                 errors.append(f"{item.get('case_id')}: unknown ids {sorted(unknown)}")

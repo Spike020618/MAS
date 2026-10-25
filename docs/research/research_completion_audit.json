@@ -1,0 +1,193 @@
+{
+  "locked_stackelberg_validation_2026_10_19": {
+    "execution_acceptance": "passed_for_explicit_utility_agents_only",
+    "finite_development_estimated_optimum": "budget_1_of_0_0.5_1_2_4",
+    "online_questions": 24,
+    "nonpreviewed_quality_questions": 23,
+    "online_runs": 48,
+    "independently_checked_joint_profiles": 384,
+    "maximum_terminal_regret": 0.0,
+    "quality_improvement_supported": false,
+    "nonpreviewed_accuracy_no_credit": 0.5652173913043478,
+    "nonpreviewed_accuracy_locked_contract": 0.5217391304347826,
+    "exact_mcnemar_p": 1.0,
+    "autonomous_llm_equilibrium_verified": false,
+    "population_or_continuous_global_optimum_verified": false,
+    "real_resource_reward_account_verified": false,
+    "report": "docs/research/locked_stackelberg_acceptance_2026-10-19.md",
+    "evidence": "experiments/results/mechanism/stackelberg/locked_source_game_test_v1/independent_audit.json"
+  },
+  "automated_checks_pass": true,
+  "checks": {
+    "frozen_records": true,
+    "interface_records": true,
+    "decomposition_records": true,
+    "formal_total": true,
+    "movie_entity_rate": true,
+    "movie_constraint_rate": true,
+    "movie_trace_rate": true,
+    "redial_paired_cases": true,
+    "redial_inputs_match": true,
+    "redial_complete": true,
+    "redial_valid_entities": true,
+    "redial_constraints": true,
+    "redial_full_retrieval": true,
+    "redial_full_inputs_match": true,
+    "redial_hybrid_retrieval_improves": true,
+    "redial_weight_selected_on_dev": true,
+    "redial_failure_taxonomy_complete": true,
+    "redial_frozen_weight_agent_rerun": true,
+    "required_artifacts": true
+  },
+  "record_counts": {
+    "frozen": 5850,
+    "report_interface": 270,
+    "mechanism_decomposition": 240,
+    "formal_total": 6360
+  },
+  "optional_human_validation": {
+    "required_for_current_conclusions": false,
+    "status": "not_run_no_reviewer_available",
+    "prepared_packets": [
+      "aeic_review_A_blind.csv",
+      "aeic_review_B_blind.csv",
+      "movie_review_blind.csv"
+    ],
+    "policy": "Do not fabricate labels; run only if independent reviewers become available."
+  },
+  "redial": {
+    "benchmark": "ReDial-to-MovieLens leakage-safe test split",
+    "retrieval": "hybrid",
+    "top_k": 5,
+    "paired_case_sets_equal": true,
+    "benchmark_inputs_match": true,
+    "retrieval_ceiling": {
+      "hit_at_10": 0.09,
+      "hit_at_50": 0.25,
+      "recall_at_10": 0.060833333333333336,
+      "recall_at_50": 0.18333333333333332
+    },
+    "methods": [
+      {
+        "method": "lexical",
+        "cases": 100,
+        "hit_at_5": 0.06,
+        "recall_at_5": 0.04166666666666666,
+        "ndcg_at_5": 0.026603585131326702,
+        "valid_entity_rate": 1.0,
+        "constraint_satisfaction_rate": 1.0,
+        "evidence_support_rate": 0.0,
+        "mean_tokens": 0.0,
+        "total_tokens": 0,
+        "mean_model_calls": 0.0,
+        "total_model_calls": 0,
+        "mean_latency_ms": 191.37571000000008,
+        "median_latency_ms": 199.97750000000002,
+        "p95_latency_ms": 301.8773
+      },
+      {
+        "method": "single",
+        "cases": 100,
+        "hit_at_5": 0.07,
+        "recall_at_5": 0.05166666666666666,
+        "ndcg_at_5": 0.031074993549833493,
+        "valid_entity_rate": 1.0,
+        "constraint_satisfaction_rate": 1.0,
+        "evidence_support_rate": 0.0,
+        "mean_tokens": 5842.21,
+        "total_tokens": 584221,
+        "mean_model_calls": 1.0,
+        "total_model_calls": 100,
+        "mean_latency_ms": 7437.6355300000005,
+        "median_latency_ms": 7384.7575,
+        "p95_latency_ms": 9956.743999999999
+      },
+      {
+        "method": "ours",
+        "cases": 100,
+        "hit_at_5": 0.07,
+        "recall_at_5": 0.05166666666666666,
+        "ndcg_at_5": 0.029587870406058925,
+        "valid_entity_rate": 1.0,
+        "constraint_satisfaction_rate": 1.0,
+        "evidence_support_rate": 0.512,
+        "mean_tokens": 16934.52,
+        "total_tokens": 1693452,
+        "mean_model_calls": 3.0,
+        "total_model_calls": 300,
+        "mean_latency_ms": 12681.242589999994,
+        "median_latency_ms": 10138.5055,
+        "p95_latency_ms": 28693.16135
+      }
+    ],
+    "paired_hit_at_5_tests": {
+      "ours_vs_direct": {
+        "right_only_hits": 1,
+        "left_only_hits": 0,
+        "discordant": 1,
+        "exact_two_sided_p": 1.0
+      },
+      "ours_vs_single": {
+        "right_only_hits": 0,
+        "left_only_hits": 0,
+        "discordant": 0,
+        "exact_two_sided_p": 1.0
+      },
+      "single_vs_direct": {
+        "right_only_hits": 1,
+        "left_only_hits": 0,
+        "discordant": 1,
+        "exact_two_sided_p": 1.0
+      }
+    }
+  },
+  "redial_retrieval_ablation": {
+    "cases": 1203,
+    "paired_case_sets_equal": true,
+    "benchmark_inputs_match": true,
+    "metrics": {
+      "hit_at_5": {
+        "lexical": 0.007481296758104738,
+        "hybrid": 0.10806317539484622,
+        "cooccurrence": 0.10473815461346633,
+        "difference": 0.10058187863674148,
+        "paired_bootstrap_95_ci": [
+          0.08395677472984206,
+          0.11886949293433084
+        ]
+      },
+      "recall_at_5": {
+        "lexical": 0.0025630368523136605,
+        "hybrid": 0.059531726239955673,
+        "cooccurrence": 0.05828484344693822,
+        "difference": 0.056968689387642005,
+        "paired_bootstrap_95_ci": [
+          0.046481019673039636,
+          0.06839844832363534
+        ]
+      },
+      "ndcg_at_5": {
+        "lexical": 0.0024111413374094696,
+        "hybrid": 0.05014944152392708,
+        "cooccurrence": 0.04880856939577806,
+        "difference": 0.04773830018651761,
+        "paired_bootstrap_95_ci": [
+          0.038852646951691674,
+          0.056772156737212566
+        ]
+      }
+    },
+    "hit_at_5_mcnemar": {
+      "hybrid_only_hits": 123,
+      "lexical_only_hits": 2,
+      "discordant": 125,
+      "exact_two_sided_p": 3.7032774028305346e-34
+    },
+    "constraints": {
+      "lexical": 1.0,
+      "hybrid": 1.0
+    }
+  },
+  "external_blocked_optional": [],
+  "blocked_required": []
+}

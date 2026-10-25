@@ -11,13 +11,13 @@
 | 可恢复采集 | COMPLETE | 原子唯一键存储、文件锁、失败重试、失败声誉回滚、纵向状态恢复；`tests/test_mechanism.py` |
 | Pilot 与机制选择 | COMPLETE | `pilot_v10` 三域 750 条、dose calibration、`docs/pilot_decision_log.md` |
 | 正式主实验 | COMPLETE | `experiments/results/mechanism/frozen/formal_v10/` 及 `.recomputed/`；1,350 个 question-level 单元 |
-| 跨信息结构 | RUNNING | `information_v11_dev.json`，目标 1,200 单元 |
-| 跨模型 | RUNNING | `heldout_glm_v11_dev.json`，目标 300 单元；Qwen 欠费失败作为留档，不计入有效复验 |
-| 激励/成本边界 | RUNNING | `boundary_v11_dev.json`，目标 600 单元 |
-| AEIC 信号消融 | PENDING | `signal_ablation_v11_dev.json`，目标 750 单元 |
-| 历史消融/负对照 | PENDING | `history_ablation_v11_dev.json`，目标 600 单元 |
-| 随机种子稳健性 | PENDING | `seed_robustness_v11_dev.json`，目标 600 单元；与 seed 42 组成三次复验 |
-| 缺失 Agent 稳健性 | PENDING | `missing_agent_v11_dev.json`，目标 450 单元 |
+| 跨信息结构 | COMPLETE | `information_v11_dev`，1,200条问题级记录；四种环境均完成复算 |
+| 跨模型 | COMPLETE | `heldout_glm_v11_dev`，300条；GLM未复现机制响应，作为边界证据 |
+| 激励/成本边界 | COMPLETE | `boundary_v11_dev`，600条；奖励正响应、成本负响应 |
+| AEIC 信号消融 | COMPLETE | `signal_ablation_v11_dev`，750条；未证明单字段必要性 |
+| 历史消融/负对照 | COMPLETE | `history_ablation_v11_dev`，600条；准确率对扰动总体稳定 |
+| 随机种子稳健性 | COMPLETE | `seed_robustness_v11_dev`，600条；主方向在额外Seed复现 |
+| 缺失 Agent 稳健性 | COMPLETE | `missing_agent_v11_dev`，450条；3—5 Agent范围稳定 |
 | 统一冻结与一键复算 | PENDING | 每套矩阵须生成 `frozen/<suite>/` 与 `<suite>.recomputed/`，最后生成总 provenance |
 
 ## E0–E6 证据映射

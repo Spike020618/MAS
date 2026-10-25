@@ -1,0 +1,14 @@
+{
+  "matrix_version": "report-interface-v1.0",
+  "purpose": "Paired, compute-controlled validation of AEIC as an observable report interface",
+  "experiment_id": "report-interface-v1",
+  "split": "test",
+  "n_samples_per_dataset": 30,
+  "protocols": ["free_text", "generic_structure", "aeic"],
+  "backend": "deepseek",
+  "max_tokens": 800,
+  "temperature": 0.2,
+  "seed": 20261012,
+  "datasets": ["StrategyQA", "MMLU-Hard", "TruthfulQA"],
+  "out": "experiments/results/mechanism/interface/report_interface_v1.jsonl"
+}

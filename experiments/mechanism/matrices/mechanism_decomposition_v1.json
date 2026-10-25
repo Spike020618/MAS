@@ -1,0 +1,48 @@
+{
+  "matrix_version": "mechanism-decomposition-v1.0",
+  "purpose": "Separate public-contract effects from DeepSeek-only action-bound resource execution before compute matching",
+  "decision_source": "docs/research/aeic_role_and_experiment_revision_2026-10-12.md",
+  "defaults": {
+    "split": "test",
+    "n_samples": 30,
+    "behavior": "independent",
+    "reward_scale": 0.2,
+    "cost_scale": 1.0,
+    "n_agents": 3,
+    "n_rounds": 1,
+    "seed": 20261012,
+    "max_attempts": 3,
+    "backends": ["deepseek"],
+    "similarity": "lexical",
+    "experiment_id": "mechanism-decomposition-v1",
+    "out": "experiments/results/mechanism/decomposition/mechanism_decomposition_v1.jsonl"
+  },
+  "planned_contrasts": [
+    {
+      "name": "contract_effect_fixed_resource",
+      "left": "independent__no_mechanism@0.2__variant@no_contract_fixed",
+      "right": "independent__static_aeic@0.2__variant@contract_fixed"
+    },
+    {
+      "name": "resource_binding_increment",
+      "left": "independent__static_aeic@0.2__variant@contract_fixed",
+      "right": "independent__static_aeic@0.2__variant@full_mechanism"
+    },
+    {
+      "name": "full_vs_matched_compute",
+      "left": "independent__no_mechanism@0.2__variant@matched_compute",
+      "right": "independent__static_aeic@0.2__variant@full_mechanism"
+    }
+  ],
+  "jobs": [
+    {"dataset": "MMLU-Hard", "mechanism": "no_mechanism", "fixed_resources": true, "variant_tag": "no_contract_fixed", "label": "no_contract_fixed"},
+    {"dataset": "MMLU-Hard", "mechanism": "static_aeic", "fixed_resources": true, "variant_tag": "contract_fixed", "label": "contract_fixed"},
+    {"dataset": "MMLU-Hard", "mechanism": "static_aeic", "resource_tiered": true, "deepseek_only_tiers": true, "variant_tag": "full_mechanism", "label": "full_mechanism"},
+    {"dataset": "MMLU-Hard", "mechanism": "no_mechanism", "resource_schedule": "experiments/results/mechanism/decomposition/matched_compute_schedule_v1.json", "variant_tag": "matched_compute", "label": "matched_compute"},
+    {"dataset": "TruthfulQA", "mechanism": "no_mechanism", "fixed_resources": true, "variant_tag": "no_contract_fixed", "label": "no_contract_fixed"},
+    {"dataset": "TruthfulQA", "mechanism": "static_aeic", "fixed_resources": true, "variant_tag": "contract_fixed", "label": "contract_fixed"},
+    {"dataset": "TruthfulQA", "mechanism": "static_aeic", "resource_tiered": true, "deepseek_only_tiers": true, "variant_tag": "full_mechanism", "label": "full_mechanism"},
+    {"dataset": "TruthfulQA", "mechanism": "no_mechanism", "resource_schedule": "experiments/results/mechanism/decomposition/matched_compute_schedule_v1.json", "variant_tag": "matched_compute", "label": "matched_compute"}
+  ],
+  "note": "No Contract / Matched Compute replays the Full Mechanism per-question/agent backend, call-count and token-limit schedule while retaining the no-contract choice prompt."
+}

@@ -1,4 +1,4 @@
-"""Generate the four-figure AEIC-MD architecture suite."""
+"""Generate the four-figure AEIC mechanism architecture suite."""
 from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Rectangle, Circle
@@ -53,7 +53,7 @@ def branch_icon(ax,x,y,color):
         ax.add_patch(Circle((x+dx,y-.014),.005,fc=WHITE,ec=color,lw=1))
 
 def rich_overview():
-    fig,ax=canvas("AEIC-MD: from public contract to auditable collective decision",
+    fig,ax=canvas("AEIC mechanism: from public contract to auditable collective decision",
         "Observable actions connect individual follower choices, multi-round collaboration, and mechanism-level evaluation.",(15.8,8.6))
     # top input ribbon
     ax.add_patch(FancyBboxPatch((.03,.83),.94,.075,boxstyle="round,pad=.006,rounding_size=.012",fc=LBLUE,ec=BLUE,lw=1.2))
@@ -154,7 +154,7 @@ def agent_card(ax,y,idx):
     return x+w,y+h/2
 
 def overview():
-    fig,ax=canvas("AEIC-MD: mechanism-mediated multi-agent deliberation",
+    fig,ax=canvas("AEIC mechanism: mechanism-mediated multi-agent deliberation",
         "A public leader rule changes what followers choose to do before reports are aggregated.")
     # left: repeated agents
     ax.text(.025,.885,"FOLLOWER MICRO-ARCHITECTURE",fontsize=8.5,fontweight="bold",color=BLUE)
@@ -194,7 +194,7 @@ def overview():
     save(fig,"fig1_aeic_md_overview")
 
 def runtime_sequence():
-    fig,ax=canvas("AEIC-MD runtime: one question across three synchronous rounds",
+    fig,ax=canvas("AEIC mechanism runtime: one question across three synchronous rounds",
         "The action is chosen before solving; settlement and history are produced after execution.",(15.5,7.8))
     lanes=[("Leader / controller",.76,BLUE,LBLUE),("Follower agents",.55,TEAL,LTEAL),("Executor",.34,ORANGE,LORANGE),("Audit + aggregation",.13,NAVY,LGRAY)]
     for label,y,c,fc in lanes:
@@ -292,4 +292,4 @@ def experimental_design():
 if __name__=="__main__":
     OUT.mkdir(parents=True,exist_ok=True)
     overview(); rich_overview(); runtime_sequence(); experimental_design()
-    print("Generated AEIC-MD figure suite")
+    print("Generated AEIC mechanism figure suite")

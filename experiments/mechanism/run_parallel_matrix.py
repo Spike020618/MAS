@@ -9,9 +9,11 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+sys.path.insert(0, str(ROOT))
+
+from experiments.mechanism.run_matrix import merged_jobs
 
 
 def safe_name(value: str) -> str:
@@ -24,26 +26,29 @@ def main() -> None:
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--max-workers", type=int, default=6)
     parser.add_argument("--print-only", action="store_true")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Use collector mocks; makes no external API calls")
     args = parser.parse_args()
     if args.max_workers < 1:
         parser.error("--max-workers must be >= 1")
 
     matrix = json.loads(args.matrix.read_text(encoding="utf-8"))
-    jobs = matrix["jobs"]
+    jobs = merged_jobs(matrix)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     commands = []
     for index, job in enumerate(jobs, 1):
-        merged = {**matrix["defaults"], **job}
-        label = job.get("label", merged["mechanism"])
+        merged = job
+        label = job["_matrix_job_label"]
         shard = args.out_dir / (
             f"{index:02d}_{safe_name(merged['dataset'])}_{safe_name(label)}.jsonl"
         )
         command = [
             sys.executable, str(HERE / "run_matrix.py"), str(args.matrix),
-            "--only-dataset", merged["dataset"],
-            "--only-condition", label,
+            "--job-index", str(merged["_matrix_job_index"]),
             "--out", str(shard),
         ]
+        if args.dry_run:
+            command.append("--dry-run")
         commands.append((index, merged["dataset"], label, command))
 
     if args.print_only:

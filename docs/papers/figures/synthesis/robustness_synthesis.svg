@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="455" viewBox="0 0 1600 455">
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<text x="800" y="38" font-size="22" text-anchor="middle" font-weight="bold" fill="#17324D">Robustness, heterogeneity, and boundary evidence</text>
+<rect x="25" y="65" width="365" height="360" rx="5" fill="#F8FAFB" stroke="#DCE3E8"/>
+<text x="207" y="94" font-size="16" text-anchor="middle" font-weight="bold" fill="#17324D">A. Incentive response</text>
+<rect x="420" y="65" width="365" height="360" rx="5" fill="#F8FAFB" stroke="#DCE3E8"/>
+<text x="602" y="94" font-size="16" text-anchor="middle" font-weight="bold" fill="#17324D">B. Information environments</text>
+<rect x="815" y="65" width="365" height="360" rx="5" fill="#F8FAFB" stroke="#DCE3E8"/>
+<text x="997" y="94" font-size="16" text-anchor="middle" font-weight="bold" fill="#17324D">C. Perturbation stability</text>
+<rect x="1210" y="65" width="365" height="360" rx="5" fill="#F8FAFB" stroke="#DCE3E8"/>
+<text x="1392" y="94" font-size="16" text-anchor="middle" font-weight="bold" fill="#17324D">D. Model boundary</text>
+<text x="50" y="150" font-size="13" text-anchor="start" font-weight="bold" fill="#17324D">Reward 0.05→0.50</text>
+<text x="50" y="185" font-size="18" text-anchor="start" font-weight="bold" fill="#2D7F7A">Action response  +23.42 pp</text>
+<text x="50" y="215" font-size="14" text-anchor="start" font-weight="normal" fill="#17324D">Accuracy  +6.00 pp</text>
+<text x="50" y="238" font-size="10" text-anchor="start" font-weight="normal" fill="#657786">Accuracy contrast not significant after Holm</text>
+<text x="50" y="270" font-size="13" text-anchor="start" font-weight="bold" fill="#17324D">Cost 0.5→1.5</text>
+<text x="50" y="305" font-size="18" text-anchor="start" font-weight="bold" fill="#D47A2C">Action response  -15.73 pp</text>
+<text x="50" y="335" font-size="14" text-anchor="start" font-weight="normal" fill="#17324D">Accuracy  -4.00 pp</text>
+<text x="50" y="358" font-size="10" text-anchor="start" font-weight="normal" fill="#657786">Accuracy contrast not significant after Holm</text>
+<text x="445" y="135" font-size="12" text-anchor="start" font-weight="bold" fill="#17324D">Evidence</text>
+<rect x="535" y="121" width="152.5" height="16" fill="#2D7F7A"/>
+<text x="692.4622222222222" y="135" font-size="10" text-anchor="start" font-weight="normal" fill="#17324D">+47.6 pp effort</text>
+<text x="445" y="157" font-size="11" text-anchor="start" font-weight="normal" fill="#657786">Accuracy +11.3 pp</text>
+<text x="445" y="197" font-size="12" text-anchor="start" font-weight="bold" fill="#17324D">Social</text>
+<rect x="535" y="183" width="129.4" height="16" fill="#2D7F7A"/>
+<text x="669.4222222222222" y="197" font-size="10" text-anchor="start" font-weight="normal" fill="#17324D">+40.4 pp effort</text>
+<text x="445" y="219" font-size="11" text-anchor="start" font-weight="normal" fill="#657786">Accuracy +9.3 pp</text>
+<text x="445" y="259" font-size="12" text-anchor="start" font-weight="bold" fill="#17324D">Copy</text>
+<rect x="535" y="245" width="185.2" height="16" fill="#2D7F7A"/>
+<text x="725.1733333333334" y="259" font-size="10" text-anchor="start" font-weight="normal" fill="#17324D">+57.9 pp effort</text>
+<text x="445" y="281" font-size="11" text-anchor="start" font-weight="normal" fill="#657786">Accuracy +22.0 pp</text>
+<text x="445" y="321" font-size="12" text-anchor="start" font-weight="bold" fill="#17324D">Counter</text>
+<rect x="535" y="307" width="154.5" height="16" fill="#2D7F7A"/>
+<text x="694.4533333333334" y="321" font-size="10" text-anchor="start" font-weight="normal" fill="#17324D">+48.3 pp effort</text>
+<text x="445" y="343" font-size="11" text-anchor="start" font-weight="normal" fill="#657786">Accuracy +12.0 pp</text>
+<text x="840" y="140" font-size="12" text-anchor="start" font-weight="bold" fill="#17324D">Panel 3–5</text>
+<text x="965" y="140" font-size="17" text-anchor="start" font-weight="bold" fill="#2D7F7A">87.3–88.7%</text>
+<text x="965" y="160" font-size="10" text-anchor="start" font-weight="normal" fill="#657786">observed accuracy range</text>
+<text x="840" y="204" font-size="12" text-anchor="start" font-weight="bold" fill="#17324D">AEIC fields</text>
+<text x="965" y="204" font-size="17" text-anchor="start" font-weight="bold" fill="#2D7F7A">87.3–90.0%</text>
+<text x="965" y="224" font-size="10" text-anchor="start" font-weight="normal" fill="#657786">observed accuracy range</text>
+<text x="840" y="268" font-size="12" text-anchor="start" font-weight="bold" fill="#17324D">History</text>
+<text x="965" y="268" font-size="17" text-anchor="start" font-weight="bold" fill="#2D7F7A">84.7–90.0%</text>
+<text x="965" y="288" font-size="10" text-anchor="start" font-weight="normal" fill="#657786">observed accuracy range</text>
+<text x="840" y="332" font-size="12" text-anchor="start" font-weight="bold" fill="#17324D">Extra seeds</text>
+<text x="965" y="332" font-size="17" text-anchor="start" font-weight="bold" fill="#2D7F7A">71.0–85.7%</text>
+<text x="965" y="352" font-size="10" text-anchor="start" font-weight="normal" fill="#657786">observed accuracy range</text>
+<text x="840" y="395" font-size="10" text-anchor="start" font-weight="normal" fill="#657786">Field ablations do not establish component necessity.</text>
+<rect x="1270" y="225.99999999999997" width="75" height="124.00000000000003" fill="#7B8794"/>
+<text x="1307" y="216.99999999999997" font-size="15" text-anchor="middle" font-weight="bold" fill="#17324D">70.7%</text>
+<text x="1307" y="375" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">No mechanism</text>
+<rect x="1415" y="233.99999999999994" width="75" height="116.00000000000006" fill="#D47A2C"/>
+<text x="1452" y="224.99999999999994" font-size="15" text-anchor="middle" font-weight="bold" fill="#17324D">69.3%</text>
+<text x="1452" y="375" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Process contract</text>
+<text x="1392" y="125" font-size="14" text-anchor="middle" font-weight="bold" fill="#17324D">Effort Δ +0.36 pp</text>
+<text x="1392" y="148" font-size="14" text-anchor="middle" font-weight="normal" fill="#17324D">Accuracy Δ -1.33 pp</text>
+<text x="1392" y="171" font-size="11" text-anchor="middle" font-weight="normal" fill="#657786">No significant transfer</text>
+</g>
+</svg>

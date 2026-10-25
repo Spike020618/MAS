@@ -1,12 +1,15 @@
 import json
 import os
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from system.game_consensus_recsys.catalog import InMemoryCatalog
 from system.game_consensus_recsys.deepseek import DeepSeekClient, DeepSeekConfig, DeepSeekError
 from system.game_consensus_recsys.deepseek_agents import DeepSeekReviewAgent
 from system.game_consensus_recsys.domain import SearchRequest, Verdict
+from system.game_consensus_recsys.movie_data import HybridMovieCatalog
 from system.game_consensus_recsys.workflow import ConsensusWorkflow
 
 
@@ -80,6 +83,31 @@ class DeepSeekAgentTests(unittest.TestCase):
         self.assertEqual(len(response.decisions), 2)
         degraded = [event for event in response.trace.events if event.event == "agent_degraded"]
         self.assertEqual(degraded[0].payload["fallback"], "deterministic_agents_continue")
+
+
+class HybridRetrievalTests(unittest.TestCase):
+    def test_train_association_retrieves_and_hard_exclusion_blocks_movie(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog_path = root / "catalog.jsonl"
+            rows = [
+                {"movie_id": "a", "title": "Anchor", "year": 2000, "genres": ["Drama"],
+                 "rating_count": 10, "rating_mean": 4.0},
+                {"movie_id": "b", "title": "Neighbor", "year": 2001, "genres": ["Drama"],
+                 "rating_count": 8, "rating_mean": 3.8},
+            ]
+            catalog_path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+            associations = root / "associations.json"
+            associations.write_text(json.dumps({
+                "associations": {"a": [{"movie_id": "b", "count": 2, "score": 1.0}]}
+            }))
+            catalog = HybridMovieCatalog(catalog_path, associations)
+            found = catalog.search(SearchRequest("unmatched", liked_movie_ids=["a"]))
+            self.assertEqual(found[0].movie_id, "b")
+            blocked = catalog.search(SearchRequest(
+                "unmatched", liked_movie_ids=["a"], excluded_movie_ids=["b"]
+            ))
+            self.assertNotIn("b", [item.movie_id for item in blocked])
 
 
 if __name__ == "__main__":

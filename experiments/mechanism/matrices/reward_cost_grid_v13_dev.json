@@ -1,0 +1,58 @@
+{
+  "matrix_version": "reward-cost-grid-v13.0-dev",
+  "purpose": "Finite 3x3 public-contract grid for empirical follower response and development-set leader optimization",
+  "protocol_status": "frozen-before-collection",
+  "selection_rule": "Select the balanced leader-utility maximizer on dev; ties prefer lower calls, then lower tokens, then lexicographically smaller contract id",
+  "leader_utility_presets": {
+    "quality_first": {"token": 0.05, "call": 0.025, "failure": 0.05},
+    "balanced": {"token": 0.15, "call": 0.10, "failure": 0.10},
+    "cost_first": {"token": 0.30, "call": 0.20, "failure": 0.10}
+  },
+  "defaults": {
+    "split": "dev",
+    "n_samples": 50,
+    "behavior": "independent",
+    "mechanism": "static_aeic",
+    "n_agents": 5,
+    "n_rounds": 3,
+    "seed": 20261016,
+    "max_attempts": 3,
+    "backends": ["deepseek"],
+    "resource_tiered": true,
+    "deepseek_only_tiers": true,
+    "similarity": "lexical",
+    "experiment_id": "aeic-stackelberg-v13-reward-cost-dev",
+    "out": "experiments/results/mechanism/stackelberg/reward_cost_grid_v13_dev.jsonl"
+  },
+  "jobs": [
+    {"dataset":"StrategyQA","reward_scale":0.05,"cost_scale":0.5,"label":"r0.05_c0.5"},
+    {"dataset":"StrategyQA","reward_scale":0.05,"cost_scale":1.0,"label":"r0.05_c1.0"},
+    {"dataset":"StrategyQA","reward_scale":0.05,"cost_scale":1.5,"label":"r0.05_c1.5"},
+    {"dataset":"StrategyQA","reward_scale":0.2,"cost_scale":0.5,"label":"r0.2_c0.5"},
+    {"dataset":"StrategyQA","reward_scale":0.2,"cost_scale":1.0,"label":"r0.2_c1.0"},
+    {"dataset":"StrategyQA","reward_scale":0.2,"cost_scale":1.5,"label":"r0.2_c1.5"},
+    {"dataset":"StrategyQA","reward_scale":0.5,"cost_scale":0.5,"label":"r0.5_c0.5"},
+    {"dataset":"StrategyQA","reward_scale":0.5,"cost_scale":1.0,"label":"r0.5_c1.0"},
+    {"dataset":"StrategyQA","reward_scale":0.5,"cost_scale":1.5,"label":"r0.5_c1.5"},
+
+    {"dataset":"MMLU-Hard","reward_scale":0.05,"cost_scale":0.5,"label":"r0.05_c0.5"},
+    {"dataset":"MMLU-Hard","reward_scale":0.05,"cost_scale":1.0,"label":"r0.05_c1.0"},
+    {"dataset":"MMLU-Hard","reward_scale":0.05,"cost_scale":1.5,"label":"r0.05_c1.5"},
+    {"dataset":"MMLU-Hard","reward_scale":0.2,"cost_scale":0.5,"label":"r0.2_c0.5"},
+    {"dataset":"MMLU-Hard","reward_scale":0.2,"cost_scale":1.0,"label":"r0.2_c1.0"},
+    {"dataset":"MMLU-Hard","reward_scale":0.2,"cost_scale":1.5,"label":"r0.2_c1.5"},
+    {"dataset":"MMLU-Hard","reward_scale":0.5,"cost_scale":0.5,"label":"r0.5_c0.5"},
+    {"dataset":"MMLU-Hard","reward_scale":0.5,"cost_scale":1.0,"label":"r0.5_c1.0"},
+    {"dataset":"MMLU-Hard","reward_scale":0.5,"cost_scale":1.5,"label":"r0.5_c1.5"},
+
+    {"dataset":"TruthfulQA","reward_scale":0.05,"cost_scale":0.5,"label":"r0.05_c0.5"},
+    {"dataset":"TruthfulQA","reward_scale":0.05,"cost_scale":1.0,"label":"r0.05_c1.0"},
+    {"dataset":"TruthfulQA","reward_scale":0.05,"cost_scale":1.5,"label":"r0.05_c1.5"},
+    {"dataset":"TruthfulQA","reward_scale":0.2,"cost_scale":0.5,"label":"r0.2_c0.5"},
+    {"dataset":"TruthfulQA","reward_scale":0.2,"cost_scale":1.0,"label":"r0.2_c1.0"},
+    {"dataset":"TruthfulQA","reward_scale":0.2,"cost_scale":1.5,"label":"r0.2_c1.5"},
+    {"dataset":"TruthfulQA","reward_scale":0.5,"cost_scale":0.5,"label":"r0.5_c0.5"},
+    {"dataset":"TruthfulQA","reward_scale":0.5,"cost_scale":1.0,"label":"r0.5_c1.0"},
+    {"dataset":"TruthfulQA","reward_scale":0.5,"cost_scale":1.5,"label":"r0.5_c1.5"}
+  ]
+}

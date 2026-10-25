@@ -1,4 +1,4 @@
-\section{AEIC介导的Leader--Follower机制}\label{sec:game}
+\section{基于AEIC结构化报告的Leader--Follower机制}\label{sec:game}
 \subsection{时序与行动空间}
 Leader在生成前承诺合同$m$，追随者观察后选择
 \begin{equation}a_i\in\mathcal{A}=\{\textsc{Low},\textsc{AEIC},\textsc{Verify},\textsc{Imitate}\}.\end{equation}
@@ -8,12 +8,28 @@ Leader在生成前承诺合同$m$，追随者观察后选择
 \begin{equation}U_i(a_i;m,h_i)=\mathbb{E}[g_m(r_i,y,h_i)\mid a_i,m,h_i]-c_m(a_i),\label{eq:followerutility}\end{equation}
 其中$h_i$为可见历史，$y$仅在需要结果验证时对结算环境可用。本文不声称模型精确计算该式；检验对象是奖励或成本变化时行动分布是否改变。
 
+形式上，合同记为
+\begin{equation}
+m=(g_m,c_m,P_m,B_m),
+\end{equation}
+其中$P_m$规定跨轮可见矩阵，$B_m$给出验证调用预算。合同在题目求解前写入所有Agent可见的系统输入，并在该题结束前保持不变。控制器随后把声明行动映射为确定性执行配置$\phi(a)$，其中包括Prompt模板、最大Token、允许调用次数、是否读取同伴历史以及是否进入验证分支。因而行动不是生成后附加的标签，而是实际改变计算路径的控制变量。
+
+\textsc{Low}只执行一次短答案路径；\textsc{AEIC}执行独立四字段报告；\textsc{Verify}在完整报告后获得一次额外的检查与修订机会；\textsc{Imitate}只能使用$P_m$允许的上一轮同伴信息。所有行动均输出统一Schema，使聚合器无需从自由文本猜测结论，同时又保留资源成本和信息来源的差异。
+
 \subsection{比较规则}
 确认性实验固定问题、Seed、面板、轮数和信息策略，比较No Mechanism、Outcome Only和Static AEIC。前者不提供显式信用；第二种仅为正确最终立场结算；第三种按AEIC完整性和合法结论结算且不读取答案键。令$H(a)=\mathbf{1}[a\in\{\textsc{AEIC},\textsc{Verify}\}]$。主要估计量分别是$\mathbb{E}[H]$和问题级多数票正确率的配对变化，Token作为资源结果单独报告。
 
 \subsection{结算与纵向状态}
+信用由公开信号线性组合：
+\begin{equation}
+\mathrm{credit}_i^t=\sum_k w_k s_k(r_i^t,h_i^t,y),\qquad
+\mathrm{utility}_i^t=\mathrm{credit}_i^t-c_m(a_i^t).
+\end{equation}
+过程型合同不读取$y$，仅结果合同只在完成生成后使用$y$。权重、成本和预算在运行前冻结并进入Manifest；控制器不根据当前题的真实答案临时改权。
 \begin{equation}\rho_i^t=\delta\rho_i^{t-1}+g_m(r_i^t,y,h_i^t)-c_m(a_i^t),\qquad\delta=0.9.\end{equation}
 静态规则不按信誉自适应系数，但保留完整状态以支持历史消融与未来合同。失败尝试回滚，重试和修复仍保留在Trace中。
+
+集体结论只从合法$C$字段形成。确认性实验固定采用第三轮简单多数票，从而避免把新的聚合器与新的生产激励同时引入主比较。平票、无效结论和调用失败使用预先定义的确定性规则处理。该设计把研究问题收敛为：当问题、信息结构和聚合规则不变时，行动前可读合同是否改变报告生产行为及其最终结果。
 \begin{figure}[t]\centering
 \includegraphics[width=\textwidth]{../figures/fig1_aeic_md_overview_rich.pdf}
-\caption{AEIC-MD架构。合同先于资源行动选择，控制器在执行后结算并记录状态。}\label{fig:framework}\end{figure}
+\caption{博弈驱动的可观测语义共识架构。合同先于资源行动选择，AEIC接口将报告转化为可结算信号，控制器在执行后结算并记录状态。}\label{fig:framework}\end{figure}

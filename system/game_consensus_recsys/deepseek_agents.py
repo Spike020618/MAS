@@ -49,6 +49,8 @@ verdict(support/oppose/abstain), utility(0到1), confidence(0到1)。
                 "preferred_genres": request.preferred_genres,
                 "required_genres": request.required_genres,
                 "excluded_genres": request.excluded_genres,
+                "excluded_movie_ids": request.excluded_movie_ids,
+                "liked_movie_ids": request.liked_movie_ids,
                 "min_year": request.min_year,
                 "max_year": request.max_year,
                 "top_k": request.top_k,

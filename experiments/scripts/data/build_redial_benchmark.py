@@ -99,12 +99,25 @@ def dialogue_to_case(dialogue: dict, exact, title_only) -> tuple[dict | None, li
     if not context:
         return None, review
 
+    # Only expose profile signals that are actually mentioned before the target
+    # cutoff. Labels attached to later dialogue turns are evaluation targets, not
+    # request-time features.
+    context_redial_ids = {
+        movie_id
+        for message in context_messages
+        for movie_id in MOVIE_TOKEN.findall(str(message.get("text", "")))
+    }
+    context_movie_ids = sorted({mapped[movie_id] for movie_id in context_redial_ids
+                                if mapped.get(movie_id)})
+
     seen = []
     liked_context = []
     for redial_id, label in labels.items():
-        if isinstance(label, dict) and label_is_positive(label.get("seen")) and mapped.get(str(redial_id)):
+        if (str(redial_id) in context_redial_ids and isinstance(label, dict)
+                and label_is_positive(label.get("seen")) and mapped.get(str(redial_id))):
             seen.append(mapped[str(redial_id)])
-        if isinstance(label, dict) and label_is_positive(label.get("liked")) and mapped.get(str(redial_id)):
+        if (str(redial_id) in context_redial_ids and isinstance(label, dict)
+                and label_is_positive(label.get("liked")) and mapped.get(str(redial_id))):
             if str(redial_id) not in relevant_redial:
                 liked_context.append(mapped[str(redial_id)])
     return {
@@ -112,6 +125,7 @@ def dialogue_to_case(dialogue: dict, exact, title_only) -> tuple[dict | None, li
         "conversation_id": dialogue.get("conversationId"),
         "context": context,
         "query": "\n".join(f"{x['sender']}: {x['text']}" for x in context),
+        "context_movie_ids": context_movie_ids,
         "relevant_movie_ids": relevant,
         "excluded_seen_movie_ids": sorted(set(seen) - set(relevant)),
         "liked_context_movie_ids": sorted(set(liked_context) - set(relevant)),
@@ -151,7 +165,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--redial-root", type=Path, default=Path("experiments/data/raw/redial"))
     parser.add_argument("--catalog", type=Path, default=Path("experiments/data/processed/movie_catalog.jsonl"))
-    parser.add_argument("--output", type=Path, default=Path("benchmarks/movie_consensus"))
+    parser.add_argument("--output", type=Path,
+                        default=Path("experiments/benchmarks/movie_consensus"))
     parser.add_argument("--dev-size", type=int, default=30)
     parser.add_argument("--test-size", type=int, default=100)
     parser.add_argument("--seed", type=int, default=20260907)

@@ -1,8 +1,24 @@
 \section{相关工作}\label{sec:related}
-\paragraph{多智能体审议。}Self-consistency聚合采样推理路径~\cite{wang2023selfconsistency}；多智能体辩论在聚合前让模型实例彼此可见~\cite{du2024improving}；ChatEval与AgentVerse组织专业Agent或评估者~\cite{chan2023chateval,chen2023agentverse}。近期研究还揭示同质面板中的从众、谄媚和有效分歧损失~\cite{pitre2025consensagent,swamy2025peacemaker}。AEIC-MD关注更早的决策：Agent是否选择承担可独立检查报告的成本。
 
-\paragraph{作为接口的结构化推理。}Chain-of-Thought、Tree-of-Thoughts和ReAct组织单模型计算~\cite{wei2022chain,yao2024tree,yao2023react}。AEIC统一观测报告完整性、最终立场和资源行动。它既是生成协议，也是可缔约报告空间；本文不假设格式保证真实性。
+\subsection{多样化采样、投票与多智能体审议}
+提高测试时计算量的早期路线主要依赖多次采样和结果聚合。Self-consistency对同一问题生成多条推理路径并以答案频率聚合~\cite{wang2023selfconsistency}；选举式集体决策进一步用不同投票规则维护候选多样性~\cite{zhao2024electoral}。这类方法能够利用独立采样降低单次生成波动，但默认各样本已经完成了足够的信息生产，通常不区分短答、独立证据和追加验证的成本。
 
-\paragraph{语言模型机制设计。}LLM的委托--代理和合同视角区分设计者承诺与Agent响应~\cite{rauba2025principal,saig2024incentivizing}；Stackelberg激励也用于分布式学习和众包~\cite{fu2024stackelberg,guo2023incentive,wang2024incentive}。AEIC-MD直接执行“规则先呈现、行动先声明、路径后执行”的顺序，区别于对未见规则时生成的回答做离线评分。
+多智能体辩论把聚合前的独立样本扩展为跨轮交互。Du等让多个模型实例提出答案、交换论证并在多轮后形成结果~\cite{du2024improving}；FORD研究模型能力不平衡时的跨模型一致性和强模型支配~\cite{xiong2023interconsistency}；ChatEval、AgentVerse和角色化系统把讨论者、批评者或评估者组织成任务流程~\cite{chan2023chateval,chen2023agentverse}。后续工作从人格、反思和辩论模式研究协作效率~\cite{zhang2024collaboration}，也比较辩论、投票和动态加权共识~\cite{choi2025debate,li2025dynamic}。这些工作主要回答“Agent怎样交换和聚合既有输出”，本文则将研究对象前移为“规则如何改变输出产生前的行动与资源路径”。
 
-\paragraph{通信结构与生产激励。}拓扑决定报告如何流动~\cite{hong2023metagpt,chen2024reconcile}，却不能保证报告包含独立工作。本文将信息结构作为受控环境和未来设计层；确认性实验固定信息流，仅改变公开规则。
+\subsection{从众、异议损失与通信风险}
+交互并不必然改善决策。已有研究发现同质模型容易出现谄媚、从众和过早一致，正确少数意见可能在多轮讨论中消失~\cite{pitre2025consensagent,swamy2025peacemaker}；共识与多样性之间存在任务相关权衡~\cite{wu2025disagreement}。对抗性协作研究进一步表明，具有较强说服力的错误Agent能够通过辩论影响其他成员~\cite{amayuelas2024multiagent}。因此，通信轮数、拓扑或多数票本身不能证明有效审议：系统还需要记录谁看到了什么、何时改变立场、改变是否伴随新证据，以及各候选是否接受了相同覆盖。
+
+本文不把通信拓扑作为主因果变量。确认性实验固定同步面板与信息流，只改变行动前公开规则；受控信息实验再分别提供新增证据、无证据多数立场、复制压力和反向证据。该设计与从众研究互补：现有工作刻画错误如何传播，本文检验可观察过程合同是否能够改变传播之前的信息生产行为。
+
+\subsection{结构化推理、验证与可观察报告}
+Chain-of-Thought显式化中间步骤，Tree-of-Thoughts把求解组织为搜索，ReAct把推理与外部行动交替执行~\cite{wei2022chain,yao2024tree,yao2023react}。这些方法说明中间结构有助于分解复杂任务和连接工具，但结构化文本不自动等于事实正确，也不保证报告来自独立验证。自由文本评审还存在字段缺失、结论难以规范化和证据来源无法定位的问题。
+
+AEIC与上述方法的关系是“审计接口”而非新的隐式思维链。它只保存假设、证据、推断和结论四类可公开短报告，并把字段完整、结论合法、证据增量、核验证据、有用纠正和无支持翻转转换为可结算信号。本文额外设置自由文本、通用“分析--答案”结构和AEIC的等预算比较，以避免把一般结构化输出的收益错误归因于AEIC字段命名。
+
+\subsection{LLM中的机制设计与委托代理视角}
+机制设计研究关注设计者先承诺规则、参与者随后根据规则行动。已有工作在生成内容拍卖中研究由LLM表示偏好的机制与单调性条件~\cite{duetting2023mechanism}，在文本生成中使用统计合同激励可测质量~\cite{saig2024incentivizing}，并从委托--代理和信息不对称角度讨论多Agent系统~\cite{rauba2025principal,kaltenpoth2025agency}。Stackelberg激励也广泛用于联邦学习、众包和资源分配~\cite{fu2024stackelberg,guo2023incentive,wang2024incentive}。
+
+与生成后评分不同，本文要求合同在求解前进入Follower可见上下文，并使声明行动选择不同Prompt、Token上限、调用次数和验证路径。经验对象是黑盒模型在固定合同下产生的行动分布，而不是预设其具有稳定的人类效用。我们使用Stackelberg时序组织实验，但不声称求得闭式均衡、一般激励相容或全局最优合同。
+
+\subsection{本文定位}
+现有多智能体研究已经较充分地覆盖角色分工、通信拓扑、辩论轮次、投票规则和裁判模型；结构化推理研究解决中间过程表达；机制设计研究提供先承诺后响应的分析框架。三者之间仍缺少一个可执行连接：公开规则必须在生成前可见，行动必须真实控制资源路径，自然语言报告必须成为可解析结算对象，失败、修复和跨轮信息还必须可追溯。本文以AEIC作为报告接口，以公开合同和行动路由构成处理，以配对行为响应为首要证据。该定位使贡献不依赖“辩论一定优于投票”或“结构化格式天然提高准确率”等强假设。

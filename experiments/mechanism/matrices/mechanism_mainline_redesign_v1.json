@@ -1,0 +1,71 @@
+{
+  "protocol_version": "mechanism-mainline-redesign-v1",
+  "status": "design_only_not_collectable",
+  "paid_collection_allowed": false,
+  "research_question": "Contract-induced evidence production under one fixed tool environment",
+  "n_agents": 3,
+  "actions": ["direct", "retrieve"],
+  "timing": ["public_contract", "simultaneous_local_choice", "fixed_action_execution", "report_sharing", "settlement", "majority_decision"],
+  "fixed_environment": {
+    "backend_alias": "deepseek-chat",
+    "retriever_version": null,
+    "source_manifest_sha256": null,
+    "report_prompt_sha256": null,
+    "same_execution_for_all_contracts": true,
+    "contract_visible_in_execution_prompt": false,
+    "same_source_bank_for_all_contracts": true,
+    "task_specific_checkers_allowed": false,
+    "peer_reports_visible_before_choice": false,
+    "same_question_labels_visible_to_agents": false,
+    "reputation_across_tasks": false
+  },
+  "payments": {
+    "unit_definition": null,
+    "account_enforcement_verified": false,
+    "signal": "authorized_retrieval_receipt_and_exact_source_quote",
+    "signal_claim": "provenance_and_acquisition_not_truth",
+    "primary_payment_uses_llm_support_judge": false,
+    "budget_levels_provisional": [0, 0.5, 1, 2, 4],
+    "budget_cap_enforced": true,
+    "same_document_duplicate_quotes_do_not_increase_credit": true
+  },
+  "conditions": ["no_credit", "flat_trace_credit", "static_source_sharing", "selected_source_sharing"],
+  "strategy_baselines": ["fixed_retrieval_quota", "random_allocation", "budget_matched_central_allocation"],
+  "agent_implementations": ["explicit_local_policy", "llm_autonomous_choice"],
+  "equilibrium": {
+    "concept": "finite_pure_commitment_Stackelberg_Nash",
+    "joint_action_profiles": 8,
+    "complete_counterfactual_payoffs_required": true,
+    "ties": ["optimistic", "pessimistic"],
+    "mixed_equilibria_implemented": false,
+    "observed_policy_optimum_is_equilibrium": false,
+    "per_question_gold_oracle_contract_selection_allowed": false
+  },
+  "leader_objective": {
+    "terms": ["team_quality", "total_resource", "actual_payment", "terminal_failure"],
+    "weights": null,
+    "normalization_from_test_forbidden": true
+  },
+  "data": {
+    "pilot_question_ids": null,
+    "calibration_question_ids": null,
+    "development_question_ids": null,
+    "test_question_ids": null,
+    "historical_exposure_audit_completed": false,
+    "old_exploratory_questions_are_final_test": false
+  },
+  "pilot": {
+    "n_questions": 6,
+    "n_repeats": 2,
+    "forced_action_execution_units": 72,
+    "autonomous_response_collection": "only after environment audit",
+    "api_call_count": "derive from frozen tool implementation, not equated to execution units"
+  },
+  "statistics": {
+    "unit": "question_cluster",
+    "primary": ["unilateral_deviation_gain", "epsilon_regret", "evidence_acquisition", "unique_source_contribution", "redundant_work"],
+    "secondary": ["team_accuracy", "irrelevant_evidence", "abstention", "tokens", "calls", "latency", "payment"],
+    "confirmatory_contrasts": null
+  },
+  "blocking_freeze_items": ["retriever_version", "source_manifest_sha256", "report_prompt_sha256", "unit_definition", "account_enforcement", "leader_weights", "question_ids", "exposure_audit", "confirmatory_contrasts"]
+}

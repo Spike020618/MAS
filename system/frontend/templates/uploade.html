@@ -670,10 +670,8 @@
                     formData.append('image', imageFile);
                 }
                 
-                // 修复：支持本地和生产环境
-                const apiUrl = window.location.hostname === 'localhost' 
-                    ? 'http://localhost:8000/agent/upload'
-                    : 'https://www.tvosagent.cn/agent/upload';
+                // 与当前二维码页面同源，兼容localhost、127.0.0.1和局域网IP。
+                const apiUrl = `${window.location.origin}/agent/upload`;
                 
                 const response = await fetch(apiUrl, {
                     method: 'POST',

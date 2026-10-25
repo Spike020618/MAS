@@ -2,7 +2,9 @@ import unittest
 
 from system.game_consensus_recsys.catalog import InMemoryCatalog
 from system.game_consensus_recsys.consensus import ConsensusEngine
-from system.game_consensus_recsys.domain import SearchRequest
+from system.game_consensus_recsys.domain import (
+    CandidateReport, CandidateSource, Evidence, MovieCandidate, SearchRequest, Verdict,
+)
 from system.game_consensus_recsys.workflow import ConsensusWorkflow
 from system.game_consensus_recsys.planner import ConsensusPlanner
 
@@ -35,6 +37,15 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue(response.decisions)
         self.assertTrue(all("动作" not in item.candidate.genres for item in response.decisions))
 
+    def test_excluded_movie_id_is_never_recommended(self):
+        catalog = InMemoryCatalog()
+        first = catalog.search(SearchRequest("科幻电影"))[0]
+        response = ConsensusWorkflow(catalog=catalog).run(SearchRequest(
+            "科幻电影", top_k=8, excluded_movie_ids=[first.movie_id],
+        ))
+        self.assertTrue(response.decisions)
+        self.assertNotIn(first.movie_id, [item.candidate.movie_id for item in response.decisions])
+
     def test_required_genres_are_hard_constraints_and_top_k_is_not_padded(self):
         response = ConsensusWorkflow().run(SearchRequest(
             "适合亲子观看的温暖科幻动画", top_k=3,
@@ -53,6 +64,64 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(first.trace.reputations_before, {})
         self.assertNotEqual(first.trace.reputations_after, {})
         self.assertEqual(second.trace.reputations_before, first.trace.reputations_after)
+
+    def test_shortlist_has_uniform_agent_coverage(self):
+        response = ConsensusWorkflow().run(SearchRequest(
+            "科幻电影", top_k=3, preferred_genres=["科幻"],
+        ))
+        coverage_event = next(event for event in response.trace.events
+                              if event.event == "coverage_checked")
+        self.assertTrue(coverage_event.payload["uniform"])
+        expected = set(coverage_event.payload["required_agents"])
+        self.assertTrue(expected)
+        self.assertTrue(all(set(value) == expected
+                            for value in coverage_event.payload["coverage"].values()))
+
+
+class ConsensusTests(unittest.TestCase):
+    @staticmethod
+    def candidate(movie_id, retrieval_score):
+        return MovieCandidate(
+            movie_id, f"movie-{movie_id}", 2020, ["科幻"],
+            [CandidateSource.LEXICAL], retrieval_score,
+        )
+
+    @staticmethod
+    def report(candidate_id, agent_id="preference-1", role="preference",
+               verdict=Verdict.SUPPORT, utility=0.8):
+        return CandidateReport(
+            agent_id, role, candidate_id, "assumption",
+            [Evidence("claim", "test", f"test:{candidate_id}", True, 1.0)],
+            "inference", verdict, utility, 0.8,
+        )
+
+    def test_candidate_order_does_not_change_scores(self):
+        candidates = [self.candidate("a", 0.9), self.candidate("b", 0.6)]
+        reports = [self.report("a", utility=0.7), self.report("b", utility=0.9)]
+        forward = ConsensusEngine().decide(candidates, reports, 2)
+        reverse = ConsensusEngine().decide(list(reversed(candidates)),
+                                           list(reversed(reports)), 2)
+        self.assertEqual(
+            {item.candidate.movie_id: item.score for item in forward},
+            {item.candidate.movie_id: item.score for item in reverse},
+        )
+
+    def test_verifier_opposition_is_a_hard_gate(self):
+        candidate = self.candidate("blocked", 1.0)
+        reports = [
+            self.report("blocked", utility=1.0),
+            self.report("blocked", "verifier-1", "verifier", Verdict.OPPOSE, 0.0),
+        ]
+        self.assertEqual(ConsensusEngine().decide([candidate], reports, 1), [])
+
+    def test_score_exposes_recomputable_components(self):
+        candidates = [self.candidate("a", 0.9), self.candidate("b", 0.6)]
+        decisions = ConsensusEngine().decide(
+            candidates, [self.report("a"), self.report("b", utility=0.4)], 2,
+        )
+        self.assertTrue(all({"retrieval", "agent_utility", "evidence_quality",
+                             "opposition_penalty"} == set(item.score_components)
+                            for item in decisions))
 
 
 class PlannerTests(unittest.TestCase):

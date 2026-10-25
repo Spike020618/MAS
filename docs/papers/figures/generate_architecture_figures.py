@@ -80,7 +80,7 @@ def research_framework():
     ax.set_ylim(0, 1)
     ax.axis("off")
 
-    ax.text(0.03, 0.985, "AEIC-MD: observable effort before aggregation",
+    ax.text(0.03, 0.985, "AEIC mechanism: observable effort before aggregation",
             ha="left", va="top", fontsize=14, fontweight="bold", color=NAVY)
     ax.text(0.03, 0.945, "The leader commits first; each follower chooses an action that selects a real execution path before settlement.",
             ha="left", va="top", fontsize=9, color=GRAY)
@@ -135,7 +135,7 @@ def system_architecture():
     ax.set_ylim(0, 1)
     ax.axis("off")
 
-    ax.text(0.03, 0.985, "Movie search and recommendation: application-level validation of AEIC-MD",
+    ax.text(0.03, 0.985, "Movie search and recommendation: application-level validation of AEIC mechanism",
             ha="left", va="top", fontsize=13.5, fontweight="bold", color=NAVY)
     ax.text(0.03, 0.945, "Deterministic retrieval grounds candidates; multi-agent reports are measured and controlled before evidence-aware ranking.",
             ha="left", va="top", fontsize=9, color=GRAY)

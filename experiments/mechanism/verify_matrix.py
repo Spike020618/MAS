@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import sys
 from collections import Counter
 from pathlib import Path
@@ -90,6 +91,9 @@ def main() -> None:
 
     route_errors = []
     schema_errors = []
+    structure_errors = []
+    trace_errors = []
+    schedule_cache = {}
     for key in expected & present:
         record = records[key]
         job = jobs_by_key[key]
@@ -98,6 +102,24 @@ def main() -> None:
         validation = record_from_dict(record).validate(require_complete=True)
         if validation:
             schema_errors.append([key, validation])
+        rounds = record.get("rounds", [])
+        expected_grid = {
+            (round_id, agent_id)
+            for round_id in range(1, int(job["n_rounds"]) + 1)
+            for agent_id in range(int(job["n_agents"]))
+        }
+        observed_grid = [
+            (int(item.get("round_id", -1)), int(item.get("agent_id", -1)))
+            for item in rounds
+        ]
+        if len(observed_grid) != len(set(observed_grid)):
+            structure_errors.append([key, "duplicate agent-round entries"])
+        if set(observed_grid) != expected_grid:
+            structure_errors.append([
+                key, "agent-round grid mismatch",
+                sorted(expected_grid - set(observed_grid)),
+                sorted(set(observed_grid) - expected_grid),
+            ])
         for item in record.get("rounds", []):
             traces = item.get("action_trace") or []
             action = item.get("chosen_action")
@@ -106,13 +128,35 @@ def main() -> None:
             backends = {x.get("backend") for x in execution}
             assigned = job["backends"][int(item.get("agent_id", 0)) % len(job["backends"])]
             tiered = bool(job.get("resource_tiered"))
+            deepseek_only = bool(job.get("deepseek_only_tiers"))
             expected_backend = assigned
-            if tiered and action == "low_effort":
+            expected_calls = None
+            if job.get("resource_schedule"):
+                schedule_path = ROOT / job["resource_schedule"]
+                if schedule_path not in schedule_cache:
+                    schedule_cache[schedule_path] = json.loads(
+                        schedule_path.read_text(encoding="utf-8")
+                    )["profiles"]
+                profile_key = "|".join((
+                    str(record["dataset"]), str(record["question_id"]),
+                    str(item["round_id"]), str(item["agent_id"]),
+                ))
+                profile = schedule_cache[schedule_path].get(profile_key)
+                if not profile:
+                    route_errors.append([key, item.get("round_id"), item.get("agent_id"),
+                                         "missing_matched_profile", profile_key])
+                    continue
+                expected_backend = profile["backend"]
+                expected_calls = int(profile["execution_calls"])
+            elif tiered and action == "low_effort" and not deepseek_only:
                 expected_backend = "zhipu_flash"
             elif tiered and action == "verify":
                 expected_backend = "deepseek_reasoner"
             if backends != {expected_backend}:
                 route_errors.append([key, item.get("round_id"), item.get("agent_id"), action, sorted(backends)])
+            if expected_calls is not None and len(execution) != expected_calls:
+                route_errors.append([key, item.get("round_id"), item.get("agent_id"),
+                                     "execution_call_count", len(execution), expected_calls])
             repair_backends = {
                 x.get("backend") for x in traces
                 if str(x.get("stage", "")).startswith("format_repair")
@@ -120,6 +164,25 @@ def main() -> None:
             if repair_backends and repair_backends != {"deepseek"}:
                 route_errors.append([key, item.get("round_id"), item.get("agent_id"),
                                      "format_repair", sorted(repair_backends)])
+            for trace in traces:
+                status = trace.get("status")
+                if status is not None and not 200 <= int(status) < 300:
+                    trace_errors.append([
+                        key, item.get("round_id"), item.get("agent_id"),
+                        trace.get("stage"), f"http_status={status}",
+                    ])
+                for field in ("prompt_tokens", "completion_tokens", "latency_s"):
+                    value = trace.get(field)
+                    if value is None or not isinstance(value, (int, float)):
+                        trace_errors.append([
+                            key, item.get("round_id"), item.get("agent_id"),
+                            trace.get("stage"), f"missing_or_invalid_{field}",
+                        ])
+                    elif value < 0 or not math.isfinite(float(value)):
+                        trace_errors.append([
+                            key, item.get("round_id"), item.get("agent_id"),
+                            trace.get("stage"), f"invalid_{field}={value}",
+                        ])
 
     hashes = {}
     for path in args.records:
@@ -137,11 +200,15 @@ def main() -> None:
         "unexpected_count": len(unexpected),
         "route_error_count": len(route_errors),
         "schema_error_count": len(schema_errors),
+        "structure_error_count": len(structure_errors),
+        "trace_error_count": len(trace_errors),
         "missing_units": detail(missing),
         "incomplete_units": detail(incomplete),
         "unexpected_units": detail(unexpected),
         "route_errors": detail(route_errors),
         "schema_errors": detail(schema_errors),
+        "structure_errors": detail(structure_errors),
+        "trace_errors": detail(trace_errors),
         "action_counts": dict(Counter(
             item.get("chosen_action") for key in expected & present
             for item in records[key].get("rounds", []) if records[key].get("completed")
@@ -150,6 +217,7 @@ def main() -> None:
     }
     report["pass"] = not (
         missing or incomplete or unexpected or route_errors or schema_errors
+        or structure_errors or trace_errors
     )
     text = json.dumps(report, ensure_ascii=False, indent=2)
     print(text)

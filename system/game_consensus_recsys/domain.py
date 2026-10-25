@@ -111,6 +111,8 @@ class SearchRequest:
     preferred_genres: List[str] = field(default_factory=list)
     required_genres: List[str] = field(default_factory=list)
     excluded_genres: List[str] = field(default_factory=list)
+    excluded_movie_ids: List[str] = field(default_factory=list)
+    liked_movie_ids: List[str] = field(default_factory=list)
     min_year: Optional[int] = None
     max_year: Optional[int] = None
     latency_budget_ms: int = 2000
@@ -147,6 +149,8 @@ class ConsensusDecision:
     residual_dissent: List[str]
     accepted_evidence: List[Evidence]
     contributing_agents: List[str]
+    score_components: Dict[str, float] = field(default_factory=dict)
+    agent_coverage: Dict[str, str] = field(default_factory=dict)
 
 
 @dataclass

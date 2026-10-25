@@ -1,13 +1,17 @@
 """Atomic, retry-safe JSONL storage for mechanism experiments."""
 from __future__ import annotations
 
+import fcntl
 import json
 import os
-import fcntl
 from pathlib import Path
 from typing import Dict, Iterable, Tuple
 
 from .schema import ExperimentRecord
+
+
+class CorruptRecordStoreError(RuntimeError):
+    """The on-disk checkpoint cannot be trusted for resume."""
 
 
 def record_key(record: ExperimentRecord) -> Tuple[str, str, str, str, int]:
@@ -35,15 +39,25 @@ class RecordStore:
         records: Dict[Tuple[str, str, str, str, int], dict] = {}
         if not self.path.exists():
             return records
-        for line_no, line in enumerate(self.path.read_text(encoding="utf-8").splitlines(), 1):
-            if not line.strip():
-                continue
-            item = json.loads(line)
-            key = (
-                str(item["experiment_id"]), str(item["dataset"]),
-                str(item["condition"]), str(item["question_id"]), int(item["seed"]),
-            )
-            records[key] = item
+        with self.path.open("r", encoding="utf-8") as handle:
+            for line_no, line in enumerate(handle, 1):
+                if not line.strip():
+                    continue
+                try:
+                    item = json.loads(line)
+                    key = (
+                        str(item["experiment_id"]), str(item["dataset"]),
+                        str(item["condition"]), str(item["question_id"]), int(item["seed"]),
+                    )
+                except (json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+                    raise CorruptRecordStoreError(
+                        f"invalid checkpoint {self.path} at line {line_no}: {exc}"
+                    ) from exc
+                if key in records:
+                    raise CorruptRecordStoreError(
+                        f"duplicate experimental unit in {self.path} at line {line_no}: {key}"
+                    )
+                records[key] = item
         return records
 
     def completed_keys(self) -> set:
@@ -83,8 +97,20 @@ class RecordStore:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(self.path.suffix + ".tmp")
         with tmp.open("w", encoding="utf-8") as handle:
-            for item in records:
+            ordered = sorted(records, key=lambda item: (
+                str(item.get("experiment_id", "")), str(item.get("dataset", "")),
+                str(item.get("condition", "")), str(item.get("question_id", "")),
+                int(item.get("seed", 0)),
+            ))
+            for item in ordered:
                 handle.write(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n")
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(tmp, self.path)
+        # Persist the directory entry as well as the file contents. This keeps
+        # a completed checkpoint durable across an abrupt process/host stop.
+        directory_fd = os.open(self.path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)

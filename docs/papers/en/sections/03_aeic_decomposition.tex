@@ -9,10 +9,18 @@ For question $x$, agent $i$ submits
 \end{equation}
 where $A_i$ states the operative assumptions, $E_i$ is a list of specific evidence items, $I_i$ connects evidence to the answer, and $C_i$ contains an explicit final stance. The report is serialized as a strict JSON object with exactly these four fields. This design supplies three observables that free-form deliberation usually conflates: whether the report is structurally complete, what evidence is exposed to later agents, and what answer is finally adopted.
 
+The fields have distinct audit roles. $A_i$ exposes premises so that disagreement can be localized to facts, definitions, or task interpretation. $E_i$ names support from the question, authorized history, or verification calls. $I_i$ makes the transition from evidence to stance inspectable, and $C_i$ is restricted to the task label space for deterministic aggregation. We store concise audit reports rather than requesting or using private chain-of-thought.
+
 AEIC is not treated as proof of correctness. A complete report may be coherently wrong, and an agent may imitate a peer while filling every field. Instead, AEIC provides a locally checkable surface on which a mechanism can condition credit. For a report $r$, define completeness
 \begin{equation}
  q_{\mathrm{comp}}(r)=\frac{1}{4}\sum_{z\in\{A,E,I,C\}}\mathbf{1}[z\text{ is non-empty}],
 \end{equation}
 and let $q_C(r)$ indicate whether $C$ yields a valid task stance. The implemented static rule uses only these process-level signals. It never receives the ground-truth answer as an input to the follower's choice prompt.
+
+The parser additionally returns
+\begin{equation}
+s(r_i,h_i)=\big(q_{\mathrm{comp}},q_C,q_{\mathrm{cons}},q_{\mathrm{nov}},q_{\mathrm{ver}},q_{\mathrm{corr}},q_{\mathrm{flip}}\big),
+\end{equation}
+covering completeness, legal conclusion, within-report consistency, evidence increments, verifiable support, useful correction, and unsupported reversal. Novelty is a conservative token increment rather than factual novelty. Verified evidence must resolve to the question, a deterministic tool result, or another traceable record. Syntactic, semantic, and task validators are separated; answer keys are available only to post-generation outcome settlement. A repair call may restore keys and types, but may neither change the attempted stance nor introduce facts, and both raw and repaired outputs remain in the trace.
 
 The distinction between \emph{observable process} and \emph{truth} is deliberate. Outcome-only credit requires the environment to know correctness after the task, whereas process credit can be announced and checked from the report itself. The comparison between these two rules asks whether a reward attached to a delayed outcome has the same behavioral effect as one attached to an immediately legible production process.

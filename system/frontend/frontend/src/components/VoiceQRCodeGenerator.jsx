@@ -20,15 +20,14 @@ const VoiceQRCodeGenerator = () => {
       const data = await response.json()
       
       // 构建完整 URL（指向语音页面）
-      const ip = data.ip || 'localhost'
-      const voicePageUrl = `${API_BASE_URL}/voice_page`
+      const voicePageUrl = `${data.origin || window.location.origin}/agent/voice_page`
       
       setCurrentUrl(voicePageUrl)
       console.log(`📱 语音页面 URL: ${voicePageUrl}`)
     } catch (error) {
       console.error('❌ 获取服务器信息失败:', error)
       // 降级方案
-      setCurrentUrl(`${API_BASE_URL}/voice_page`)
+      setCurrentUrl(`${window.location.origin}/agent/voice_page`)
     } finally {
       setIsLoading(false)
     }

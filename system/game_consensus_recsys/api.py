@@ -20,6 +20,8 @@ if FastAPI is not None:
         preferred_genres: list[str] = []
         required_genres: list[str] = []
         excluded_genres: list[str] = []
+        excluded_movie_ids: list[str] = []
+        liked_movie_ids: list[str] = []
         min_year: int | None = None
         max_year: int | None = None
         latency_budget_ms: int = Field(default=2000, gt=0)

@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="440" viewBox="0 0 1500 440">
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<text x="750" y="38" font-size="22" text-anchor="middle" font-weight="bold" fill="#17324D">Collective accuracy across deliberation rounds</text>
+<text x="255.0" y="70" font-size="16" text-anchor="middle" font-weight="bold" fill="#17324D">MMLU-Hard</text>
+<rect x="45" y="85" width="420" height="280" fill="#F8FAFB" stroke="#DCE3E8"/>
+<line x1="45" y1="365.0" x2="465" y2="365.0" stroke="#DCE3E8"/>
+<text x="37" y="369.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">50</text>
+<line x1="45" y1="309.0" x2="465" y2="309.0" stroke="#DCE3E8"/>
+<text x="37" y="313.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">60</text>
+<line x1="45" y1="253.0" x2="465" y2="253.0" stroke="#DCE3E8"/>
+<text x="37" y="257.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">70</text>
+<line x1="45" y1="197.0" x2="465" y2="197.0" stroke="#DCE3E8"/>
+<text x="37" y="201.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">80</text>
+<line x1="45" y1="141.0" x2="465" y2="141.0" stroke="#DCE3E8"/>
+<text x="37" y="145.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">90</text>
+<line x1="45" y1="85.0" x2="465" y2="85.0" stroke="#DCE3E8"/>
+<text x="37" y="89.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">100</text>
+<polyline points="115.0,297.8 255.0,279.1 395.0,249.3" fill="none" stroke="#7B8794" stroke-width="4"/>
+<circle cx="115" cy="297.8" r="5" fill="#7B8794"/>
+<circle cx="255" cy="279.1333333333333" r="5" fill="#7B8794"/>
+<circle cx="395" cy="249.26666666666665" r="5" fill="#7B8794"/>
+<polyline points="115.0,141.0 255.0,141.0 395.0,133.5" fill="none" stroke="#2D7F7A" stroke-width="4"/>
+<circle cx="115" cy="141.0" r="5" fill="#2D7F7A"/>
+<circle cx="255" cy="141.0" r="5" fill="#2D7F7A"/>
+<circle cx="395" cy="133.53333333333336" r="5" fill="#2D7F7A"/>
+<text x="115" y="387" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Round 1</text>
+<text x="255" y="387" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Round 2</text>
+<text x="395" y="387" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Round 3</text>
+<text x="745.0" y="70" font-size="16" text-anchor="middle" font-weight="bold" fill="#17324D">StrategyQA</text>
+<rect x="535" y="85" width="420" height="280" fill="#F8FAFB" stroke="#DCE3E8"/>
+<line x1="535" y1="365.0" x2="955" y2="365.0" stroke="#DCE3E8"/>
+<text x="527" y="369.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">50</text>
+<line x1="535" y1="309.0" x2="955" y2="309.0" stroke="#DCE3E8"/>
+<text x="527" y="313.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">60</text>
+<line x1="535" y1="253.0" x2="955" y2="253.0" stroke="#DCE3E8"/>
+<text x="527" y="257.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">70</text>
+<line x1="535" y1="197.0" x2="955" y2="197.0" stroke="#DCE3E8"/>
+<text x="527" y="201.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">80</text>
+<line x1="535" y1="141.0" x2="955" y2="141.0" stroke="#DCE3E8"/>
+<text x="527" y="145.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">90</text>
+<line x1="535" y1="85.0" x2="955" y2="85.0" stroke="#DCE3E8"/>
+<text x="527" y="89.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">100</text>
+<polyline points="605.0,219.4 745.0,226.9 885.0,234.3" fill="none" stroke="#7B8794" stroke-width="4"/>
+<circle cx="605" cy="219.4" r="5" fill="#7B8794"/>
+<circle cx="745" cy="226.86666666666665" r="5" fill="#7B8794"/>
+<circle cx="885" cy="234.33333333333337" r="5" fill="#7B8794"/>
+<polyline points="605.0,189.5 745.0,200.7 885.0,211.9" fill="none" stroke="#2D7F7A" stroke-width="4"/>
+<circle cx="605" cy="189.53333333333336" r="5" fill="#2D7F7A"/>
+<circle cx="745" cy="200.73333333333338" r="5" fill="#2D7F7A"/>
+<circle cx="885" cy="211.93333333333337" r="5" fill="#2D7F7A"/>
+<text x="605" y="387" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Round 1</text>
+<text x="745" y="387" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Round 2</text>
+<text x="885" y="387" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Round 3</text>
+<text x="1235.0" y="70" font-size="16" text-anchor="middle" font-weight="bold" fill="#17324D">TruthfulQA</text>
+<rect x="1025" y="85" width="420" height="280" fill="#F8FAFB" stroke="#DCE3E8"/>
+<line x1="1025" y1="365.0" x2="1445" y2="365.0" stroke="#DCE3E8"/>
+<text x="1017" y="369.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">50</text>
+<line x1="1025" y1="309.0" x2="1445" y2="309.0" stroke="#DCE3E8"/>
+<text x="1017" y="313.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">60</text>
+<line x1="1025" y1="253.0" x2="1445" y2="253.0" stroke="#DCE3E8"/>
+<text x="1017" y="257.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">70</text>
+<line x1="1025" y1="197.0" x2="1445" y2="197.0" stroke="#DCE3E8"/>
+<text x="1017" y="201.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">80</text>
+<line x1="1025" y1="141.0" x2="1445" y2="141.0" stroke="#DCE3E8"/>
+<text x="1017" y="145.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">90</text>
+<line x1="1025" y1="85.0" x2="1445" y2="85.0" stroke="#DCE3E8"/>
+<text x="1017" y="89.0" font-size="10" text-anchor="end" font-weight="normal" fill="#657786">100</text>
+<polyline points="1095.0,286.6 1235.0,297.8 1375.0,312.7" fill="none" stroke="#7B8794" stroke-width="4"/>
+<circle cx="1095" cy="286.6" r="5" fill="#7B8794"/>
+<circle cx="1235" cy="297.8" r="5" fill="#7B8794"/>
+<circle cx="1375" cy="312.73333333333335" r="5" fill="#7B8794"/>
+<polyline points="1095.0,204.5 1235.0,193.3 1375.0,208.2" fill="none" stroke="#2D7F7A" stroke-width="4"/>
+<circle cx="1095" cy="204.46666666666673" r="5" fill="#2D7F7A"/>
+<circle cx="1235" cy="193.2666666666667" r="5" fill="#2D7F7A"/>
+<circle cx="1375" cy="208.2" r="5" fill="#2D7F7A"/>
+<text x="1095" y="387" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Round 1</text>
+<text x="1235" y="387" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Round 2</text>
+<text x="1375" y="387" font-size="11" text-anchor="middle" font-weight="normal" fill="#17324D">Round 3</text>
+<line x1="570" y1="405" x2="610" y2="405" stroke="#7B8794" stroke-width="4"/>
+<text x="620" y="410" font-size="12" text-anchor="start" font-weight="normal" fill="#17324D">No mechanism</text>
+<line x1="770" y1="405" x2="810" y2="405" stroke="#2D7F7A" stroke-width="4"/>
+<text x="820" y="410" font-size="12" text-anchor="start" font-weight="normal" fill="#17324D">Process contract</text>
+</g>
+</svg>

@@ -5,8 +5,9 @@
 当前可运行应用验证切片：
 
 ```text
-typed request -> request-time planner -> catalog retrieval -> heterogeneous review
-              -> evidence/reputation consensus -> Top-K + full trace
+typed request -> request-time planner -> catalog retrieval -> frozen shortlist
+              -> uniform heterogeneous review -> gated evidence/reputation consensus
+              -> Top-K + full trace
 ```
 
 本地无外部依赖 smoke test：
@@ -23,7 +24,10 @@ python -m system.game_consensus_recsys.demo
 ./system/game_consensus_recsys/run.sh demo    # 运行完整请求
 ./system/game_consensus_recsys/run.sh test    # 全套机制与系统测试
 ./system/game_consensus_recsys/run.sh api     # 启动零依赖 HTTP API
+./system/game_consensus_recsys/run.sh acceptance  # 运行30条系统工程验收
 ```
+
+`acceptance`生成请求级结果、汇总报告和150行人工审核表。每次成功的HTTP搜索还会自动归档到`experiments/results/system_traces/`，文件名为request_id。
 
 只使用一个 DeepSeek API。系统会自动复用 MAS 根目录已有的 `.env`；也可以用进程环境变量覆盖：
 
@@ -43,6 +47,8 @@ uvicorn system.game_consensus_recsys.api:app --reload
 ```
 
 系统已通过适配层接入 `experiments/core/mechanism` 的可见合同和真实 follower action。`low_effort`、`aeic_effort`、`verify` 与 `defer_imitate` 使用不同 Prompt、Token 预算与核验路径；行动、Token、延迟和降级事件写入 trace。当前应用切片采用单轮异质审议与透明的证据/信誉聚合，不把它表述为论文三轮协议的完整复刻。
+
+所有进入最终排名的候选使用同一短名单和同一组 Agent 覆盖；硬约束是门控而非统一加分项；信誉在整轮评分结束后批量更新，不让候选输入顺序影响结果。
 
 浏览器工作台展示请求时计划、公开合同、候选级共识分解、多 Agent AEIC 报告和完整审计时间线。正式 MovieLens 目录可由以下命令生成：
 

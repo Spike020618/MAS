@@ -20,15 +20,14 @@ const QRCodeGenerator = () => {
       const data = await response.json()
       
       // 构建完整 URL（指向上传页面）
-      const ip = data.ip || 'localhost'
-      const uploadPageUrl = `${API_BASE_URL}/uploade_page`
+      const uploadPageUrl = `${data.origin || window.location.origin}/agent/uploade_page`
       
       setCurrentUrl(uploadPageUrl)
       console.log(`📱 上传页面 URL: ${uploadPageUrl}`)
     } catch (error) {
       console.error('❌ 获取服务器信息失败:', error)
       // 降级方案
-      setCurrentUrl(`${API_BASE_URL}/uploade_page`)
+      setCurrentUrl(`${window.location.origin}/agent/uploade_page`)
     } finally {
       setIsLoading(false)
     }
