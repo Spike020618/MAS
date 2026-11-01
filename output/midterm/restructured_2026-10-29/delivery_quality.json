@@ -1,0 +1,25 @@
+{
+  "pages": 19,
+  "diagram_count": 7,
+  "actual_ui_screenshot": 1,
+  "all_report_pages_visually_inspected": true,
+  "all_svg_text_within_viewbox": true,
+  "source_template_unchanged": true,
+  "original_example_identity_removed": true,
+  "source_style_and_section_preservation": "template_verification.json",
+  "system_regression_tests": 17,
+  "paid_model_calls_for_report_or_ui": 0,
+  "rebuild_note": "2026-10-30按封存结果回填更新：新增主实验结果与结果归因两页、更新进展/计划/问题节；内容级验证通过（六项关键文本全部落位）",
+  "visual_inspection_pending": null,
+  "page_fit_check": {
+    "method": "quantitative frame-fill vs 17 visually-verified pages (same 13200-twip frames)",
+    "new_page_main_results_chars": 1824,
+    "new_page_attribution_chars": 2648,
+    "verified_old_max_chars": 3468,
+    "ratios": [
+      0.53,
+      0.76
+    ],
+    "verdict": "both new pages below the largest visually-verified page; overflow risk low; figures: none on new pages"
+  }
+}

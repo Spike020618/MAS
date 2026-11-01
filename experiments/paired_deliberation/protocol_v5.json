@@ -1,0 +1,54 @@
+{
+  "version": "claim-updates-v5",
+  "status": "offline_state_repair_accepted_semantic_calibration_pending",
+  "unit": "one immutable qualified claim and its revision",
+  "runtime_verdicts": ["supported", "refuted", "insufficient"],
+  "state_operations": {
+    "keep": "supported old claim retains content",
+    "retract": "refuted old claim is excluded from aggregation support",
+    "replace": "old claim refuted and same-ID same-candidate replacement independently supported",
+    "defer": "insufficient evidence retains an explicitly uncertain hypothesis"
+  },
+  "verification": {
+    "catalog_facts": "exact bounded genre/year grammar compared against frozen catalog",
+    "natural_language": "label-isolated model proxy with decisive exact evidence spans",
+    "missing_verifier": "insufficient",
+    "proxy_is_ground_truth": false,
+    "runtime_verifier_and_posthoc_evaluator_must_be_separate": true
+  },
+  "scope_controls": [
+    "registered exact target ID",
+    "optimistic revision hash",
+    "reviewer and owner are separate identities",
+    "single claim patch only",
+    "candidate binding and claim identity immutable",
+    "no ranking edits in a patch",
+    "atomic validation before state mutation",
+    "active and uncertain evidence projected separately to final aggregation"
+  ],
+  "checkpoint_controls": [
+    "canonical payload strings",
+    "canonical fresh and cached response objects",
+    "manifest includes source and data hashes",
+    "exclusive request intent",
+    "paid raw response saved before parsing",
+    "known raw responses can be parsed offline",
+    "unknown billing never automatically repeated"
+  ],
+  "budget": "reserve input UTF8 upper bound and maximum output before every initial, review, verification and aggregation dispatch",
+  "controlled_acceptance": {
+    "cases": 288,
+    "correct_retained": 144,
+    "incorrect_retracted": 144,
+    "scope": "execution correctness on bounded catalog facts, not natural-language or recommendation efficacy"
+  },
+  "next_gates": [
+    "natural-language engineering and verifier calibration",
+    "complete equal-information baseline and runtime-verifier ablation protocol",
+    "independent posthoc proxy evaluation",
+    "only then a newly frozen comparative pilot"
+  ],
+  "e3_design_correction": "Removing a posthoc evaluator is not a method ablation; the experimental removal must affect the runtime verifier, patch scope, routing or unresolved policy.",
+  "automatic_pilot_allowed": false,
+  "research_effect_validated": false
+}

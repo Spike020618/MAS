@@ -1,0 +1,75 @@
+硕士研究生学位论文中期报告
+学    号:    2023110949
+姓    名:    段欣悦
+学 生 类 别: 学硕(全日)
+学    院:    计算机学院（国家示范性软件学院）
+学科/专业(代码):  计算机科学与技术(081200)
+研究方向:    网络服务、管理与安全
+导师姓名:    王智立
+攻 读 学 位: 工学硕士
+北京邮电大学
+2025年10月16日
+论文题目
+面向满意度和可靠性的云服务分级工作流在线调度方法
+论文类型
+应用研究
+选题来源
+学校自选项目
+开题日期
+2024-11-28
+是否开题题目
+是
+论文开始日期
+2024-11-28
+报告日期
+2025-10-29
+报告地点
+科研楼508
+报告时间
+上午 13:00
+已提交月报次数
+9
+已提交年报次数
+0
+一、研究内容简介
+二、论文进展情况
+三、工作成果
+四、计划及进度安排
+五、问题及整改方案
+六、参考文献
+[1] Jamil, B., Ijaz, H., Shojafar, M., & Munir, K. (2023). IRATS: A DRL-based intelligent priority and deadline-aware online resource allocation and task scheduling algorithm in a vehicular fog network. Ad Hoc Networks, 141, 103090.
+[2] M. Fan, X. Zhao, X. Zuo and L. Ye, "A Budget-Constrained Workflow Scheduling Approach With Priority Adjustment and Critical Task Optimizing in Clouds," in IEEE Transactions on Automation Science and Engineering, doi: 10.1109/TASE.2024.3456762.
+[3] G. Fan, X. Chen, Z. Li, H. Yu and Y. Zhang, "An Energy-Efficient Dynamic Scheduling Method of Deadline-Constrained Workflows in a Cloud Environment," in IEEE Transactions on Network and Service Management, vol. 20, no. 3, pp. 3089-3103, Sept. 2023, doi: 10.1109/TNSM.2022.3228402.
+[4] Mohammed Maray, Ehzaz Mustafa, Junaid Shuja, Muhammad Bilal, "Dependent task offloading with deadline-aware scheduling in mobile edge networks," in Internet of Things,Volume 23, 2023, doi: 100868/ISSN 2542-6605.
+[5] L. Ye, Y. Xia, L. Yang and Y. Zhan, "Dynamic Scheduling Stochastic Multiworkflows With Deadline Constraints in Clouds," in IEEE Transactions on Automation Science and Engineering, vol. 20, no. 4, pp. 2594-2606, Oct. 2023, doi: 10.1109/TASE.2022.3204313.
+[6] J. Jin, L. Hao, Y. Xu, J. Wu and Q. -S. Jia, "Joint Scheduling of Deferrable Demand and Storage With Random Supply and Processing Rate Limits," in IEEE Transactions on Automatic Control, vol. 66, no. 11, pp. 5506-5513, Nov. 2021, doi: 10.1109/TAC.2020.3046555.
+[7] Sharif, Z., Jung, L.T., Ayaz, M., Yahya, M., & Pitafi, S. (2023). Priority-based task scheduling and resource allocation in edge computing for health monitoring system. J. King Saud Univ. Comput. Inf. Sci., 35, 544-559.
+[8]J. X. Liao and X. W. Wu, "Resource Allocation and Task Scheduling Scheme in Priority-Based Hierarchical Edge Computing System," 2020 19th International Symposium on Distributed Computing and Applications for Business Engineering and Science (DCABES), Xuzhou, China, 2020, pp. 46-49, doi: 10.1109/DCABES50732.2020.00021.
+[9] J. Liu et al., "Reliability-Enhanced Task Offloading in Mobile Edge Computing Environments," in IEEE Internet of Things Journal, vol. 9, no. 13, pp. 10382-10396, 1 July1, 2022, doi: 10.1109/JIOT.2021.3115807.
+[10] M. Zhao, X. Zhang, Z. Meng and X. Hou, "Reliable DNN Partitioning for UAV Swarm," 2022 International Wireless Communications and Mobile Computing (IWCMC), Dubrovnik, Croatia, 2022, pp. 265-270, doi: 10.1109/IWCMC55113.2022.9824945.
+[11] Wang, Z., Jin, L. & Yi, K. Intelligent hyperspectral target detection for reliable IoV applications. J Wireless Com Network 2022, 79 (2022). https://doi.org/10.1186/s13638-022-02161-z
+[12] L. Chen, J. Qi, X. Su and R. Wang, "REMR: A Reliability Evaluation Method for Dynamic Edge Computing Network Under Time Constraint," in IEEE Internet of Things Journal, vol. 10, no. 5, pp. 4281-4291, 1 March1, 2023, doi: 10.1109/JIOT.2022.3216056.
+[13] K. Peng, Y. Yang, S. Wang, P. Xiao and V. C. M. Leung, "Reliability-Aware Proactive Offloading in Mobile Edge Computing Using Stackelberg Game Approach," in IEEE Internet of Things Journal, vol. 11, no. 9, pp. 16660-16671, 1 May1, 2024, doi: 10.1109/JIOT.2024.3354700.
+[14] L. Dong, W. Wu, Q. Guo, M. N. Satpute, T. Znati and D. Z. Du, "Reliability-Aware Offloading and Allocation in Multilevel Edge Computing System," in IEEE Transactions on Reliability, vol. 70, no. 1, pp. 200-211, March 2021, doi: 10.1109/TR.2019.2909279.
+[15] B. Ju, Y. Liu, L. Song, G. Gan, Z. Li and L. Jiang, "A High-Reliability Edge-Side Mobile Terminal Shared Computing Architecture Based on Task Triple-Stage Full-Cycle Monitoring," in IEEE Internet of Things Journal, vol. 10, no. 22, pp. 20149-20161, 15 Nov.15, 2023, doi: 10.1109/JIOT.2023.3283370.
+[16] R. Huang, W. Wen, X. Chen, Z. Zhou, Q. Chen and C. Dong, "Joint Power Allocation and Task Replication for Reliability-Sensitive Services in NOMA-Enabled Vehicular Edge Computing," in IEEE Transactions on Vehicular Technology, vol. 73, no. 3, pp. 4178-4193, March 2024, doi: 10.1109/TVT.2023.3327073.
+[17] Yan H, Zhu X, Chen H, et al. DEFT: Dynamic fault-tolerant elastic scheduling for tasks with uncertain runtime in cloud[J]. Information Sciences, 2019, 477: 30-46.
+[18] M. Zhao, X. Zhang, Z. Meng and X. Hou, "Reliable DNN Partitioning for UAV Swarm," 2022 International Wireless Communications and Mobile Computing (IWCMC), Dubrovnik, Croatia, 2022, pp. 265-270, doi: 10.1109/IWCMC55113.2022.9824945.
+[19] S. Bebortta, O. Pal, D. Senapati and S. S. Tripathy, "Cost-Aware Computation Offloading for Managing Cloud-Bursts in IoT-Based Cloud-Fog Networks," 2024 1st International Conference on Cognitive, Green and Ubiquitous Computing (IC-CGU), Bhubaneswar, India, 2024, pp. 1-6, doi: 10.1109/IC-CGU58078.2024.10530817.
+[20] K. J. Reddy, P. Udayaraju, V. P. R. Pamaiahgari and V. D. Kumar, "Implementing Resource-Aware Scheduling Algorithm for Improving Cost Optimization in Cloud Computing," 2025 4th International Conference on Sentiment Analysis and Deep Learning (ICSADL), Bhimdatta, Nepal, 2025, pp. 282-287, doi: 10.1109/ICSADL65848.2025.10933319.
+[21] K. Lei, J. Wang, Y. Yu, W. Chen and L. Li, "Research on Heuristic Deployment and Scheduling Strategy of Cloud Resources Oriented to Cost Optimization," 2021 12th International Conference on Computing Communication and Networking Technologies (ICCCNT), Kharagpur, India, 2021, pp. 01-06, doi: 10.1109/ICCCNT51525.2021.9579835.
+[22] Y. T. H. Hlaing and T. T. Yee, "Static Independent Task Scheduling on Virtualized Servers in Cloud Computing Environment," 2019 International Conference on Advanced Information Technologies (ICAIT), Yangon, Myanmar, 2019, pp. 55-59, doi: 10.1109/AITC.2019.8920865.
+[23] S. Meng, L. Luo, X. Qiu and Y. Dai, "Service-Oriented Reliability Modeling and Autonomous Optimization of Reliability for Public Cloud Computing Systems," in IEEE Transactions on Reliability, vol. 71, no. 2, pp. 527-538, June 2022, doi: 10.1109/TR.2022.3154651.
+[24] X. Tang, Y. Liu, Z. Zeng and B. Veeravalli, "Service Cost Effective and Reliability Aware Job Scheduling Algorithm on Cloud Computing Systems," in IEEE Transactions on Cloud Computing, vol. 11, no. 2, pp. 1461-1473, 1 April-June 2023, doi: 10.1109/TCC.2021.3137323.
+[25] S. S. Gill and R. Buyya, "Failure Management for Reliable Cloud Computing: A Taxonomy, Model, and Future Directions," in Computing in Science & Engineering, vol. 22, no. 3, pp. 52-63, 1 May-June 2020, doi: 10.1109/MCSE.2018.2873866. 
+[26] Y. Alsenani, G. Crosby and T. Velasco, "SaRa: A Stochastic Model to Estimate Reliability of Edge Resources in Volunteer Cloud," 2018 IEEE International Conference on Edge Computing (EDGE), San Francisco, CA, USA, 2018, pp. 121-124, doi: 10.1109/EDGE.2018.00024.
+[27] X. Duan and Z. Wang, "Uncertainty-Aware Scheduling of Hierarchical Realtime Workflows with Deadline Constraints in Cloud Environments," 2025 5th International Conference on Computer Science and Blockchain (CCSB), Shenzhen, China, 2025, pp. 209-212, doi: 10.1109/CCSB66722.2025.11154293.
+导师评语
+论文针对面向满意度和可靠性的云服务分级工作流在线调度方法的关键技术开展研究工作。论文研究内容充实，研究进度符合培养方案要求，后期研究计划安排合理，预计能够按时完成论文工作。
+导师签字：
+                                                    日期：       年    月    日
+考核结果
+经学院组织评审，该生中期考核结果为：
+通过      未通过
+学院负责人签字（盖章）：
+                                                   日期：     年    月    日

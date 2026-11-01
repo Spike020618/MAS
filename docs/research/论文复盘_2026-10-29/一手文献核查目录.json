@@ -1,0 +1,71 @@
+{
+  "access_date": "2026-10-29",
+  "scope": "targeted primary-source review, not an exhaustive SOTA ranking",
+  "sources": [
+    {
+      "title": "Debate or Vote",
+      "url": "https://arxiv.org/html/2508.17536v2",
+      "read_scope": "§3、§4、定理2和附录假设；不将条件性鞅结论泛化至所有讨论"
+    },
+    {
+      "title": "Voting or Consensus",
+      "url": "https://aclanthology.org/2025.findings-acl.606/",
+      "read_scope": "正式摘要、协议比较范围"
+    },
+    {
+      "title": "The Consensus Game",
+      "url": "https://www.mit.edu/~gfarina/2024/consensus_game_iclr24/consensus_game_iclr24.pdf",
+      "read_scope": "作者论文、信号博弈与全文评分接口相关段落"
+    },
+    {
+      "title": "Sufficient Context",
+      "url": "https://arxiv.org/html/2411.06037",
+      "read_scope": "§3定义与上下文充分性/蕴涵区分"
+    },
+    {
+      "title": "ALCE",
+      "url": "https://aclanthology.org/2023.emnlp-main.398/",
+      "read_scope": "正式摘要及评价维度"
+    },
+    {
+      "title": "Intrinsic self-correction",
+      "url": "https://arxiv.org/abs/2310.01798",
+      "read_scope": "摘要、ICLR正式记录和作者关于研究范围的说明"
+    },
+    {
+      "title": "Shapley Taylor Interaction Index",
+      "url": "https://proceedings.mlr.press/v119/sundararajan20a.html",
+      "read_scope": "正式摘要、交互归因定义"
+    },
+    {
+      "title": "Adaptive Submodularity",
+      "url": "https://arxiv.org/abs/1003.3967",
+      "read_scope": "修订版摘要、条件保证及修订说明"
+    },
+    {
+      "title": "RepoShapley",
+      "url": "https://arxiv.org/html/2601.03378",
+      "read_scope": "§3.1–3.3；正式Findings ACL 2026页面另核"
+    },
+    {
+      "title": "ReDial standardized re-evaluation",
+      "url": "https://arxiv.org/abs/2605.13053",
+      "read_scope": "正式作者记录、摘要、SIGIR 2026录用说明"
+    },
+    {
+      "title": "StrategyQA",
+      "url": "https://aclanthology.org/2021.tacl-1.21/",
+      "read_scope": "官方论文记录与数据集任务描述"
+    },
+    {
+      "title": "ReDial",
+      "url": "https://proceedings.neurips.cc/paper/2018/hash/800de15c79c8d840f4e78d3af937d4d4-Abstract.html",
+      "read_scope": "官方论文记录与原始任务描述"
+    },
+    {
+      "title": "ReConcile",
+      "url": "https://aclanthology.org/2024.acl-long.381/",
+      "read_scope": "正式摘要，仅作背景不作为已复现方法"
+    }
+  ]
+}

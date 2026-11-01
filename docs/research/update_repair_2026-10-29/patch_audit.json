@@ -1,0 +1,112 @@
+[
+  {
+    "task_id": "release:qa:8bd0842a5b3757f3f0e0",
+    "patch": {
+      "operation": "set_answer",
+      "value": "yes"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  },
+  {
+    "task_id": "release:qa:8bd0842a5b3757f3f0e0",
+    "patch": {
+      "operation": "set_answer",
+      "value": "yes"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  },
+  {
+    "task_id": "release:qa:6254c356eba1826a7cc0",
+    "patch": {
+      "operation": "set_answer",
+      "value": "yes"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  },
+  {
+    "task_id": "release:qa:2fe64724db0e4ca81f61",
+    "patch": {
+      "operation": "set_answer",
+      "value": "no"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  },
+  {
+    "task_id": "release:qa:fb2c044000126b62c2eb",
+    "patch": {
+      "operation": "set_answer",
+      "value": "yes"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  },
+  {
+    "task_id": "release:qa:94dfa1922f47b71a213b",
+    "patch": {
+      "operation": "set_answer",
+      "value": "no"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  },
+  {
+    "task_id": "release:qa:94dfa1922f47b71a213b",
+    "patch": {
+      "operation": "set_answer",
+      "value": "no"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  },
+  {
+    "task_id": "release:qa:75d5afe87e358ffad6fe",
+    "patch": {
+      "operation": "set_answer",
+      "value": "yes"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  },
+  {
+    "task_id": "release:qa:10b83286334bfee4ad69",
+    "patch": {
+      "operation": "set_answer",
+      "value": "no"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  },
+  {
+    "task_id": "release:qa:10b83286334bfee4ad69",
+    "patch": {
+      "operation": "set_answer",
+      "value": "yes"
+    },
+    "valid": false,
+    "accepted": false,
+    "same_decision": true,
+    "error": "assigned new evidence not used"
+  }
+]

@@ -1,0 +1,51 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\begin{document}
+% 局部状态转移
+\begin{equation}
+s_{t+1}=\begin{cases}T(s_t,r_t),&L(s_t,r_t)=1,\\s_t,&\text{otherwise}.\end{cases}
+\tag{1}
+\end{equation}
+
+% 单份贡献
+\begin{equation}
+g_i(e\mid s)=Q\!\left(Y_i(\{e\};s)\right)-Q\!\left(Y_i(\varnothing;s)\right)
+\tag{3}
+\end{equation}
+
+% 正则化拟合
+\begin{equation}
+\mathbf w_g=\underset{\mathbf w}{\arg\min}\;\sum_j\left(y_j-\mathbf w^{\mathsf T}\phi_j\right)^2+\lambda\lVert\mathbf w\rVert_2^2
+\tag{5}
+\end{equation}
+
+% 二阶交互
+\begin{equation}
+\begin{aligned}h_i(e,f\mid s)={}&Q\!\left(Y_i(\{e,f\};s)\right)-Q\!\left(Y_i(\{e\};s)\right)\\&-Q\!\left(Y_i(\{f\};s)\right)+Q\!\left(Y_i(\varnothing;s)\right)\end{aligned}
+\tag{6}
+\end{equation}
+
+% 集合价值
+\begin{equation}
+\widehat V(\mathbf a\mid s)=\sum_{e\in U(\mathbf a)}\max_{i\in I_e(\mathbf a)}\widehat g_i(e\mid s)+\sum_{\{e,f\}\subseteq U(\mathbf a)}\widehat h_{\mathbf a}(e,f\mid s)
+\tag{8}
+\end{equation}
+
+% 共同潜势
+\begin{equation}
+\Phi(\mathbf a\mid s)=\widehat V(\mathbf a\mid s)-\sum_{i:a_i\ne\varnothing}\widehat c(a_i\mid s)
+\tag{9}
+\end{equation}
+
+% 边际贡献效用
+\begin{equation}
+u_i(a_i,\mathbf a_{-i}\mid s)=\Phi(a_i,\mathbf a_{-i}\mid s)-\Phi(\varnothing,\mathbf a_{-i}\mid s)
+\tag{10}
+\end{equation}
+
+% 最大可行偏离
+\begin{equation}
+\delta(\mathbf a\mid s)=\max\!\left\{0,\max_{\substack{i,a_i'\\(a_i',\mathbf a_{-i})\in\mathcal A(s)}}\!\left[\Phi(a_i',\mathbf a_{-i}\mid s)-\Phi(\mathbf a\mid s)\right]\right\}
+\tag{12}
+\end{equation}
+\end{document}

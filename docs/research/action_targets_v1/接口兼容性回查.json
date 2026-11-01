@@ -1,0 +1,16 @@
+{
+  "new_api_calls": 0,
+  "no_old_scores_changed": true,
+  "reports": {
+    "check": {
+      "v1_accepted": 13,
+      "v2_structurally_acceptable": 24
+    },
+    "review": {
+      "v1_accepted": 14,
+      "v2_structurally_acceptable": 24
+    }
+  },
+  "status": "offline_schema_compatibility_ONLY_not_outcome_replay",
+  "v1_analysis_sha256": "94320b11b6c1277150e932f368a43cd01f9aaf4aca627b364d0b18c7910cc80e"
+}

@@ -1,0 +1,17 @@
+{
+  "docx": "/Users/spike/code/MAS/output/midterm/expanded_2026-10-29/中期报告_开题对齐详稿.docx",
+  "sha256": "540cf2c682c9a828c8d47d22e863e0b3424e5545456718f2c77c6aa81fb0f7b6",
+  "rendered_pages": 48,
+  "narrative_and_references_characters": 44534,
+  "chinese_characters": 32839,
+  "reference_count": 46,
+  "all_references_cited": true,
+  "embedded_figures": 11,
+  "school_geometry_preserved": true,
+  "paid_experiments_started": false,
+  "proposal_title_unchanged": true,
+  "qa_directory": "/Users/spike/code/MAS/tmp/midterm_20261029/expanded_verified",
+  "visual_review": "All 48 pages inspected in final contact sheets; formula operators and subscripts reviewed at full resolution. No formula-only spill page remains.",
+  "gallery_figures": 11,
+  "gallery_missing_images": 0
+}

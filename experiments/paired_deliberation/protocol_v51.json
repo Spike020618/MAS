@@ -1,0 +1,39 @@
+{
+  "version": "v51-shared-feedback-comparison",
+  "status": "offline_implementation_acceptance_pending_live_calibration",
+  "research_sequence": ["E1", "E2", "E3"],
+  "calibration": {
+    "items": 84,
+    "labels_each": 28,
+    "categories": ["current_preference", "temporal_scope", "subject_attribution", "negation", "partial_support", "conflicting_evidence", "mention_vs_experience"],
+    "labels_available_to_model": false,
+    "scope": "controlled evidence-relative development calibration; no real-dialogue accuracy claim",
+    "gates": {"accuracy_min": 0.9, "recall_each_class_min": 0.8, "accuracy_each_category_min": 0.75, "false_supported_max": 0}
+  },
+  "E2": {
+    "methods": ["independent", "central_matched", "self_matched", "peer_matched", "verified_scoped"],
+    "primary_comparisons": [["verified_scoped", "peer_matched"], ["verified_scoped", "central_matched"]],
+    "shared_initial_reports": true,
+    "shared_verification_feedback": ["central_matched", "self_matched", "peer_matched", "verified_scoped"],
+    "central_controller": "One reviewer with persistent review history and current state; all raw evidence and identical initial verifier feedback.",
+    "peer_primary": "Frozen initial claims; cross-owner reviewers; no sequential peer-state propagation.",
+    "new_claim_verifier_access": "All feedback-enabled methods may verify newly generated claims within the same budget ceiling.",
+    "common_outputter": true,
+    "budget_policy": "Same ceiling; actual calls and tokens reported. Shared production and verification charged to every consuming path; no claim of equal actual spend.",
+    "replacement_verification_cost_included": true
+  },
+  "E3": {
+    "no_runtime_verifier": "No initial feedback, no semantic calls; model-requested operations retain only structural scope validation, and unchecked claims never become certified supported.",
+    "no_scope_constraint": "Reuse peer_matched, which rewrites whole owner reports; no extra calls or independent sample claim.",
+    "force_binary": "Same verifier feedback, but insufficient is forced to keep/retract; forced_from_insufficient is explicitly logged."
+  },
+  "artifact_controls": ["shared initial and feedback integrity hash", "claim-hash binding prevents feedback reuse on rewritten claims", "matched source/data/model versions", "raw response before parse", "explicit rejected proposal and whole-report change logs"],
+  "entry": "experiments.paired_deliberation.run_v51",
+  "phases": ["prepare", "calibration", "comparison"],
+  "engineering_comparison_cases": 3,
+  "comparison_requires_expanded_calibration_pass": true,
+  "automatic_pilot_allowed": false,
+  "E1_note": "Existing baseline family is retained; E1 random-sampling parameters require separate freezing before any new effect experiment.",
+  "remaining_research": ["live expanded calibration", "three-case paired engineering acceptance", "independent posthoc process evaluation", "newly frozen confirmatory protocol if warranted"],
+  "research_effect_validated": false
+}

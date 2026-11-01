@@ -1,0 +1,256 @@
+{
+  "plan_id": "D2-correction-2026-10-27",
+  "status": "purpose_protocol_executed_real_engineering_failed_effect_stages_pending",
+  "document": "证据约束协作更新_D2修正计划_2026-10-27.md",
+  "research_point": "有限预算下证据约束的多Agent协作更新",
+  "components_of_one_research_point": [
+    "可靠证据更新",
+    "预算下核查协调"
+  ],
+  "core_conditions": [
+    "independent",
+    "peer",
+    "central",
+    "verified_fixed",
+    "verified_adaptive"
+  ],
+  "evidence_namespaces": [
+    "dialogue",
+    "catalog",
+    "train_case",
+    "train_stat"
+  ],
+  "actor_candidates": [
+    "glm-4-flash-250414",
+    "qwen-flash-2025-07-28"
+  ],
+  "public_verifier": "deepseek-flash-d2-nonthinking-2026-10-27; limited normalized calibration only",
+  "tasks": [
+    {
+      "id": "D2-01",
+      "title": "注册证据与引用权限",
+      "status": "implemented_offline",
+      "depends_on": [],
+      "planned_deliverables": [
+        "evidence_d2.py"
+      ],
+      "artifacts": [
+        "experiments/paired_deliberation/evidence_d2.py"
+      ],
+      "evidence": "experiments/results/paired_deliberation_d2_offline_r2",
+      "online_validated": false
+    },
+    {
+      "id": "D2-02",
+      "title": "冻结统一表示适配",
+      "status": "implemented_offline",
+      "depends_on": [],
+      "planned_deliverables": [
+        "统一表示适配版本与操作轨迹"
+      ],
+      "artifacts": [
+        "experiments/paired_deliberation/output_adapter_d2.py"
+      ],
+      "evidence": "experiments/results/paired_deliberation_d2_offline_r2",
+      "online_validated": false
+    },
+    {
+      "id": "D2-03",
+      "title": "接线类型化状态与最终投影",
+      "status": "implemented_offline",
+      "depends_on": [
+        "D2-01",
+        "D2-02"
+      ],
+      "planned_deliverables": [
+        "state_d2.py"
+      ],
+      "artifacts": [
+        "experiments/paired_deliberation/state_d2.py",
+        "experiments/paired_deliberation/requests_d2.py"
+      ],
+      "evidence": "experiments/results/paired_deliberation_d2_offline_r2",
+      "online_validated": false
+    },
+    {
+      "id": "D2-04",
+      "title": "实现按用途核验",
+      "status": "implemented_offline",
+      "depends_on": [
+        "D2-01",
+        "D2-02",
+        "D2-03"
+      ],
+      "planned_deliverables": [
+        "verification_d2.py"
+      ],
+      "artifacts": [
+        "experiments/paired_deliberation/verification_d2.py"
+      ],
+      "evidence": "experiments/results/paired_deliberation_d2_offline_r2",
+      "online_validated": false
+    },
+    {
+      "id": "D2-05",
+      "title": "实现决策相关协调与停止",
+      "status": "implemented_offline",
+      "depends_on": [
+        "D2-03",
+        "D2-04"
+      ],
+      "planned_deliverables": [
+        "coordination_d2.py"
+      ],
+      "artifacts": [
+        "experiments/paired_deliberation/coordination_d2.py"
+      ],
+      "evidence": "experiments/results/paired_deliberation_d2_joint_offline_r2",
+      "online_validated": false
+    },
+    {
+      "id": "D2-06",
+      "title": "接线五条件与同资源中心Agent",
+      "status": "implemented_offline",
+      "depends_on": [
+        "D2-03",
+        "D2-04",
+        "D2-05"
+      ],
+      "planned_deliverables": [
+        "runner_d2.py"
+      ],
+      "artifacts": [
+        "experiments/paired_deliberation/budget_d2.py",
+        "experiments/paired_deliberation/runner_d2.py",
+        "experiments/paired_deliberation/offline_engineering_d2.py"
+      ],
+      "evidence": "experiments/results/paired_deliberation_d2_joint_offline_r2",
+      "online_validated": false
+    },
+    {
+      "id": "D2-07",
+      "title": "冻结用途校准与工程采集协议",
+      "status": "implemented_and_executed_engineering_failed",
+      "depends_on": [
+        "D2-06"
+      ],
+      "planned_deliverables": [
+        "preflight_d2.py",
+        "D2用途校准协议",
+        "D2三例工程协议"
+      ],
+      "artifacts": [
+        "experiments/paired_deliberation/preflight_d2.py",
+        "experiments/paired_deliberation/validate_d2.py",
+        "experiments/paired_deliberation/engineering_d2.py",
+        "experiments/paired_deliberation/transport_d2.py",
+        "experiments/paired_deliberation/runner_d2_live.py",
+        "experiments/paired_deliberation/source_alias_d2.py"
+      ],
+      "calibration_evidence": "experiments/results/paired_deliberation_d2_purpose_validation_r5",
+      "engineering_evidence": "experiments/results/paired_deliberation_d2_engineering_r1",
+      "online_validated": false,
+      "limited_calibration_pass_is_posthoc_normalized": true
+    },
+    {
+      "id": "D2-08",
+      "title": "冻结受控决策实验与评分",
+      "status": "pending",
+      "depends_on": [
+        "D2-07"
+      ],
+      "planned_deliverables": [
+        "六世界三变体受控协议",
+        "受控生成与评分模块"
+      ],
+      "prerequisite_not_met": "D2 real engineering failed at initial actor reports; no effect dispatch"
+    },
+    {
+      "id": "D2-09",
+      "title": "冻结开发pilot与后续确认协议",
+      "status": "pending",
+      "depends_on": [
+        "D2-08"
+      ],
+      "planned_deliverables": [
+        "开发pilot协议",
+        "确认样本量与预留数据访问协议"
+      ],
+      "prerequisite_not_met": "D2 real engineering failed at initial actor reports; no effect dispatch"
+    }
+  ],
+  "phases": [
+    {
+      "id": "P0",
+      "purpose": "contracts and immutable asset inventory",
+      "new_model_calls": 0
+    },
+    {
+      "id": "P1",
+      "purpose": "typed evidence/state integration and raw-response regression",
+      "new_model_calls": 0
+    },
+    {
+      "id": "P2",
+      "purpose": "purpose-specific calibration then three-case five-condition engineering",
+      "requires_frozen_execution_plan": true
+    },
+    {
+      "id": "P3",
+      "purpose": "six controlled worlds, clean/relevant-error/irrelevant-error variants",
+      "suggested_inputs": 18,
+      "requires_passing_prior_gate": true
+    },
+    {
+      "id": "P4",
+      "purpose": "natural recommendation development pilot",
+      "requires_frozen_execution_plan": true
+    },
+    {
+      "id": "P5",
+      "purpose": "confirmation and hypothesis-driven ablations",
+      "sample_size": "estimate and freeze before reserved data access"
+    }
+  ],
+  "mandatory_before_any_new_dispatch": [
+    "complete schema and evidence authority rules",
+    "passing deterministic isolation and state invariants",
+    "purpose-specific numeric acceptance criteria and analysis denominators",
+    "fixed inputs, label generator and scoring isolation",
+    "fixed actor/verifier models and common permissions",
+    "full-batch call graph and input/output reservations",
+    "per-platform cost ceiling and remaining-budget check",
+    "immutable plan/source/input hashes and pending-intent policy"
+  ],
+  "historical_results_policy": "preserve all D1 scores and failures; no retrospective release change",
+  "human_annotation_required": false,
+  "runtime_labels_allowed": false,
+  "reserved_data_accessed": false,
+  "new_model_calls_for_this_deliverable": 0,
+  "automatic_pilot_allowed": false,
+  "stop_rules": [
+    "no silent retry of pending requests",
+    "no in-batch prompt/model/threshold changes",
+    "no filtering baseline failures or selecting a model for MAS wins",
+    "saturation/floor/no effect is a reportable result",
+    "formal evaluation does not expand until significant"
+  ],
+  "completion_criterion": "answer mechanism reliability, decision usefulness, single-agent substitutability and budget value; positive gains are not mandatory",
+  "latest_progress_document": "低价模型轻量生产接口_探索记录_2026-10-27.md",
+  "new_model_calls_since_plan_creation": 151,
+  "exploratory_freeze_required": false,
+  "exploratory_dispatch_allowed": true,
+  "cheap_model_authorization": "User allows freely using low-priced GLM/Qwen without per-batch freezing; preserve versions, requests and costs.",
+  "current_exploration": {
+    "status": "light_producer_and_public_parser_initial_states_assembled",
+    "artifact": "experiments/results/paired_deliberation_light_actor_assembly_v1/assembly.json",
+    "reports": 18,
+    "initial_state_groups": 6,
+    "registered_claims": 39,
+    "unregistered_originals_retained": 5,
+    "fact_truth_validated": false,
+    "effect_validated": false,
+    "uncertain_original_cheap_requests": 1,
+    "possible_duplicate_billing_logged": true
+  }
+}

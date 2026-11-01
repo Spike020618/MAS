@@ -58,3 +58,13 @@ python experiments/scripts/data/build_movie_catalog.py
 ```
 
 重要边界：Planner 只读取请求时可见的 query、约束、偏好、Top-K 和时延预算，不读取 ground truth、最终相关性或事后收益。
+
+## 检索证据与研究轨迹工作台
+
+访问 `/workspace`（原工作台也有入口）：
+
+- 影视检索：查询、年份、必选与排除类型；按影片展开来源、角色判断和未决分歧。
+- 研究回放：仅开放论文批次完整封存的main、benchmark案例；检查case hash和任务身份，展示核查片段、局部变更及预算分配。
+- `/v1/research/status`：返回是否封存及案例数；`/v1/research/case?stage=main&index=0`：读取一个封存案例。
+
+回放不读取评价标签或原始API请求槽位；未封存返回409。它是离线实验过程展示，不代表集合价值机制已经进入在线推荐。不同数据集ID保持原生含义。验证：`python -m unittest system.test_research_view system.test_game_consensus_recsys system.test_recsys_http -q`。

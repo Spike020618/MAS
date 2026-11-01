@@ -1,0 +1,89 @@
+{
+  "api_calls": 0,
+  "cases": [
+    {
+      "central_max_potential": 2.0,
+      "identity_max_error": 1.1102230246251565e-16,
+      "lambda": 0.2,
+      "menu_residual": 0.0,
+      "soft_B_penalty": 0,
+      "trace": [
+        {
+          "potential": 2.0,
+          "profile": [
+            "A",
+            "B",
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "central_max_potential": 1.6,
+      "identity_max_error": 2.220446049250313e-16,
+      "lambda": 0.6,
+      "menu_residual": 0.0,
+      "soft_B_penalty": 0,
+      "trace": [
+        {
+          "potential": 1.2,
+          "profile": [
+            "A",
+            "B",
+            "B"
+          ]
+        },
+        {
+          "potential": 1.6,
+          "profile": [
+            "B",
+            "B",
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "central_max_potential": 1.4000000000000001,
+      "identity_max_error": 2.220446049250313e-16,
+      "lambda": 0.6,
+      "menu_residual": 0.0,
+      "soft_B_penalty": 0.8,
+      "trace": [
+        {
+          "potential": -0.8000000000000002,
+          "profile": [
+            "B",
+            "B",
+            "B"
+          ]
+        },
+        {
+          "potential": -0.4,
+          "profile": [
+            "A",
+            "B",
+            "B"
+          ]
+        },
+        {
+          "potential": -0.20000000000000007,
+          "profile": [
+            "A",
+            "A",
+            "B"
+          ]
+        },
+        {
+          "potential": 1.4000000000000001,
+          "profile": [
+            "A",
+            "A",
+            "A"
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "arithmetic check of appendix A only; not P1 implementation or model experiment"
+}

@@ -2,6 +2,12 @@
 
 本仓库围绕一条完整证据链组织：**多智能体语义共识创新方法 → 机制实验 → 影视搜索推荐系统验证**。
 
+## 当前主线入口（2026-10-30）
+
+- [项目导航与目录归属](docs/project/项目导航.md)
+- [新版影视系统：启动与验收](system/application/README.md)
+- [核查协调P0：离线交付与审核修正](docs/research/coordination_game_v1/P0交付.md)
+
 ## 目录
 
 ```text

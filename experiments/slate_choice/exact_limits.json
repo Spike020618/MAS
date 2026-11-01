@@ -1,0 +1,5 @@
+{
+  "per_case_wall_seconds": 5.0,
+  "total_wall_seconds": 600.0,
+  "scope": "computation guard before exact-solver collection; unresolved cases retain valid bounds"
+}

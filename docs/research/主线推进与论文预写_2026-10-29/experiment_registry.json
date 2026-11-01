@@ -1,0 +1,142 @@
+{
+  "version": "evidence-set-consensus-release-2",
+  "topic": "预算约束下基于证据贡献博弈的多智能体共识机制研究",
+  "numeric_result_policy": "unmeasured actual values and intervals must remain null/blank; expectations are hypotheses",
+  "active_experiment_policy": "old E0 sealed; new v2 raw-first acquisition, no outcome-dependent sample changes",
+  "formal_sample_size_policy": "QA200/Rec200 are planning candidates only; lock once using development power/budget before test outcomes",
+  "experiments": [
+    {
+      "id": "E0",
+      "question": "同状态单份/联合资料是否有可利用价值",
+      "status": "sealed_diagnostic_no_positive_action_gain",
+      "depends_on": [],
+      "planned_n_tasks": 8,
+      "planned_source": "experiments/results/action_value_panel_v1/summary.json",
+      "hypotheses": [
+        "H1"
+      ],
+      "expected": "部分动作差异超过重复波动；互补候选不是必然",
+      "implementation": "experiments/consensus_mechanism"
+    },
+    {
+      "id": "E1",
+      "question": "核查能否纠正目标并保留正确内容",
+      "status": "implemented_pending_user_api_run",
+      "depends_on": [
+        "E0"
+      ],
+      "planned_n_tasks": null,
+      "planned_source": null,
+      "hypotheses": [
+        "H3"
+      ],
+      "expected": "纠正与保留改善，误改受控；未决不设单调目标",
+      "implementation": "experiments/consensus_mechanism"
+    },
+    {
+      "id": "E2",
+      "question": "执行前贡献估计能否改善真实选择",
+      "status": "implemented_pending_user_api_run",
+      "depends_on": [
+        "E0",
+        "E1"
+      ],
+      "planned_n_tasks": null,
+      "planned_source": null,
+      "hypotheses": [
+        "H2"
+      ],
+      "expected": "实际执行收益优于简单参照；拟合分数不代替收益",
+      "implementation": "experiments/consensus_mechanism"
+    },
+    {
+      "id": "E3",
+      "question": "完整博弈共识是否有可归因增量",
+      "status": "implemented_pending_user_api_run",
+      "depends_on": [
+        "E2"
+      ],
+      "planned_n_tasks": null,
+      "planned_source": null,
+      "hypotheses": [
+        "H4"
+      ],
+      "expected": "希望优于独立/固定；对强单体/贪心/中央不预设优胜",
+      "implementation": "experiments/consensus_mechanism"
+    },
+    {
+      "id": "E4",
+      "question": "交流、联合行动、状态反馈、局部修订是否发挥作用",
+      "status": "implemented_pending_user_api_run",
+      "depends_on": [
+        "E3"
+      ],
+      "planned_n_tasks": null,
+      "planned_source": null,
+      "hypotheses": [
+        "H2",
+        "H3",
+        "H4"
+      ],
+      "expected": "对应消融解释核心发现；不支持则缩减论点",
+      "implementation": "experiments/consensus_mechanism"
+    },
+    {
+      "id": "E5",
+      "question": "预算与干扰下是否有稳定质量成本折衷",
+      "status": "implemented_pending_user_api_run",
+      "depends_on": [
+        "E3"
+      ],
+      "planned_n_tasks": null,
+      "planned_source": null,
+      "hypotheses": [
+        "H5"
+      ],
+      "expected": "部分条件更有效投入；不要求全面领先",
+      "implementation": "experiments/consensus_mechanism"
+    },
+    {
+      "id": "E6",
+      "question": "效果是否只依赖一个模型",
+      "status": "implemented_pending_user_api_run",
+      "depends_on": [
+        "E3"
+      ],
+      "planned_n_tasks": null,
+      "planned_source": null,
+      "hypotheses": [
+        "H5"
+      ],
+      "expected": "检验迁移，允许方向不一致",
+      "implementation": "experiments/consensus_mechanism"
+    }
+  ],
+  "runtime": "scripts/run_consensus_mechanism.sh",
+  "default_data": {
+    "train": 123,
+    "development": 37,
+    "public_evidence_relations": 180
+  },
+  "paper_data": {
+    "StrategyQA": 200,
+    "ReDial_conversations": 200,
+    "HotpotQA_yes_no": 458,
+    "ClimateFEVER_relations": 180,
+    "training_tasks": 123
+  },
+  "paper_output": "experiments/results/consensus_mechanism_paper_v2",
+  "operator": "user; no autonomous monitoring",
+  "secondary_subset": {
+    "tasks": 64,
+    "qa": 32,
+    "rec": 32,
+    "selection": "fixed hash before outcomes",
+    "stages": [
+      "E2",
+      "E4",
+      "E5",
+      "E6"
+    ]
+  }
+}

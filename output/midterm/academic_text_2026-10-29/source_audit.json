@@ -1,0 +1,33 @@
+{
+  "model_observations": {
+    "fit/singleton": {
+      "zero": 184,
+      "positive": 2
+    },
+    "fit/interaction": {
+      "zero": 92,
+      "negative": 1
+    },
+    "calibration/singleton": {
+      "zero": 59,
+      "positive": 1
+    },
+    "calibration/interaction": {
+      "zero": 29,
+      "negative": 1
+    }
+  },
+  "metric_definition": "native target-averaged rank discount, not multi-positive list-normalized NDCG",
+  "solver_ties": "equal potential prefers fewer calls; finite lexicographic improvement",
+  "source_files": [
+    "experiments/consensus_mechanism/core.py",
+    "experiments/consensus_mechanism/allocation.py",
+    "experiments/consensus_mechanism/runner.py",
+    "system/game_consensus_recsys/workflow.py",
+    "system/game_consensus_recsys/consensus.py"
+  ],
+  "body_tables": 0,
+  "body_figures": 0,
+  "forced_page_breaks": 0,
+  "paragraph_borders": 0
+}

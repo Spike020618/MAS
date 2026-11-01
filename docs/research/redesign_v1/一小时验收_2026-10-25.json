@@ -1,0 +1,199 @@
+{
+  "batches": {
+    "acquired_evidence_pool_v1": {
+      "calls": 8,
+      "sum_http_seconds": 10.13208099800977,
+      "tokens": 21583,
+      "usd_proxy": 0.0070959
+    },
+    "acquisition_path_attribution_v1": {
+      "calls": 31,
+      "sum_http_seconds": 44.65516462705273,
+      "tokens": 89220,
+      "usd_proxy": 0.0311778
+    },
+    "acquisition_replication_v1": {
+      "calls": 92,
+      "sum_http_seconds": 114.38791133202903,
+      "tokens": 176055,
+      "usd_proxy": 0.0616464
+    },
+    "answer_order_control_v1": {
+      "calls": 30,
+      "sum_http_seconds": 45.09259758594271,
+      "tokens": 83744,
+      "usd_proxy": 0.029796
+    },
+    "evaluator_replication_v1": {
+      "calls": 22,
+      "sum_http_seconds": 25.84034132999659,
+      "tokens": 14267,
+      "usd_proxy": 0.0060081
+    },
+    "evidence_thinking_control_v1": {
+      "calls": 30,
+      "sum_http_seconds": 81.2198898740171,
+      "tokens": 89957,
+      "usd_proxy": 0.036738599999999996
+    },
+    "open_evidence_screen_v2": {
+      "calls": 89,
+      "sum_http_seconds": 120.34766299887269,
+      "tokens": 58906,
+      "usd_proxy": 0.0261741
+    }
+  },
+  "claim_limits": [
+    "development evidence, not a formal held-out study",
+    "not equal total cost",
+    "no trained game, no equilibrium or new mechanism performance claim",
+    "sole extra EM point over sequential path is left hand versus left; not a new factual correction"
+  ],
+  "corpus_rows_parity_verified": 5233329,
+  "extra_repeats_are_not_extra_independent_questions": true,
+  "fingerprints": {
+    "e72d3c7f663d3e1383b00b3884cb4501": 302
+  },
+  "format_control": {
+    "expanded": {
+      "em_correct": 11.0,
+      "invalid": 0,
+      "mean_f1": 0.7291666666666666
+    },
+    "native": {
+      "em_correct": 8.0,
+      "invalid": 0,
+      "mean_f1": 0.53125
+    }
+  },
+  "frozen_format_warnings": [
+    {
+      "file": "experiments/tests/test_open_evidence_screen_v2.py",
+      "warning": "new blank line at EOF, pre-collection frozen hash unchanged"
+    }
+  ],
+  "legacy_frozen_files": 169,
+  "main_replication": {
+    "0": {
+      "corrected": [
+        "5a7e513a5542994959419996",
+        "5a8f15ec554299458435d552",
+        "5add3ccc5542997545bbbce5",
+        "5ade157e55429939a52fe802"
+      ],
+      "expanded": {
+        "em_correct": 12.0,
+        "invalid": 0,
+        "mean_f1": 0.7678571428571429
+      },
+      "harmed": [],
+      "native": {
+        "em_correct": 8.0,
+        "invalid": 0,
+        "mean_f1": 0.5386904761904762
+      }
+    },
+    "1": {
+      "corrected": [
+        "5a7e513a5542994959419996",
+        "5a8f15ec554299458435d552",
+        "5add3ccc5542997545bbbce5",
+        "5ade157e55429939a52fe802"
+      ],
+      "expanded": {
+        "em_correct": 12.0,
+        "invalid": 0,
+        "mean_f1": 0.7678571428571429
+      },
+      "harmed": [],
+      "native": {
+        "em_correct": 8.0,
+        "invalid": 0,
+        "mean_f1": 0.5386904761904762
+      }
+    }
+  },
+  "models": {
+    "deepseek-flash": 302
+  },
+  "n_retrieval_only_questions": 128,
+  "n_solver_questions": 24,
+  "path_metrics": {
+    "0": {
+      "em_correct": 8.0,
+      "invalid": 0,
+      "mean_f1": 0.5386904761904762
+    },
+    "1": {
+      "em_correct": 9.0,
+      "invalid": 0,
+      "mean_f1": 0.6011904761904762
+    },
+    "2": {
+      "em_correct": 7.0,
+      "invalid": 0,
+      "mean_f1": 0.49404761904761907
+    },
+    "3": {
+      "em_correct": 7.0,
+      "invalid": 0,
+      "mean_f1": 0.49702380952380953
+    },
+    "4": {
+      "em_correct": 11.0,
+      "invalid": 0,
+      "mean_f1": 0.7470238095238095
+    },
+    "5": {
+      "em_correct": 11.0,
+      "invalid": 0,
+      "mean_f1": 0.7470238095238095
+    },
+    "6": {
+      "em_correct": 12.0,
+      "invalid": 0,
+      "mean_f1": 0.7678571428571429
+    },
+    "7": {
+      "em_correct": 12.0,
+      "invalid": 0,
+      "mean_f1": 0.7678571428571429
+    }
+  },
+  "physical_calls": 302,
+  "physical_tokens": 533732,
+  "replication_questions": 16,
+  "result_sha256": {
+    "experiments/results/redesign_v1/acquired_evidence_pool_v1/result.json": "a69ffa399f0415cd26eb0e9acb7c57c2945edd1a5e889e460e2e965bf394c437",
+    "experiments/results/redesign_v1/acquisition_path_attribution_v1/result.json": "a218497e55d6f803b597b807999a6b45915b04d5d685c916384b4f47b63c9451",
+    "experiments/results/redesign_v1/acquisition_replication_v1/result.json": "3cfcaabbf83eff73e8e4aa1c38bb024b6eef000b3c5977d9650c2695df0d1d5e",
+    "experiments/results/redesign_v1/answer_order_control_v1/result.json": "a0b30f191263f5785e58d41f390831c228b691235d9261ba624ef51892a2fcfd",
+    "experiments/results/redesign_v1/evaluator_replication_v1/result.json": "a955675ec333188944696554f7a9c845e2a255bf4d465bd340c3ecce37bc60c5",
+    "experiments/results/redesign_v1/evidence_thinking_control_v1/result.json": "207426ce05dc98224f2af83a8babb2351b2611b725e25debba734a2499b8273c",
+    "experiments/results/redesign_v1/index_parity_v1/result.json": "f532b9f746251635478c61d2c20fa5f08f5d9fa28c8d2757e87a3c1544e725c8",
+    "experiments/results/redesign_v1/open_evidence_screen_v2/result.json": "92fc37650b2a49086624477a03b086e84a422294769b56bd3bc4acead7aeb55c",
+    "experiments/results/redesign_v1/retrieval_coverage_v1/result.json": "5a8d4660c6a6cbbe30fd673471d40d33197d8ec551a16de9e6af529ea3d8acc8",
+    "experiments/results/redesign_v1/screen_validity_v1/result.json": "457aaf8d91f17d0fab5e2e6338c9ebb2cb1bf6817d952eefbcdc5dea6215c6aa"
+  },
+  "status": "research_hour_verified_NOT_new_game_contribution",
+  "sum_http_seconds": 441.6756487459206,
+  "tests": 115,
+  "thinking_control": {
+    "expanded": {
+      "em_correct": 11.0,
+      "invalid": 0,
+      "logical_tokens": 51381,
+      "mean_f1": 0.7470238095238095
+    },
+    "native": {
+      "em_correct": 11.0,
+      "invalid": 0,
+      "logical_tokens": 43198,
+      "mean_f1": 0.7053571428571429
+    }
+  },
+  "tracked_git_diff_check": "passed",
+  "unresolved_attempts": 0,
+  "usd_proxy_total": 0.19863689999999998,
+  "verification_api_calls": 0
+}

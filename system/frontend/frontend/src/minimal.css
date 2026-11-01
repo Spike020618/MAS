@@ -1,0 +1,40 @@
+/* A quieter shell that keeps the complete workflow behind fewer visual layers. */
+:root{color:#202124;background:#f7f7f5}
+button{border-color:#deded9;border-radius:6px;transition:none}
+button:hover{background:#f3f3ef;border-color:#c9c9c3}
+.sidebar{width:176px;background:#fff;color:#252525;padding:22px 14px;border-right:1px solid #e5e5e0}
+.brand{font-size:20px;letter-spacing:0;padding:4px 10px}
+.new-chat{background:#222;border-color:#222;color:#fff;margin:24px 0 14px;padding:10px}
+.new-chat:hover,.primary:hover{background:#000;color:#fff}
+.sidebar nav{gap:2px}
+.sidebar nav button{color:#666;gap:0;padding:10px 12px;border-radius:6px}
+.sidebar nav button.selected{background:#f0f0ec;color:#111;font-weight:600}
+.sidebar nav em{background:#e5e5df;color:#555}
+.sidebar-bottom{display:flex;gap:6px;padding-top:16px}
+.session-list{display:grid;gap:3px;margin-top:20px;overflow:auto;min-height:0}.session-list strong{padding:8px 12px;color:#888;font-size:11px}.session-list button{border:0;background:transparent;text-align:left;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.session-list button.selected{background:#f0f0ec;color:#111}
+.sidebar-bottom button{flex:1;padding:7px 4px;border:0;background:transparent;color:#777;font-size:11px}
+.studio main{margin-left:176px}
+.topbar{height:58px;padding:0 32px;background:#fff;border-color:#e5e5e0;color:#333}
+.topbar-right{gap:12px}.topbar button{border:0;background:transparent}
+.content{max-width:1120px;padding:28px 32px 60px}
+.hero{max-width:760px;padding:18px 0 22px}
+.hero h1{font-size:30px;line-height:1.2;letter-spacing:-.5px;margin:0 0 18px;font-weight:600}
+.composer{margin-top:0;border-radius:8px;padding:10px;box-shadow:none}
+.query-row textarea{min-height:54px}
+.primary{background:#222;border-color:#222;border-radius:6px;padding:11px 20px}
+.input-actions{margin-top:5px;padding-top:6px}.input-actions button{color:#666}
+.suggestions{margin-top:10px}.suggestions button{border-radius:6px;background:#fff;color:#666}
+.filters{padding:14px 0 20px}.filters>button{background:transparent;border:0}
+.section-heading{margin:26px 0 14px}.section-heading h1{font-size:24px;margin:0}.section-heading h2{font-size:18px;margin:0}.section-heading p{margin:7px 0 0}
+.eyebrow{display:none}
+.movie-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.movie{border-radius:8px;box-shadow:none}
+.cover{height:210px;padding:15px;background:#ddd;border-radius:0}
+.cover:hover{background:#d5d5d5}.cover-title{font-size:17px}.cover-year{top:14px;left:15px}
+.cover-placeholder{position:absolute;right:10px;bottom:10px;z-index:2;padding:3px 6px;background:#0009;color:white;border-radius:3px;font-size:10px}
+.movie-body{padding:13px}.movie-body>p{margin:8px 0 12px;height:32px}.movie-foot{padding-top:8px}
+.panel,.conversation{border-radius:8px;padding:20px}.task-strip{border-radius:7px;padding:12px 15px}
+.stats section{border-radius:7px;padding:16px}.stats strong{font-size:18px}
+.empty{padding:45px 20px;border-radius:8px}.modal{border-radius:10px;padding:30px}
+@media(max-width:1050px){.movie-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.sidebar{width:100%;padding:10px 14px;border-right:0;border-bottom:1px solid #e5e5e0}.brand{display:none}.new-chat{margin:0 8px 0 0;width:auto;float:left;padding:8px 12px}.sidebar nav{display:flex}.sidebar nav button{padding:8px 10px}.sidebar-bottom{display:none}.studio main{margin:0}.topbar{height:50px;padding:0 18px}.content{padding:20px 18px 40px}.hero h1{font-size:25px}.movie-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.cover{height:180px}.section-heading{margin-top:22px}}

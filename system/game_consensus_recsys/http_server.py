@@ -145,6 +145,26 @@ class ConsensusHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        if urlparse(self.path).path == '/workspace':
+            self._file(Path(__file__).with_name('web') / 'workspace.html')
+            return
+        if urlparse(self.path).path == '/v1/research/status':
+            from .research_view import inventory
+            self._json(200, inventory())
+            return
+        if urlparse(self.path).path == '/v1/research/case':
+            from .research_view import sealed_case
+            params = parse_qs(urlparse(self.path).query)
+            try:
+                stage = (params.get('stage') or ['main'])[0]
+                raw_index = (params.get('index') or ['0'])[0]
+                if not raw_index.isdecimal(): raise ValueError('invalid case index')
+                self._json(200, sealed_case(stage, int(raw_index)))
+            except (ValueError, IndexError) as exc:
+                self._json(400, {'error': str(exc)})
+            except RuntimeError as exc:
+                self._json(409, {'error': str(exc)})
+            return
         if self.path in ("/", "/index.html"):
             built = self.server.frontend_dist / "index.html"
             if built.is_file():

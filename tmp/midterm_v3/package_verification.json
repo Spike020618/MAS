@@ -1,0 +1,46 @@
+{
+  "reference_sha256": "c8fcea4dce4384fafbbe83d0411f213cb11b5f0574162c20ecd87d8c398aa738",
+  "preserved_parts": [
+    "docProps/",
+    "docProps/app.xml",
+    "docProps/core.xml",
+    "docProps/custom.xml",
+    "word/",
+    "word/styles.xml",
+    "word/header1.xml",
+    "word/footer1.xml",
+    "word/theme/",
+    "word/theme/theme1.xml",
+    "customXml/",
+    "customXml/item1.xml",
+    "customXml/itemProps1.xml",
+    "customXml/item2.xml",
+    "customXml/itemProps2.xml",
+    "word/fontTable.xml",
+    "_rels/",
+    "_rels/.rels",
+    "customXml/_rels/",
+    "customXml/_rels/item1.xml.rels",
+    "customXml/_rels/item2.xml.rels",
+    "word/_rels/",
+    "media/image.bin",
+    "word/_rels/header1.xml.rels",
+    "media/image2.bin",
+    "media/image3.bin"
+  ],
+  "edited_parts": [
+    "word/document.xml",
+    "word/_rels/document.xml.rels",
+    "word/settings.xml",
+    "[Content_Types].xml"
+  ],
+  "removed_embedded_content": [
+    "word/afchunk2.docx",
+    "word/afchunk3.docx",
+    "word/afchunk4.docx",
+    "word/afchunk5.docx",
+    "word/afchunk6.docx"
+  ],
+  "figures": 26,
+  "tables": 23
+}

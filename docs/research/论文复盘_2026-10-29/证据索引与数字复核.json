@@ -1,0 +1,148 @@
+{
+  "date": "2026-10-29",
+  "scope": "read-only existing evidence review; no new API requests; running panel excluded",
+  "sources": {
+    "legacy450": {
+      "path": "/Users/spike/code/MAS/experiments/results/audit/legacy_gain_attribution_2026-10-22/analysis.json",
+      "sha256": "5b8a4ee31fccb1abed2156955557ff74c6fc14b7a7f0b7e17e293fe57695a343"
+    },
+    "interface90": {
+      "path": "/Users/spike/code/MAS/experiments/results/audit/interface_verdicts_2026-10-24/audit_v2.json",
+      "sha256": "4b7eafb6c3546f4ad17f6c777d4eaeb687a016f0f6f5f67b023964498de98778"
+    },
+    "ranker3010": {
+      "path": "/Users/spike/code/MAS/experiments/results/native_calibrated_transfer_v1/strong_baseline_comparison.json",
+      "sha256": "d969ce3e15ee8422e1479292ae86c408195ea867afdeff10f6b631cb2ecfa4f4"
+    },
+    "review64": {
+      "path": "/Users/spike/code/MAS/experiments/results/native_review_diagnostic_live_v1/summary.json",
+      "sha256": "ad3925a6756c1550cbc3b2a1db1c522438b49d63e0e66b675bd291fe23f905ce"
+    },
+    "v2_heuristic": {
+      "path": "/Users/spike/code/MAS/experiments/results/protocol_v2_frozen/heuristic/summary.json",
+      "sha256": "0c05d7f22901d051e662ed9b1610433f63347fbbb7a8249414738616561ab4d4"
+    },
+    "v2_learned": {
+      "path": "/Users/spike/code/MAS/experiments/results/protocol_v2_frozen/learned/summary.json",
+      "sha256": "fa9ad05fbbda42f1043363615c77f1fd52c2e3667b929fc25389b676093af470"
+    },
+    "v2_audit": {
+      "path": "/Users/spike/code/MAS/experiments/results/protocol_v2_frozen_audit_v1.json",
+      "sha256": "23d1193f0910b87e8dc512a551b2db409bd8be35d8d6029ff12cf5b72343b537"
+    }
+  },
+  "verified_results": {
+    "legacy450": {
+      "baseline": 306,
+      "static_package": 370,
+      "n": 450,
+      "delta_percentage_points": 14.222222222222221,
+      "attribution": "joint execution configuration, NOT isolated game or AEIC effect"
+    },
+    "interface90": {
+      "aeic": {
+        "correct_lower": 77,
+        "correct_upper": 77,
+        "unresolved": 0,
+        "tokens": 25188
+      },
+      "free_text": {
+        "correct_lower": 67,
+        "correct_upper": 68,
+        "unresolved": 1,
+        "tokens": 15991
+      },
+      "generic_structure": {
+        "correct_lower": 76,
+        "correct_upper": 77,
+        "unresolved": 1,
+        "tokens": 18931
+      }
+    },
+    "ranker3010": {
+      "baseline_hits": 730,
+      "ranker_hits": 806,
+      "targets": 3010,
+      "contexts": 2286,
+      "conversations": 883,
+      "delta_percentage_points": 2.524916943521595,
+      "cluster95_percentage_points": [
+        1.6463265600432229,
+        3.396235839632066
+      ],
+      "attribution": "supervised ranking relative to fixed RRF, NOT game benefit",
+      "scope": "calibrator diagnostic, not global pristine confirmation; no multiplicity adjustment"
+    },
+    "review64": {
+      "base": {
+        "hits": 19,
+        "targets": 76,
+        "logical_calls": 0
+      },
+      "central": {
+        "hits": 19,
+        "targets": 76,
+        "logical_calls": 5
+      },
+      "fixed_qwen_flash": {
+        "hits": 20,
+        "targets": 76,
+        "logical_calls": 48
+      },
+      "fixed_qwen_plus": {
+        "hits": 19,
+        "targets": 76,
+        "logical_calls": 48
+      },
+      "game": {
+        "hits": 19,
+        "targets": 76,
+        "logical_calls": 5
+      }
+    },
+    "v2_qa": {
+      "n": 17,
+      "heuristic": {
+        "central": 5,
+        "fixed": 8,
+        "game": 6,
+        "independent": 8,
+        "score_greedy": 6,
+        "single": 9
+      },
+      "learned": {
+        "central": 5,
+        "fixed": 8,
+        "game": 5,
+        "independent": 7,
+        "score_greedy": 7,
+        "single": 8
+      }
+    },
+    "v2_recommendation": {
+      "tasks": 20,
+      "targets": 26,
+      "hits_all_methods": 5
+    },
+    "v2_prompt_echo": {
+      "valid_events": 139,
+      "placeholder_claim_events": 93,
+      "assigned_source_rejections": 30,
+      "assigned_source_present_in_payload": 30,
+      "assigned_source_named_in_assigned_doubt": 0,
+      "cites_old_source_only": 30,
+      "placeholder_claim": 30,
+      "patch_matches_supplied_example": 30,
+      "assigned_source_in_report_E": 0,
+      "assigned_source_linked_support_refute": 0
+    }
+  },
+  "current_unfinished_evidence": [
+    "natural-language semantic verifier accuracy",
+    "independent positive game contribution",
+    "same-planner strong single-agent comparison",
+    "new v3 model outcome",
+    "matched-state action panel outcome",
+    "untouched confirmatory benchmark"
+  ]
+}

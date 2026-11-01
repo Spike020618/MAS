@@ -1,0 +1,1003 @@
+PAGE 1
+Many Minds, One Path: LLM-Augmented Consensus Decision for Distributed
+Control in Multi-Agent Collaborative Stable Scenarios
+Zhuohao Yu*, Zhe Liu*, Tao Ren†, Chenxue Wang, Junjie Wang, Qing Wang†
+State Key Laboratory of Complex System Modeling and Simulation Technology, Beijing, China
+Institute of Software Chinese Academy of Sciences, Beijing, China
+University of Chinese Academy of Sciences, Beijing, China
+{yuzhuohao2023, liuzhe2020, rentao22, wangchenxue2024, junjie, wq}@iscas.ac.cn
+Abstract
+Distributed multi-agent systems are increasingly deployed
+in dynamic and high-stakes environments such as power
+grids, intelligent traffic systems, and collaborative robotics.
+In these systems, long-term stability, the ability to main-
+tain coherent and safe system behavior over time, is critical
+but underexplored in existing research. This paper presents
+LLMASC, a framework designed to enhance long-term stabil-
+ity in multi-agent collaboration by combining semantic rea-
+soning with decentralized control. LLMASC comprises three
+key components: a Semantic Perception Encoder that trans-
+forms heterogeneous agent observations into structured nat-
+ural language; an LLM-Guided Consensus Decision module
+that enables strategic alignment through proposal exchange
+and voting; and aPolicy Execution Controllerthat maps high-
+level plans to executable actions via reinforcement learn-
+ing. We evaluate LLMASC across three representative simu-
+lation domains (Multi-Walker, Simulation of Urban Mobil-
+ity and Power Grid Stabilization), spanning both physical
+and cyber-physical systems. Experiments show that LLMASC
+consistently outperforms the best baselines, improving stabil-
+ity rates by up to 44% and long-term success by 31%. Further
+analysis confirms its decision-making efficiency and robust-
+ness under varying agent populations and model choices.
+Code — https://github.com/yuzh2001/LLMASC
+Introduction
+Distributed multi-agent systems are increasingly deployed
+in mission-critical tasks and infrastructure control. Exist-
+ing research focuses on task-driven collaboration scenar-
+ios (Rashid et al. 2020; Liu et al. 2021a; Yu et al. 2022)
+(e.g., winning a game) and short-term performance (Son
+et al. 2019; Peng et al. 2021), where multiple agents coop-
+erate to complete a single, well-defined objective within a
+bounded time horizon. Unlike short-term tasks, many real-
+world systems, such as power grids (Wang et al. 2021; Chen
+et al. 2023) and city-scale traffic light networks (Wang, Cao,
+and Hussain 2021; Antonio and Maria-Dolores 2022; Zhou
+et al. 2022) require agents to continuously maintain sys-
+tem stability over the long term, often weeks, months, or
+*These authors contributed equally.
+†Corresponding authors.
+Copyright © 2026, Association for the Advancement of Artificial
+Intelligence (www.aaai.org). All rights reserved.
+even years. In a smart power grid (Lu et al. 2023; Yan and
+Xu 2024), maintaining long-term stability requires ongoing
+coordination among decentralized control units that react
+to fluctuating energy sources like wind or solar. Similarly,
+adaptive traffic lights must dynamically regulate flows to
+avoid long-term congestion or deadlock (Zhou et al. 2022;
+Mukhtar et al. 2023), responding to unpredictable events
+while preserving overall system reliability. While short-term
+task performance is important, ensuring stable, coherent,
+and sustainable collaboration over time introduces unique
+challenges that remain underexplored.
+Considering the difference in objectives between short-
+term task execution (Carroll et al. 2019; Peng et al. 2021)
+and long-term stability maintenance, this paper focuses on
+enabling multi-agent systems to sustain reliable and coor-
+dinated behavior over extended time horizons. Long-term
+stability tasks (Aotani, Kobayashi, and Sugimoto 2021; Ma
+et al. 2023; Berducci et al. 2024) require agents to continu-
+ously adapt to environmental dynamics and maintain global
+coherence, often without a well-defined terminal condition.
+Agents must not only optimize their local actions, but also
+anticipate delayed effects, recover from transient inconsis-
+tencies, and preserve overall system integrity under partial
+observability and evolving conditions. This requires design-
+ing new ways of decision-making, communication, and co-
+ordination, shifting the focus from occasional optimization
+to sustained and flexible collaboration.
+Achieving long-term stability in distributed multi-agent
+systems requires overcoming three fundamental challenges.
+First, agents often operate under limited perception and se-
+mantic understanding. These raw observation signals often
+lack the structured, knowledge-level representations neces-
+sary for consistent coordination. Agents may interpret sim-
+ilar situations differently, leading to behavioral inconsisten-
+cies. Second, agents face inflexible decision-making. In dy-
+namic environments, agents must be capable of rapidly ad-
+justing their behavioral modes in response to shifting condi-
+tions, yet a lack of contextual understanding and strategy-
+level flexibility makes such adaptation difficult. Finally,
+there is the issue of inaccurate response. Inconsistency
+in interpretation across agents may lead to coordination
+mismatches, oscillations, or cumulative errors that under-
+mine system-wide stability. These challenges compound
+over time in long-horizon tasks, making it difficult to sustain
+The Fortieth AAAI Conference on Artificial Intelligence (AAAI-26)
+28014
+
+PAGE 2
+robust collaboration. Addressing them requires new mecha-
+nisms that enable agents to share semantically meaningful
+information, reach consensus dynamically, and adjust be-
+havior proactively in response to emerging conditions.
+The inspiration comes from the operation of human teams
+in dynamic environments. Humans actively interpret en-
+vironmental cues, share information, anticipate contextual
+shifts, and adjust behaviors through collaborative reason-
+ing. The recent advances in Large Language Models(LLMs)
+offer a promising opportunity to bridge the semantic and
+decision-making gaps in such systems. LLMs possess strong
+generalization capabilities, allowing agents to generate high-
+level strategic insights from raw contextual information and
+to align decisions based on shared semantic abstractions.
+We propose LLMASC, a structured framework designed
+to enhance the stability and interpretability of multi-agent
+coordination through knowledge-augmented consensus. The
+architecture of LLMASC consists of three interconnected
+modules, each addressing a specific challenge identified ear-
+lier. First, to mitigate observation heterogeneity, the Seman-
+tic Perception Encoder module converts each agent’s local-
+ized, modality-specific observations into a structured natu-
+ral language representation. This process standardizes how
+agents perceive and interpret their surroundings, serving as
+the semantic input for further decision-making. Second, to
+address the problem of inconsistent or conflicting strate-
+gies, the LLM-Guided Consensus Decision module enables
+agents to individually infer appropriate operational modes
+based on semantic representations and then participate in
+a voting-based consensus process to agree on a joint plan.
+Finally, to ensure that these high-level strategies can be en-
+acted reliably, thePolicy Execution Controllermodule trans-
+lates the shared plan into executable low-level actions us-
+ing reinforcement learning. By integrating symbolic reason-
+ing, semantic abstraction, and data-driven control, LLMASC
+provides a novel framework toward stable and decentralized
+multi-agent collaboration.
+We evaluate LLMASC across three diverse simulation en-
+vironments: (1) Multi-Walker (Gupta, Egorov, and Kochen-
+derfer 2017), where agents physically coordinate to trans-
+port a shared payload over uneven terrain; (2) Simulation
+of Urban Mobility (SUMO) (Krajzewicz et al. 2012; Alegre
+2019; Ault and Sharon 2021), where decentralized agents
+manage city-wide intersections to avoid congestion; and (3)
+Distributed Power Grid Stabilization (Wang et al. 2021),
+where energy nodes collaboratively regulate voltages un-
+der fluctuating conditions. These domains span both embod-
+ied and cyber-physical systems, enabling a comprehensive
+assessment of long-term stability. Experiments show that
+LLMASC consistently outperforms the best baselines, im-
+proving stability rates by up to 44% and long-term success
+rates rates by 31%. Further analysis confirms thatLLMASC’s
+consensus mechanism operates efficiently within system
+time constraints. LLMASC also generalizes well to vary-
+ing agent population sizes and underlying model choices,
+demonstrating robustness and adaptability across tasks.
+The contributions of this paper are as follows:
+• We formulate the long-term stability problem in dis-
+tributed multi-agent systems (dynamic, partially observ-
+able environments), expanding the scope of traditional
+MARL research.
+• We propose LLMASC, a structured framework that en-
+hances multi-agent coordination through semantic per-
+ception, consensus-driven decision-making, and robust
+policy execution. Our implementation is open-sourced to
+facilitate reproducibility and extension.
+• We evaluate LLMASC across three diverse simulation en-
+vironments involving physical and cyber-physical con-
+trol tasks. Results show that LLMASC achieves signif-
+icant improvements in long-term stability and coordi-
+nation performance, validating the LLMASC’s generality
+and effectiveness.
+Related Work
+Stability in Multi-Agent Systems. Stability has long been
+a core concern in distributed control and cooperative
+robotics (Zhang, Dong, and Pan 2020; Wang et al. 2022;
+Li et al. 2025), often formulated as system convergence,
+consensus, or regulation. Classical approaches design con-
+trol laws under known system dynamics to satisfy Lya-
+punov or frequency-domain stability conditions. However,
+such methods assume strong structural priors, limiting their
+applicability to complex, black-box, or data-driven multi-
+agent environments. In the multi-agent reinforcement learn-
+ing (MARL) community, most efforts center around opti-
+mizing task-level objectives such as win rate (Samvelyan
+et al. 2019; Kurach et al. 2020), episodic return (Peng et al.
+2021; Liu et al. 2021b; Towers et al. 2024), or exploration
+coverage (Christianos, Sch ¨afer, and Albrecht 2020; Zheng
+et al. 2021; Hao et al. 2023), without directly modeling long-
+term dynamic stability. Our work differs by treating steady-
+state regulation as an explicit optimization goal. We propose
+a generalizable, variance-based formulation that integrates
+smoothly into standard reinforcement learning pipelines. We
+address scenarios where agents must adaptively switch poli-
+cies in response to subtle changes in environmental condi-
+tions while preserving global consistency.
+Language Models for Agent Coordination and Rea-
+soning. LLMs have recently shown promise in enhanc-
+ing multi-agent systems by enabling communication, strat-
+egy generation, and common-sense reasoning (Agashe et al.
+2023; Li et al. 2024; Guo et al. 2024). Several works have
+explored using LLMs to generate executable plans (Kan-
+nan, Venkatesh, and Min 2024; Zhai et al. 2025) or sug-
+gest cooperative behavior in simulated environments (Bo
+et al. 2024; Yang et al. 2025). However, these approaches
+often assume a centralized planner or rely on prompt en-
+gineering without integrating structured perception or pol-
+icy execution. In the multi-agent setting, recent studies have
+proposed frameworks where LLMs simulate autonomous
+agents engaging in natural language dialogue. These works
+emphasize human-like communication and deliberation but
+are not grounded in real-time physical environments with
+action and reward feedback. Our work differs in three key
+aspects: (1) we target decentralized physical control tasks
+rather than pure dialogue; (2) we introduce a structured
+perception layer that translates observations into semantic
+28015
+
+PAGE 3
+prompts; and (3) we develop a lightweight language-guided
+consensus mechanism that integrates naturally with the Re-
+inforcement Learning pipelines.
+Problem Formulation
+We consider a general setting where a group of N au-
+tonomous agents interact in a dynamic, partially observ-
+able environment to achieve a shared task. The environ-
+ment is modeled as a Partially Observable Multi-Agent
+Markov Decision Process(PO-MAMDP), defined by the tu-
+ple ⟨S, {Ai}N
+i=1, T , {Oi}N
+i=1, R, γ⟩. Here, S is the global
+state space, and Ai and Oi denote the action and obser-
+vation spaces of agent i, respectively. The transition func-
+tion T : S × A 1 × · · · × A N → P (S) defines the prob-
+ability distribution over next states. Each agent receives a
+local observation oi
+t ∈ O i based on the observation func-
+tion O : S → O 1 × · · · × O N . The reward function
+R : S × A1 × · · · × AN → R provides a shared reward sig-
+nal. The objective is to learn a joint policyπ = (π 1, . . . , πN )
+that maximizes the expected cumulative return with discount
+factor γ ∈ (0, 1).
+Unlike conventional MARL tasks that focus primarily on
+short-term reward maximization or adversarial competition,
+our objective is to achieve stable long-horizon collabora-
+tion under non-stationary and partially observable condi-
+tions. Stability, in this context, refers to the system’s abil-
+ity to maintain coherent and coordinated behavior over ex-
+tended time horizons, despite environmental changes, het-
+erogeneous observations, and asynchronous agent decisions.
+To capture this notion, we define a stability-oriented util-
+ity function:
+Jstab(π) = Eπ
+" ∞X
+t=0
+γtLstab(st, a1
+t , . . . , aN
+t )
+#
+, (1)
+where Lstab is a task-specific stability evaluator that quanti-
+fies deviations from coordinated behavior, policy switching
+smoothness, or inter-agent consistency.
+Approach
+To achieve long-horizon stability in distributed multi-
+agent collaboration, we propose a novel framework named
+LLMASC, which integrates semantic perception, consensus-
+driven coordination, and reinforcement-based execution into
+a unified decision-making process. The core idea is to bridge
+the semantic gap between low-level, heterogeneous agent
+observations and high-level collaborative planning by in-
+troducing an intermediate LLM-based consensus layer. As
+shown in Figure 1, the LLMASC is composed of three in-
+terdependent components, each designed to address a key
+challenge of distributed collaboration: (1) Semantic Percep-
+tion Encoder, which transforms raw agent observations into
+structured natural language descriptions that capture contex-
+tual semantics and temporal patterns; (2) LLM-Guided Con-
+sensus Decision, which enables agents to generate strategy
+proposals using LLMs and aggregate them into a globally
+consistent collaborative plan; and (3) Policy Execution Con-
+troller, which translates the consensus plan into executable
+low-level actions by optimizing for both task performance
+and system stability.
+Semantic Perception Encoder
+The Semantic Perception Encoder is responsible for trans-
+forming low-level, modality-specific agent observations into
+structured LLM-based representations that capture salient
+semantic features of the local environment. This component
+addresses the inherent heterogeneity of partial observations
+in distributed systems and serves as the foundation for LLM-
+guided coordination in LLMASC.
+Observation Abstraction via Feature Projection. At
+each timestep t, agent i receives a raw observation vector
+oi
+t ∈ O i, which may contain sensory readings, agent states,
+or environmental signals. To construct a semantically mean-
+ingful representation, we define a hierarchical abstraction
+function:
+xi
+t = f (oi
+t, Hi
+t) = GenStruct(ϕ(oi
+t), ψ(Hi
+t)) (2)
+where Hi
+t = {oi
+t−K , . . . , oi
+t−1} is a temporal context win-
+dow of size K, ϕ is a feature extractor applied to the cur-
+rent observation, and ψ is a temporal summarization oper-
+ator. The function GenStruct(·) denotes a structured repre-
+sentation generator that outputs a sentence-level semantic
+description.
+Temporal Contextualization of Local Observations. We
+design ϕ(oi
+t) to project the raw observation into a latent rep-
+resentation space:
+ϕ(oi
+t) = Wooi
+t + bo (3)
+where Wo and bo are learnable parameters. Similarly, the
+temporal encoding ψ(Hi
+t) is defined as:
+ψ(Hi
+t) =
+KX
+k=1
+αk · ϕ(oi
+t−k), α k = exp(−λk)
+PK
+j=1 exp(−λj)
+(4)
+which captures historical context with exponential decay,
+controlled by the hyperparameter λ > 0.
+Structured Semantic Prompt Construction. The final
+semantic input to the generation function is constructed as
+the concatenation of current and contextual embeddings:
+hi
+t = [ϕ(o i
+t) ∥ ψ(Hi
+t)] (5)
+where [ · ∥ ·] denotes vector concatenation. The structured
+representation xi
+t is then generated as:
+xi
+t = Decoder(hi
+t; Θ) (6)
+where Decoder(·) is a symbolic rule-based template engine
+with parameters Θ. In practice, we implement this com-
+ponent using prompt-conditioned template filling for con-
+trolled interpretability, while allowing extensibility to gen-
+erative neural models.
+The output xi
+t resides in a shared semantic spaceX , which
+serves as the communication and reasoning substrate for
+downstream consensus generation. This transformation en-
+sures that heterogeneous raw observations are projected into
+a unified, interpretable representation amenable to large lan-
+guage model processing. By encoding not only spatial fea-
+tures but also temporal patterns, this module enables each
+agent to reason about local dynamics and system evolution
+in a semantically aligned manner.
+28016
+
+PAGE 4
+Figure 1: Overview of LLMASC
+LLM-Guided Consensus Decision
+In distributed systems with partial observability and non-
+stationary dynamics, individual agents may form divergent
+interpretations of the environment, leading to inconsistent or
+suboptimal coordination. To overcome this, we introduce the
+LLM-Guided Consensus Decision module, which enables
+each agent to independently reason over its semantic ob-
+servation using a dedicated large language model (LLM),
+and to reach a globally consistent high-level plan through
+a structured consensus process. This module is the key in-
+novation in LLMASC, enabling decentralized agents to align
+their strategies via interpretable, semantic-level communica-
+tion rather than implicit policy synchronization.
+Prompt-Based Strategic Reasoning with LLM. Each
+agent i is equipped with an LLM instance, denoted Li
+θ, pa-
+rameterized by θ, which serves as a local strategic reasoner.
+At time t, the LLM takes as input the agent’s semantic state
+xi
+t ∈ X and a domain-specific prompt template Ptask, yield-
+ing a policy proposal pi
+t:
+pi
+t = Li
+θ
+ 
+Prompt(xi
+t; Ptask)
+
+(7)
+where Prompt(·) is a deterministic formatting function that
+concatenates task, constraints, and the agent’s local state
+description. The output pi
+t belongs to a structured strategy
+space P:
+P = {maintain, adjust, switch
+to mode k, . . .}
+To enhance consistency and reasoning reliability, we de-
+sign prompts to follow a structured, chain-of-thought style
+format: P rompt(xi
+t; Ptask) = Instruction + “Given the fol-
+lowing observation:” + xi
+t + “What is the appropriate strat-
+egy? Explain your reasoning first, then output the plan. ”
+The output of Li
+θ is parsed to extract both the final pro-
+posal pi
+t and an intermediate reasoning trace ri
+t for inter-
+pretability and optional verification.
+Consensus Aggregation Through Voting Mechanisms.
+At each timestep, the system collects all N agent proposals:
+Pt = {(p1
+t , r1
+t ), (p2
+t , r2
+t ), . . . ,(pN
+t , rN
+t )} (8)
+where each element consists of a strategy token pi
+t and its
+supporting explanation ri
+t. These proposals can be inter-
+preted as individual agent intents.
+To aggregate proposals into a unified collaborative plan,
+we define a consensus function C : P N → P that computes
+a representative consensus strategy Πcons
+t :
+Πcons,i
+t = Ci(p1
+t , . . . , pN
+t ) (9)
+A deterministic selection of the majority proposal:
+Πcons,i
+t = arg max
+p∈P
+NX
+j=1
+I[pj
+t = p] (10)
+with tie-breaking by priority rules or predefined preferences.
+When LLMs produce confidence scores cj
+t along with
+proposals, we can define a soft aggregation:
+Πcons,i
+t =
+NX
+j=1
+αj
+t pj
+t , α j
+t = cj
+t
+PN
+k=1 ck
+t
+(11)
+This representation is suitable whenP is embedded in a con-
+tinuous latent space or parameterized via vectors. In both
+cases, the consensus function ensures that the system tran-
+sitions from a collection of local intentions to a globally
+aligned plan Πcons,i
+t , which will be subsequently executed.
+To reinforce alignment between local reasoning and the
+final plan, we introduce a regularization term during execu-
+tion that penalizes divergence between the agent’s proposal
+and the adopted consensus:
+Li
+cons = KL(pi
+t ∥ Πcons,i
+t ) (12)
+where the Kullback-Leibler divergence is evaluated over a
+categorical distribution derived from proposal embeddings.
+This term encourages agents to produce proposals that are
+not only locally optimal but also globally coherent.
+Notably, the consensus module avoids direct parameter
+sharing or gradient synchronization among agents. Instead,
+it operates at the symbolic level via LLM-generated propos-
+als. This design enables plug-and-play adaptation of agents,
+modular training of policy components, and scalability to
+large agent populations, provided that communication la-
+tency and reasoning delays are bounded. In implementation,
+proposals and reasoning traces can be compressed or pruned
+based on token budgets or criticality assessments.
+28017
+
+PAGE 5
+Figure 2: Example of 3 different simulation environments
+Policy Execution Controller
+Given the global collaborative plan Πcons
+t obtained from the
+LLM-Guided Consensus Decision module, the role of the
+Policy Execution Controller is to generate low-level exe-
+cutable actions for each agent that are both behaviorally con-
+sistent with the consensus and robust to local variations in
+the environment. This module provides a mechanism to de-
+couple high-level reasoning from dynamic policy execution,
+allowing agents to adaptively specialize their actions while
+preserving system-wide coherence.
+Policy Switching Mechanism. Each agent maintains a pa-
+rameterized policy πi : Oi × P → A i, which conditions on
+both the local observation oi
+t and the consensus plan Πcons
+t to
+produce an action distribution:
+ai
+t ∼ πi(a | oi
+t, Πcons
+t ) (13)
+This structure enables agents to specialize their behavior
+based on their own sensory input, while aligning with the
+collective strategic intent captured in Πcons
+t .
+To enable dynamic adaptation under diverse environmen-
+tal conditions, we assume that each agent is equipped with a
+library of K operational sub-policies:
+{πi
+k}K
+k=1, where πi
+k : Oi → A i (14)
+A policy selector function gi is trained to select the most
+suitable sub-policy based on the current context:
+ki
+t = gi(oi
+t, Πcons
+t ) = arg max
+k
+Qi
+k(oi
+t, Πcons
+t ) (15)
+where Qi
+k is a context-conditioned value function that esti-
+mates the long-term utility of executing sub-policy πi
+k. The
+selected action is then from the corresponding sub-policy:
+ai
+t ∼ πi
+ki
+t
+(a | oi
+t) (16)
+This mechanism supports robust mode-switching and dy-
+namic reconfiguration under non-stationary dynamics.
+Stability-Oriented Reinforcement Learning Objective.
+The policy is trained to optimize a composite objective that
+combines task-specific reward R and a stability-oriented
+auxiliary signal Lstab, introduced in Section 2:
+Jstab = Eπ
+" ∞X
+t=0
+γt (R(st, ⃗ at) − β · Lstab(st, ⃗ at))
+#
+(17)
+where ⃗ at = (a 1
+t , . . . , aN
+t ) denotes the joint action vector and
+β is a tunable coefficient that balances task success with be-
+havioral stability.
+To provide supervision at the level of consensus plan ex-
+ecution, we introduce a centralized critic Vω that estimates
+the expected long-term return given the current state and the
+consensus plan:
+Vω(st, Πc
+t) ≈ E
+" ∞X
+τ =t
+γτ −t (R(sτ , ⃗ aτ ) − β · Ls(sτ , ⃗ aτ ))
+#
+(18)
+This critic serves two purposes: (1) to guide policy updates
+via actor-critic training; (2) to enable long-term validation
+of the consensus plan’s effectiveness, which may feed back
+into prompt refinement or plan re-evaluation.
+The policy parameters θi, sub-policy ensemble {πi
+k}, se-
+lector gi, and centralized critic Vω are jointly trained using
+an actor-critic optimization algorithm. The gradient of the
+stability-augmented return is computed as:
+∇θi Jstab = Eπ
+h
+∇θi log πi(ai
+t | oi
+t, Πcons
+t ) · ˆAt
+i
+(19)
+where ˆAt is the advantage estimate based on the critic and
+incorporates both reward and stability feedback.
+Experiments
+• RQ1: Effectiveness. Does LLMASC improve long-term
+success rate and system stability compared to baselines?
+• RQ2: Decision Efficiency. How efficient is the LLM-
+Guided Consensus Decision module in responding to dis-
+turbances and adapting decisions across agents?
+• RQ3: Module Ablation. What is the impact of each key
+component in LLMASC?
+• RQ4: Environmental Robustness. How robust is our
+LLMASC to changes in system configuration?
+Experimental Setup
+Environments. We evaluate LLMASC across three differ-
+ent simulation environments, which are implemented us-
+ing HARL (Zhong et al. 2024) and PettingZoo (Terry
+et al. 2021), which provide the APIs for reproducibility.
+(1) Multi-Walker.(Gupta, Egorov, and Kochenderfer 2017)
+Multiple agents carry a shared payload across uneven ter-
+rain, as shown in Figure 2(a). The stability is measured by
+maintaining the payload angle and the uninterrupted walk.
+(2) Simulation of Urban MObility (SUMO). (Krajzewicz
+et al. 2012; Alegre 2019; Ault and Sharon 2021) A large-
+scale city traffic simulation in Figure 2(b), each agent man-
+ages a traffic light. Purpose is to reduce long-term gridlock.
+(3) Distributed Power Grid Stabilization. (Wang et al.
+28018
+
+PAGE 6
+MultiWalker SUMO PowerGrid
+Algorithm Stability Rate Long-term SR Stability Rate Long-term SR Stability Rate Long-term SR
+MAPPO 54% 61% 83% 89% 64% 66%
+HAPPO 23% 25% 78% 88% 62% 65%
+HASAC 37% 43% 68% 75% 58% 64%
+Heuristic 56% 60% 82% 87% 56% 58%
+LLMASC 78%(+44%) 80%(+31%) 93%(+12%) 98%(+10%) 75%(+17%) 78%(+18%)
+Table 1: Comprehensive performance comparison with metric breakdown (RQ1)
+2021) A decentralized voltage control task where agents ad-
+just reactive power generation under time-varying weather
+and load conditions to stabilize bus voltages within target
+thresholds, as shown in Figure 2(c). More details regarding
+the environment configurations and hyperparameter settings
+are provided in the Appendix.
+Baselines. We compare LLMASC with 3 state-of-the-art
+RL approaches, MAPPO (Yu et al. 2022), HAPPO (Zhong
+et al. 2024) and HASAC (Liu et al. 2024). We also compare
+LLMASC with Heuristic Rules, which are manually crafted
+policies based on domain knowledge and rule-based action
+switching. We trained these algorithms by sweeping more
+than 80 sets of training hyper-parameters each and selected
+the checkpoints with the highest rewards for the following
+evaluations. Details including computing infrastructure and
+tuned hyper-parameters can be found in the Appendix file.
+Metrics. We select 2 metrics to assess both effective-
+ness and coordination efficiency. Long-term Success Rate
+(LT SR): The percentage of episodes where agents com-
+plete the task without triggering failure or violating sys-
+tem constraints. Stability Rate (SR): The proportion of
+episodes where all critical stability indicators remain within
+safe bounds (e.g., payload tilt < 5◦, cars’ waiting time
+< 2000s, voltage safe region 0.95 p.u. ≤ v ≤ 1.05 p.u.,
+where p.u. is a unit to measure voltage). For each evalu-
+ation setting, we conducted 100 independent test episodes
+with randomized initial states and environmental perturba-
+tions to ensure statistical robustness. Each baseline was run
+three times for each evaluation setting, and we averaged
+these metrics to mitigate potential bias.
+Results and Analysis
+RQ1: Long-Term Stability
+We first evaluate whether LLMASC improves long-term
+multi-agent coordination stability. Table 1 shows that com-
+pared to the best baseline (MAPPO),LLMASC improves sta-
+bility rate by 44% and Long-term success rate by 31% in
+the MultiWalker environment. The largest improvements are
+observed in the Multi-Walker task, where traditional meth-
+ods often fail after 300–500 steps due to payload imbalance
+or agent falls. In contrast, LLMASC maintains synchronized
+behavior and precise pose control across all agents for over
+1000 steps in test runs.
+MultiWalker SUMO PowerGrid
+Per-Step 0.1s 180s 5s
+LLM (Ratio) 1.65s 1.62s 1.66s
+Table 2: Excution Time Efficiency (RQ2)
+We also observe that similar gains are seen in SUMO and
+PowerGrid. In SUMO, LLMASC reduces gridlocks by ad-
+justing control modes based on emerging traffic patterns, im-
+proving the stability rate by 12% and long-term success rate
+by 10%. In PowerGrid, agents coordinate voltage adjust-
+ments more coherently, resisting fluctuations caused by sud-
+den weather changes or load disturbances. These improve-
+ments demonstrate that semantic reasoning and consensus
+aggregation mechanisms help prevent cascading errors and
+sustain stable collaboration over long durations. We also add
+the case analysis of LLMASC in the Appendix file.
+RQ2: Decision Efficiency
+We next examine whether the use of LLM-based consen-
+sus introduces latency that may hinder real-time decision-
+making. Table 2 reports the average environment step time
+alongside the average LLM response time when using GPT-
+4o. Across all environments, the LLM response time re-
+mains around 1.6 seconds. In SUMO and PowerGrid, where
+each step requires approximately 180 and 5 seconds, respec-
+tively, the additional 1.6 seconds of LLM reasoning are neg-
+ligible relative to the intrinsic simulation dynamics. More
+importantly, the consensus output arrives well before the
+next control cycle, ensuring no disruption to system perfor-
+mance.
+The MultiWalker environment presents a different case,
+since each simulation step is only 0.1 seconds. However, ev-
+ery agent is equipped with a radar sensor that can detect
+terrain variations up to 25 steps in advance. This predic-
+tive horizon provides a buffer of 2.5 seconds, which is suf-
+ficient to accommodate the 1.6 seconds LLM decision pro-
+cess. Therefore, consensus decisions are delivered in time
+for agents to adapt their modes before destabilizing events
+occur. Results show that integration of LLM-based reason-
+ing into control pipeline doesn’t bottleneck real-time coor-
+dination.
+28019
+
+PAGE 7
+MultiWalker SUMO PowerGrid
+Variants SR LTSR SR LTSR SR LTSR
+I. Semantic Perception Encoder
+w/o Semantic 36% 54% 74% 76% 44% 52%
+II. LLM-Guided C.D.:Variant Base LLM Models
+Gemini-2.5pro 72% 74% 87% 97% 66% 76%
+Claude-3.7 72% 74% 89% 97% 67% 78%
+Claude-3.5 74% 76% 89% 97% 67% 78%
+DeepSeekV3 70% 72% 87% 96% 62% 76%
+GPT-4o-mini 66% 70% 90% 98% 64% 76%
+Llama-3.2-3B 68% 72% 90% 97% 63% 78%
+Qwen3-0.6B 70% 74% 87% 97% 62% 72%
+Qwen3-1.7B 70% 74% 90% 98% 64% 76%
+III. Policy Exec. Controller:Variant Base RL Models
+(HAPPO) 60% 64% 79% 84% 71% 76%
+(HASAC) 63% 64% 80% 85% 72% 74%
+LLMASC 78% 80% 93% 98% 75% 78%
+Table 3: Ablations on the variation of module (RQ3)
+RQ3: Module Ablation
+To understand the contribution of each module in LLMASC,
+we conduct ablation studies as shown in Table 3.
+(1) Semantic Perception Encoder. Removing the seman-
+tic encoder and directly feeding raw observation values to
+the LLM leads to the most severe performance drop. Stabil-
+ity rate decreases by 36%–74%, and long-horizon success
+rate drops by 52%–76% across environments. Without struc-
+tured abstraction, the LLM struggles to form coherent in-
+terpretations of agent contexts, resulting in erratic decisions
+and misaligned coordination. This confirms that semantic
+grounding is crucial for effective language-based reasoning
+in multi-agent settings.
+(2) LLM-Guided Consensus Decision. We replace the
+GPT-4o with several alternative LLMs, including both pro-
+prietary (e.g., Claude-3.7, Gemini-2.5 Pro, DeepSeek V3)
+and open-source models (e.g., LLaMA 3B, Qwen3). Larger
+models maintain comparable performance (within 0%–8%
+gap), while smaller models (e.g., LLaMA 1B, Qwen3-0.6B)
+experience a moderate degradation of 6%–10% in long-
+horizon metrics. This shows that smaller models may serve
+as viable alternatives in latency-sensitive or on-device de-
+ployment scenarios.
+(3) Policy Execution Controller. We substitute MAPPO
+with HAPPO and HASAC as the base reinforcement learner.
+While the long-horizon success rate drops by 2%–16% de-
+pending on the task, overall performance remains stable.
+The symbolic coordination layer decouples policy execution
+from semantic reasoning, enabling flexible integration with
+existing MARL algorithms.
+Overall, the ablation results confirm that all three mod-
+ules are essential to the performance of LLMASC. Among
+them, semantic abstraction has the most pronounced effect,
+MultiWalker
+Variants n=2 n=3 n=5 n=7 n=8 n=9
+SR 90% 78% 76% 75% 74% 72%
+LTSR 94% 80% 80% 77% 76% 74%
+Table 4: Robustness on the variation of environments (RQ4)
+while the LLM and RL backbones offer deployment flexi-
+bility without significantly compromising effectiveness.
+RQ4: Environmental Robustness
+To evaluate the robustness of LLMASC under varying agent
+population sizes, we conduct experiments in the Multi-
+Walker environment and vary the number of agents from the
+default of 3 to 2, 5, 7, 8 and 9. Table 4 summarizes the re-
+sults. Across all settings, LLMASC maintains high stability
+and long-term success, with only marginal variation in per-
+formance. Notably, even in the 9-agent configuration, where
+coordination becomes significantly more challenging due to
+increased interaction complexity,LLMASC achieves a stabil-
+ity rate of 72%.
+The best results are observed in the 2-agent case, where
+the system reaches a stability rate of 90% and a long-term
+success rate of 94%. In the default 3-agent setup, these val-
+ues are 78% and 80%, respectively. As the number of agents
+increases to 5–9, the performance remains stable with only
+moderate drops: the stability rate decreases gradually from
+76% to 72%, and the long-term success rate from 80% to
+74%. Results show that LLMASC generalizes well to teams
+of varying sizes, without requiring any reconfiguration.
+Due to space limitations, we omit detailed results for
+SUMO and PowerGrid. However, we observe similar trends:
+LLMASC exhibits stable performance across varying num-
+bers of traffic lights or power nodes, consistently outper-
+forming baselines. These findings confirm that LLMASC’s
+architecture generalizes well to larger agent populations and
+diverse task topologies.
+Conclusion
+We propose LLMASC, a framework designed to enhance
+long-term stability in multi-agent collaboration by combin-
+ing semantic reasoning with decentralized control. Semantic
+Perception Encoder transforms heterogeneous agent obser-
+vations into structured natural language. LLM-Guided Con-
+sensus Decision enables strategic alignment through pro-
+posal exchange and voting. Policy Execution Controller
+maps high-level plans to executable actions via reinforce-
+ment learning. We evaluate LLMASC across three repre-
+sentative simulation domains, spanning both physical and
+cyber-physical systems. Experiments show that LLMASC
+consistently outperforms the best baselines.
+In future work, we plan to explore more scalable consen-
+sus mechanisms, extend LLMASC to more real-world sys-
+tems, and investigate how continual language feedback can
+further enhance adaptability in non-stationary settings.
+28020
+
+PAGE 8
+Acknowledgements
+Supported by the Strategic Priority Research Program of
+Chinese Academy of Sciences, Grant No. XDB0900000, the
+National Natural Science Foundation of China Grant No.
+62402483, 62232016, 62072442, 62402484, Major Program
+of ISCAS Grant No. ISCAS-ZD-202401 and ISCAS-ZD-
+202302, Innovation Team 2024 ISCAS (No. 2024-66), Ba-
+sic Research Program of ISCAS Grant No. ISCAS-JCZD-
+202304.
+References
+Agashe, S.; Fan, Y .; Reyna, A.; and Wang, X. E. 2023. Llm-
+coordination: evaluating and analyzing multi-agent coordi-
+nation abilities in large language models. arXiv preprint
+arXiv:2310.03903.
+Alegre, L. N. 2019. SUMO-RL. https://github.com/
+LucasAlegre/sumo-rl. Accessed: 2025-07-01.
+Antonio, G.-P.; and Maria-Dolores, C. 2022. Multi-
+agent deep reinforcement learning to manage connected au-
+tonomous vehicles at tomorrow’s intersections.IEEE Trans-
+actions on Vehicular Technology, 71(7): 7033–7043.
+Aotani, T.; Kobayashi, T.; and Sugimoto, K. 2021. Bottom-
+up multi-agent reinforcement learning by reward shaping for
+cooperative-competitive tasks. Applied Intelligence, 51(7):
+4434–4452.
+Ault, J.; and Sharon, G. 2021. Reinforcement Learning
+Benchmarks for Traffic Signal Control. In Proceedings
+of the Thirty-fifth Conference on Neural Information Pro-
+cessing Systems (NeurIPS 2021) Datasets and Benchmarks
+Track.
+Berducci, L.; Yang, S.; Mangharam, R.; and Grosu, R. 2024.
+Learning adaptive safety for multi-agent systems. In 2024
+IEEE International Conference on Robotics and Automation
+(ICRA), 2859–2865. IEEE.
+Bo, X.; Zhang, Z.; Dai, Q.; Feng, X.; Wang, L.; Li, R.; Chen,
+X.; and Wen, J.-R. 2024. Reflective multi-agent collabora-
+tion based on large language models. Advances in Neural
+Information Processing Systems, 37: 138595–138631.
+Carroll, M.; Shah, R.; Ho, M. K.; Griffiths, T.; Seshia, S.;
+Abbeel, P.; and Dragan, A. 2019. On the utility of learn-
+ing about humans for human-ai coordination. Advances in
+neural information processing systems, 32.
+Chen, P.; Liu, S.; Wang, X.; and Kamwa, I. 2023. Physics-
+guided multi-agent deep reinforcement learning for robust
+active voltage control in electrical distribution systems.
+IEEE Transactions on Circuits and Systems I: Regular Pa-
+pers, 71(2): 922–933.
+Christianos, F.; Sch¨afer, L.; and Albrecht, S. 2020. Shared
+experience actor-critic for multi-agent reinforcement learn-
+ing. Advances in neural information processing systems, 33:
+10707–10717.
+Guo, T.; Chen, X.; Wang, Y .; Chang, R.; Pei, S.; Chawla,
+N. V .; Wiest, O.; and Zhang, X. 2024. Large language model
+based multi-agents: A survey of progress and challenges.
+arXiv preprint arXiv:2402.01680.
+Gupta, J. K.; Egorov, M.; and Kochenderfer, M. 2017. Coop-
+erative multi-agent control using deep reinforcement learn-
+ing. In International conference on autonomous agents and
+multiagent systems, 66–83. Springer.
+Hao, J.; Yang, T.; Tang, H.; Bai, C.; Liu, J.; Meng, Z.; Liu,
+P.; and Wang, Z. 2023. Exploration in deep reinforcement
+learning: From single-agent to multiagent domain. IEEE
+Transactions on Neural Networks and Learning Systems,
+35(7): 8762–8782.
+Kannan, S. S.; Venkatesh, V . L.; and Min, B.-C. 2024.
+Smart-llm: Smart multi-agent robot task planning using
+large language models. In 2024 IEEE/RSJ International
+Conference on Intelligent Robots and Systems (IROS),
+12140–12147. IEEE.
+Krajzewicz, D.; Erdmann, J.; Behrisch, M.; Bieker, L.; et al.
+2012. Recent development and applications of SUMO-
+Simulation of Urban MObility. International journal on ad-
+vances in systems and measurements, 5(3&4): 128–138.
+Kurach, K.; Raichuk, A.; Stanczyk, P.; Zajkac, M.; Bachem,
+O.; Espeholt, L.; Riquelme, C.; Vincent, D.; Michalski, M.;
+Bousquet, O.; et al. 2020. Google research football: A novel
+reinforcement learning environment. In Proceedings of the
+AAAI conference on artificial intelligence, volume 34, 4501–
+4510.
+Li, X.; Wang, S.; Zeng, S.; Wu, Y .; and Yang, Y . 2024. A
+survey on LLM-based multi-agent systems: workflow, in-
+frastructure, and challenges. Vicinagearth, 1(1): 9.
+Li, Z.; Peng, X. B.; Abbeel, P.; Levine, S.; Berseth, G.; and
+Sreenath, K. 2025. Reinforcement learning for versatile, dy-
+namic, and robust bipedal locomotion control. The Interna-
+tional Journal of Robotics Research, 44(5): 840–888.
+Liu, B.; Liu, Q.; Stone, P.; Garg, A.; Zhu, Y .; and Anand-
+kumar, A. 2021a. Coach-player multi-agent reinforcement
+learning for dynamic team composition. In International
+Conference on Machine Learning, 6860–6870. PMLR.
+Liu, I.-J.; Jain, U.; Yeh, R. A.; and Schwing, A. 2021b.
+Cooperative exploration for multi-agent deep reinforcement
+learning. In International conference on machine learning,
+6826–6836. PMLR.
+Liu, J.; Zhong, Y .; Hu, S.; Fu, H.; Fu, Q.; Chang, X.; and
+Yang, Y . 2024. Maximum Entropy Heterogeneous-Agent
+Reinforcement Learning. In The Twelfth International Con-
+ference on Learning Representations. 595–596.
+Lu, Y .; et al. 2023. Deep Reinforcement Learning Based Op-
+timal Scheduling of Active Distribution System Considering
+Distributed Generation, Energy Storage and Flexible Load.
+Energy, 271: n. pag. Web.
+Ma, Y . J.; Liang, W.; Wang, G.; Huang, D.-A.; Bastani, O.;
+Jayaraman, D.; Zhu, Y .; Fan, L.; and Anandkumar, A. 2023.
+Eureka: Human-level reward design via coding large lan-
+guage models. arXiv preprint arXiv:2310.12931.
+Mukhtar, H.; Afzal, A.; Alahmari, S.; and Yonbawi, S. 2023.
+CCGN: Centralized Collaborative Graphical Transformer
+Multi-Agent Reinforcement Learning for Multi-Intersection
+Signal Free-Corridor. Neural Networks, 166: 396–409.
+Epub 2023 Jul 26, PMID: 37549608.
+28021
+
+PAGE 9
+Peng, B.; Rashid, T.; Schroeder de Witt, C.; Kamienny, P.-
+A.; Torr, P.; B¨ohmer, W.; and Whiteson, S. 2021. Facmac:
+Factored multi-agent centralised policy gradients. Advances
+in Neural Information Processing Systems, 34: 12208–
+12221.
+Rashid, T.; Samvelyan, M.; De Witt, C. S.; Farquhar, G.;
+Foerster, J.; and Whiteson, S. 2020. Monotonic value func-
+tion factorisation for deep multi-agent reinforcement learn-
+ing. Journal of Machine Learning Research, 21(178): 1–51.
+Samvelyan, M.; Rashid, T.; De Witt, C. S.; Farquhar, G.;
+Nardelli, N.; Rudner, T. G.; Hung, C.-M.; Torr, P. H.; Fo-
+erster, J.; and Whiteson, S. 2019. The starcraft multi-agent
+challenge. arXiv preprint arXiv:1902.04043.
+Son, K.; Kim, D.; Kang, W. J.; Hostallero, D. E.; and Yi, Y .
+2019. Qtran: Learning to factorize with transformation for
+cooperative multi-agent reinforcement learning. In Interna-
+tional conference on machine learning, 5887–5896. PMLR.
+Terry, J.; Black, B.; Grammel, N.; Jayakumar, M.; Hari,
+A.; Sullivan, R.; Santos, L. S.; Dieffendahl, C.; Horsch, C.;
+Perez-Vicente, R.; et al. 2021. Pettingzoo: Gym for multi-
+agent reinforcement learning. Advances in Neural Informa-
+tion Processing Systems, 34: 15032–15043.
+Towers, M.; Kwiatkowski, A.; Terry, J.; Balis, J. U.;
+De Cola, G.; Deleu, T.; Goul ˜ao, M.; Kallinteris, A.; Krim-
+mel, M.; KG, A.; et al. 2024. Gymnasium: A standard
+interface for reinforcement learning environments. arXiv
+preprint arXiv:2407.17032.
+Wang, J.; Xu, W.; Gu, Y .; Song, W.; and Green, T. C. 2021.
+Multi-agent reinforcement learning for active voltage con-
+trol on power distribution networks. Advances in neural in-
+formation processing systems, 34: 3271–3284.
+Wang, T.; Cao, J.; and Hussain, A. 2021. Adaptive Traf-
+fic Signal Control for large-scale scenario with Cooperative
+Group-based Multi-agent reinforcement learning. Trans-
+portation research part C: emerging technologies, 125:
+103046.
+Wang, W. Z.; Shih, A.; Xie, A.; and Sadigh, D. 2022. Influ-
+encing towards stable multi-agent interactions. In Confer-
+ence on robot learning, 1132–1143. PMLR.
+Yan, R.; and Xu, Y . 2024. Multi-Objective and Multi-Agent
+Deep Reinforcement Learning for Real-Time Decentralized
+V olt/V AR Control of Distribution Networks Considering PV
+Inverter Lifetime. IEEE Transactions on Power Systems.
+Yang, Y .; Chai, H.; Shao, S.; Song, Y .; Qi, S.; Rui, R.; and
+Zhang, W. 2025. Agentnet: Decentralized evolutionary co-
+ordination for llm-based multi-agent systems.arXiv preprint
+arXiv:2504.00587.
+Yu, C.; Velu, A.; Vinitsky, E.; Gao, J.; Wang, Y .; Bayen, A.;
+and Wu, Y . 2022. The surprising effectiveness of ppo in
+cooperative multi-agent games. Advances in neural infor-
+mation processing systems, 35: 24611–24624.
+Zhai, W.; Liao, J.; Chen, Z.; Su, B.; and Zhao, X. 2025. A
+Survey of Task Planning with Large Language Models. In-
+telligent Computing, 4: 0124.
+Zhang, Q.; Dong, H.; and Pan, W. 2020. Lyapunov-based re-
+inforcement learning for decentralized multi-agent control.
+In International Conference on Distributed Artificial Intelli-
+gence, 55–68. Springer.
+Zheng, L.; Chen, J.; Wang, J.; He, J.; Hu, Y .; Chen, Y .;
+Fan, C.; Gao, Y .; and Zhang, C. 2021. Episodic multi-
+agent reinforcement learning with curiosity-driven explo-
+ration. Advances in Neural Information Processing Systems,
+34: 3757–3769.
+Zhong, Y .; Kuba, J. G.; Feng, X.; Hu, S.; Ji, J.; and Yang, Y .
+2024. Heterogeneous-agent reinforcement learning. Journal
+of Machine Learning Research, 25(32): 1–67.
+Zhou, W.; Chen, D.; Yan, J.; Li, Z.; Yin, H.; and Ge, W.
+2022. Multi-agent reinforcement learning for cooperative
+lane changing of connected and autonomous vehicles in
+mixed traffic. Autonomous Intelligent Systems, 2(1): 5.
+28022

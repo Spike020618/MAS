@@ -1,0 +1,24 @@
+{
+  "new_verification_api_calls": 0,
+  "physical_calls": 171,
+  "physical_tokens": 449522,
+  "sha256": {
+    "docs/research/action_targets_v1/README.md": "d3acd8a040e14490032bf450b2e55822e59ed86ea500dc5a25f4b97fa3fa1861",
+    "docs/research/action_targets_v1/三行动验证方案.md": "576ad540591f30bb134e74f293693404729bdc90bf2ab313abf2ce7f8c8a5d06",
+    "docs/research/action_targets_v1/完成与待办.md": "d06a46a84ef6518f3628a6059f5e89452c419334b5242a322d18236958066e49",
+    "docs/research/action_targets_v1/实测结果.md": "c0c1a8fce69701c94a5b3e21862d3055ae27dca76d3408552ff30d6dc2b4dba8",
+    "docs/research/action_targets_v1/接口兼容性回查.json": "7c2dd172486c7d89ea6395c890d81b69e13f362bf3f5731cbeccdc92fcc3edc1",
+    "docs/research/action_targets_v1/案例审查与接口修复.md": "82949f3a730a95f9e9371c8690cc41e91380b180e57d3a7458632be820c8257c",
+    "docs/research/action_targets_v1/轨迹归因.md": "ee9817906dddac9afc8def56a12ae267626d3e031e69dda8474e4d9ad408009d",
+    "experiments/core/mechanism/action_target_interface_v2.py": "ab9324960ca0358a8b182ea9c32162d01222f85e2caa04a60f042fe719345dc2",
+    "experiments/mechanism/report_action_comparison.py": "d1743710806e559623db389346d552dd2261b3d7487baa2005fba392d175afb1",
+    "experiments/mechanism/verify_action_comparison.py": "77d0e9e075c262f2df7c2933cfd0057926a1a0358658f9ac38caf4ba8e042434",
+    "experiments/results/action_comparison_v1/acceptance.json": "fb5803c82afa21212449ec6e9d8b339537c803d3e112df81f9358c07c7a3fabf",
+    "experiments/tests/test_action_contract_repair.py": "f1049db9b3c9bbc619ad17196c3a0bade0499d86de9b39225850f6c91b0becfa"
+  },
+  "status": "implementation_and_screen_completed_scientific_gain_NOT_established",
+  "tests_passed": 39,
+  "usd_proxy": 0.1877766,
+  "v1_preserved": true,
+  "v2_status": "offline_contract_repair_NOT_paid_effect_validation"
+}

@@ -1,0 +1,24 @@
+{
+  "version": "paired-deliberation.claim-annotation-v2",
+  "status": "optional_future_human_validation_not_a_development_gate",
+  "unit": "one qualified initial claim within one case",
+  "labels": {
+    "supported": "The cited frozen evidence supports the claim at its stated scope.",
+    "unsupported": "The claim contradicts, exceeds, or misuses the cited frozen evidence.",
+    "unclear": "The frozen evidence is insufficient to decide support."
+  },
+  "required_record_fields": [
+    "verdict",
+    "source_ids",
+    "annotator_ids",
+    "adjudication"
+  ],
+  "procedure": [
+    "Two annotators label independently without seeing method outputs or final recommendation labels.",
+    "Disagreements are adjudicated before an update arm is run.",
+    "Annotators may use only the frozen evidence bundle and the exact claim scope.",
+    "Agreement and disagreement counts are reported; adjudication never uses Hit@5 outcomes."
+  ],
+  "automation_boundary": "Source existence is checked automatically; semantic support is never inferred automatically.",
+  "reserved_test_allowed": false
+}

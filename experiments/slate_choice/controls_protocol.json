@@ -1,0 +1,18 @@
+{
+  "version": "slate-choice-controls.v1",
+  "stage": "development controls, not confirmatory testing",
+  "collaborative_model": "randomized truncated SVD of training-user, pre-cutoff rating-minus-item-prior residuals; missing entries zero",
+  "latent_dimensions": 32,
+  "oversampling": 8,
+  "power_iterations": 2,
+  "seed": 20261026,
+  "item_feature_scaling": "unit row norm, with intercept; same ridge penalty as genre model",
+  "candidate_control": "all four methods share CF-generated candidates per budget; do not attribute cross-representation differences to reranking alone",
+  "exact_scope": "first 128 dev users by sample_key, all three history budgets, both genre and collaborative representations",
+  "exact_max_users": 128,
+  "milp_time_limit_seconds_per_call": 2.0,
+  "exact_objective": "finite-bootstrap setwise minimax regret via threshold set-cover MILP; point-score sum is secondary tie objective",
+  "solver_tolerance": 1e-8,
+  "unknown_feasibility": "retain bounds; never classify timeout or solver error as infeasible",
+  "do_not": ["tune parameters on control results", "score reserved_test", "claim SVD/MMR/SMR as a new method", "claim mixed-strategy equilibrium from deterministic minimax optimization"]
+}

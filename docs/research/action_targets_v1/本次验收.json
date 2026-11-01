@@ -1,0 +1,21 @@
+{
+  "status": "offline_audit_and_design_completed_NOT_new_paid_experiment",
+  "new_api_calls": 0,
+  "network_blocked_during_verification": true,
+  "tests_passed": 14,
+  "n_questions": 40,
+  "n_mode_trajectories": 80,
+  "n_stage_outputs": 240,
+  "legacy_frozen_files_unchanged": 169,
+  "prior_acceptance_artifacts_unchanged": 525,
+  "sequential_files_unchanged": 572,
+  "sha256": {
+    "experiments/mechanism/audit_action_targets.py": "596fed02a0c700788e9ee8a3f1c07cd2b39b440b72443c9d2c0c26a07943a1ab",
+    "experiments/core/mechanism/action_target_interface.py": "521b58f3c07fda6f2f492355742bd449e1052d64c4774d710d9202de4c4c04c5",
+    "experiments/tests/test_action_targets.py": "74f9c137e56fa1eb9994fb58fcf89ad52980253d3ff2d5ac43105fd2f4753d25",
+    "docs/research/action_targets_v1/README.md": "d3acd8a040e14490032bf450b2e55822e59ed86ea500dc5a25f4b97fa3fa1861",
+    "docs/research/action_targets_v1/三行动验证方案.md": "576ad540591f30bb134e74f293693404729bdc90bf2ab313abf2ce7f8c8a5d06",
+    "docs/research/action_targets_v1/轨迹归因.md": "ee9817906dddac9afc8def56a12ae267626d3e031e69dda8474e4d9ad408009d",
+    "docs/research/action_targets_v1/轨迹归因.json": "bfb031e07f0d914a8df5b3d13e71b00646a06523228f5fd2ae810f6ca617c317"
+  }
+}

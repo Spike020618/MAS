@@ -4,6 +4,8 @@ No filesystem/network/model imports. The agent sees its own initial observation
 and a calibration estimate, never the cached upgrade or the evaluation outcome.
 Private Python objects are an API boundary, NOT an adversarial process sandbox.
 """
+from __future__ import annotations
+
 from dataclasses import dataclass, asdict
 from fractions import Fraction
 from hashlib import sha256

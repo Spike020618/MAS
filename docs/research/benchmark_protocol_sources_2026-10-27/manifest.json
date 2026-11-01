@@ -1,0 +1,61 @@
+{
+  "scope": "public source code only, no benchmark test data downloaded or read",
+  "files": [
+    {
+      "repository": "https://github.com/RUCAIBox/UniCRS",
+      "commit": "f7d8f95104d6eba5371cfa845b243057a632079e",
+      "path": "README.md",
+      "url": "https://raw.githubusercontent.com/RUCAIBox/UniCRS/f7d8f95104d6eba5371cfa845b243057a632079e/README.md",
+      "sha256": "ed6534d0527cc7ffefced9984878ee3da11cf8563dc91fc91906dc4d1f70fa77"
+    },
+    {
+      "repository": "https://github.com/RUCAIBox/UniCRS",
+      "commit": "f7d8f95104d6eba5371cfa845b243057a632079e",
+      "path": "src/evaluate_rec.py",
+      "url": "https://raw.githubusercontent.com/RUCAIBox/UniCRS/f7d8f95104d6eba5371cfa845b243057a632079e/src/evaluate_rec.py",
+      "sha256": "90c7a2b2a8b99d1abb10beb44eb16c22751081b144ddd4a508e895572f87bd90"
+    },
+    {
+      "repository": "https://github.com/RUCAIBox/UniCRS",
+      "commit": "f7d8f95104d6eba5371cfa845b243057a632079e",
+      "path": "src/dataset_rec.py",
+      "url": "https://raw.githubusercontent.com/RUCAIBox/UniCRS/f7d8f95104d6eba5371cfa845b243057a632079e/src/dataset_rec.py",
+      "sha256": "0038a61d22ceda80b770f46a09ee05b1e058249cb0e7e71fab66eb47a6f65c6f"
+    },
+    {
+      "repository": "https://github.com/RUCAIBox/UniCRS",
+      "commit": "f7d8f95104d6eba5371cfa845b243057a632079e",
+      "path": "src/train_rec.py",
+      "url": "https://raw.githubusercontent.com/RUCAIBox/UniCRS/f7d8f95104d6eba5371cfa845b243057a632079e/src/train_rec.py",
+      "sha256": "8b4fb1516cbe50817ddbb0682f194ac2dc43370b21f10225f18ea9415b01f88e"
+    },
+    {
+      "repository": "https://github.com/RUCAIBox/CRSLab",
+      "commit": "6497938919998b9cd7aa9c2f43effb39ad0c7088",
+      "path": "README.md",
+      "url": "https://raw.githubusercontent.com/RUCAIBox/CRSLab/6497938919998b9cd7aa9c2f43effb39ad0c7088/README.md",
+      "sha256": "7f4ef4293f5e4da41cbb95adea67775d2b5fe46d90d76c5eb1e429b1b7820f05"
+    },
+    {
+      "repository": "https://github.com/RUCAIBox/CRSLab",
+      "commit": "6497938919998b9cd7aa9c2f43effb39ad0c7088",
+      "path": "crslab/data/dataset/redial/redial.py",
+      "url": "https://raw.githubusercontent.com/RUCAIBox/CRSLab/6497938919998b9cd7aa9c2f43effb39ad0c7088/crslab/data/dataset/redial/redial.py",
+      "sha256": "22e3dde3e21688ad3963633ce9773dbe72af505efe5026bc5ca2639ff225e146"
+    },
+    {
+      "repository": "https://github.com/RUCAIBox/CRSLab",
+      "commit": "6497938919998b9cd7aa9c2f43effb39ad0c7088",
+      "path": "crslab/evaluator/rec.py",
+      "url": "https://raw.githubusercontent.com/RUCAIBox/CRSLab/6497938919998b9cd7aa9c2f43effb39ad0c7088/crslab/evaluator/rec.py",
+      "sha256": "86405b35810e5a0a5b369265bb81a216cca021b13ae21896103ff7cc86a47e13"
+    },
+    {
+      "repository": "https://github.com/RUCAIBox/CRSLab",
+      "commit": "6497938919998b9cd7aa9c2f43effb39ad0c7088",
+      "path": "crslab/evaluator/metrics/rec.py",
+      "url": "https://raw.githubusercontent.com/RUCAIBox/CRSLab/6497938919998b9cd7aa9c2f43effb39ad0c7088/crslab/evaluator/metrics/rec.py",
+      "sha256": "eb039b156191e2a6cf29ccb2a37acf8ff8cd9d1b1d31598bbf9dc08a8f288ec0"
+    }
+  ]
+}

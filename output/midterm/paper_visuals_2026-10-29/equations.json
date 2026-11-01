@@ -1,0 +1,58 @@
+[
+  {
+    "id": "eq01",
+    "number": 1,
+    "title": "局部状态转移",
+    "tex": "s_{t+1}=\\begin{cases}T(s_t,r_t),&L(s_t,r_t)=1,\\\\s_t,&\\text{otherwise}.\\end{cases}",
+    "height": 159
+  },
+  {
+    "id": "eq03",
+    "number": 3,
+    "title": "单份贡献",
+    "tex": "g_i(e\\mid s)=Q\\!\\left(Y_i(\\{e\\};s)\\right)-Q\\!\\left(Y_i(\\varnothing;s)\\right)",
+    "height": 107
+  },
+  {
+    "id": "eq05",
+    "number": 5,
+    "title": "正则化拟合",
+    "tex": "\\mathbf w_g=\\underset{\\mathbf w}{\\arg\\min}\\;\\sum_j\\left(y_j-\\mathbf w^{\\mathsf T}\\phi_j\\right)^2+\\lambda\\lVert\\mathbf w\\rVert_2^2",
+    "height": 160
+  },
+  {
+    "id": "eq06",
+    "number": 6,
+    "title": "二阶交互",
+    "tex": "\\begin{aligned}h_i(e,f\\mid s)={}&Q\\!\\left(Y_i(\\{e,f\\};s)\\right)-Q\\!\\left(Y_i(\\{e\\};s)\\right)\\\\&-Q\\!\\left(Y_i(\\{f\\};s)\\right)+Q\\!\\left(Y_i(\\varnothing;s)\\right)\\end{aligned}",
+    "height": 156
+  },
+  {
+    "id": "eq08",
+    "number": 8,
+    "title": "集合价值",
+    "tex": "\\widehat V(\\mathbf a\\mid s)=\\sum_{e\\in U(\\mathbf a)}\\max_{i\\in I_e(\\mathbf a)}\\widehat g_i(e\\mid s)+\\sum_{\\{e,f\\}\\subseteq U(\\mathbf a)}\\widehat h_{\\mathbf a}(e,f\\mid s)",
+    "height": 164
+  },
+  {
+    "id": "eq09",
+    "number": 9,
+    "title": "共同潜势",
+    "tex": "\\Phi(\\mathbf a\\mid s)=\\widehat V(\\mathbf a\\mid s)-\\sum_{i:a_i\\ne\\varnothing}\\widehat c(a_i\\mid s)",
+    "height": 161
+  },
+  {
+    "id": "eq10",
+    "number": 10,
+    "title": "边际贡献效用",
+    "tex": "u_i(a_i,\\mathbf a_{-i}\\mid s)=\\Phi(a_i,\\mathbf a_{-i}\\mid s)-\\Phi(\\varnothing,\\mathbf a_{-i}\\mid s)",
+    "height": 107
+  },
+  {
+    "id": "eq12",
+    "number": 12,
+    "title": "最大可行偏离",
+    "tex": "\\delta(\\mathbf a\\mid s)=\\max\\!\\left\\{0,\\max_{\\substack{i,a_i'\\\\(a_i',\\mathbf a_{-i})\\in\\mathcal A(s)}}\\!\\left[\\Phi(a_i',\\mathbf a_{-i}\\mid s)-\\Phi(\\mathbf a\\mid s)\\right]\\right\\}",
+    "height": 222
+  }
+]

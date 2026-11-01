@@ -1,0 +1,13 @@
+{
+  "frozen_protocol_sha256": "bf454c061752e8199731bee30b9038e3e115fd7da9cd4adc0abf24654fef9227",
+  "legacy_frozen_files": 169,
+  "maximum_calls": 192,
+  "network_prohibited_for_tests": true,
+  "previous_acceptance_files_unchanged": 525,
+  "previous_action_audit_artifacts_unchanged": 7,
+  "questions": 24,
+  "status": "offline_engineering_preflight_not_efficacy",
+  "tests_api_calls": 0,
+  "tests_passed": 32,
+  "usd_proxy_cap": 2.0
+}

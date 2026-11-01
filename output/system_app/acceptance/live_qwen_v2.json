@@ -1,0 +1,1973 @@
+{
+  "status": "complete",
+  "error": null,
+  "result": {
+    "schema": "mas.engine.result.v1",
+    "engine": {
+      "id": "catalog-evidence-v1",
+      "contract": "mas.engine.result.v1",
+      "methods": {
+        "single": "单 Agent 核查",
+        "independent": "独立核查后汇总",
+        "fixed": "固定顺序交流",
+        "greedy": "按预计收益选择",
+        "central": "中央优化分配",
+        "game": "博弈协商分配"
+      },
+      "supports": [
+        "events",
+        "citations",
+        "local_updates",
+        "cancel",
+        "receipt_resume"
+      ],
+      "value_estimator": "目录特征启发式，尚未加载研究贡献模型",
+      "scope": "影视系统应用适配器；不是已验证的研究效果复现"
+    },
+    "method": "game",
+    "provider": "qwen_flash",
+    "movies": [
+      {
+        "id": "57504",
+        "title": "Girl Who Leapt Through Time, The (Toki o kakeru shôjo)",
+        "year": 2006,
+        "genres": [
+          "Animation",
+          "Comedy",
+          "Drama",
+          "Romance",
+          "Sci-Fi"
+        ],
+        "description": "",
+        "tags": [
+          {
+            "relevance": 0.9735,
+            "tag": "anime"
+          },
+          {
+            "relevance": 0.9618,
+            "tag": "japan"
+          },
+          {
+            "relevance": 0.9378,
+            "tag": "coming of age"
+          },
+          {
+            "relevance": 0.9325,
+            "tag": "time travel"
+          },
+          {
+            "relevance": 0.9272,
+            "tag": "original"
+          },
+          {
+            "relevance": 0.9027,
+            "tag": "drama"
+          },
+          {
+            "relevance": 0.8682,
+            "tag": "japanese"
+          },
+          {
+            "relevance": 0.8607,
+            "tag": "school"
+          },
+          {
+            "relevance": 0.8602,
+            "tag": "friendship"
+          },
+          {
+            "relevance": 0.8487,
+            "tag": "animation"
+          },
+          {
+            "relevance": 0.8268,
+            "tag": "storytelling"
+          },
+          {
+            "relevance": 0.8037,
+            "tag": "melancholic"
+          }
+        ],
+        "rating": 3.9351,
+        "rating_scale": 5,
+        "rating_count": 1896,
+        "rating_source": "MovieLens",
+        "poster": null,
+        "links": {
+          "IMDb": "https://www.imdb.com/title/tt0808506/"
+        },
+        "sources": {
+          "metadata": "movielens:movies.csv:movieId=57504",
+          "ratings": "movielens:ratings.csv:movieId=57504",
+          "tags": "movielens:genome-scores.csv:movieId=57504"
+        },
+        "catalog_version": "dfc1743a6f0b",
+        "retrieval_score": 0.5231,
+        "retrieval_components": {
+          "关键词匹配": 0.0,
+          "主题标签匹配": 0.24,
+          "偏好匹配": 0.24,
+          "资料覆盖": 0.043,
+          "相似影片": 0.0
+        },
+        "evidence": [
+          {
+            "id": "57504:metadata",
+            "source": "movielens:movies.csv:movieId=57504",
+            "text": "Girl Who Leapt Through Time, The (Toki o kakeru shôjo)；年份：2006；类型：Animation, Comedy, Drama, Romance, Sci-Fi"
+          },
+          {
+            "id": "57504:tag:0",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "anime"
+          },
+          {
+            "id": "57504:tag:1",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "japan"
+          },
+          {
+            "id": "57504:tag:2",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "coming of age"
+          },
+          {
+            "id": "57504:tag:3",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "time travel"
+          },
+          {
+            "id": "57504:tag:4",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "original"
+          },
+          {
+            "id": "57504:tag:5",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "drama"
+          },
+          {
+            "id": "57504:tag:6",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "japanese"
+          },
+          {
+            "id": "57504:tag:7",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "school"
+          },
+          {
+            "id": "57504:tag:8",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "friendship"
+          },
+          {
+            "id": "57504:tag:9",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "animation"
+          },
+          {
+            "id": "57504:tag:10",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "storytelling"
+          },
+          {
+            "id": "57504:tag:11",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "melancholic"
+          }
+        ],
+        "match_score": 0.6731,
+        "initial_score": 0.5231,
+        "explanation": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'coming of age'、'time travel'、'drama'、'friendship'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。",
+        "uncertainties": [
+          "当前目录未提供剧情全文，不能据此确认所有情节细节。"
+        ]
+      },
+      {
+        "id": "130520",
+        "title": "Home",
+        "year": 2015,
+        "genres": [
+          "Adventure",
+          "Animation",
+          "Children",
+          "Comedy",
+          "Fantasy",
+          "Sci-Fi"
+        ],
+        "description": "",
+        "tags": [
+          {
+            "relevance": 0.9848,
+            "tag": "alien"
+          },
+          {
+            "relevance": 0.9748,
+            "tag": "animation"
+          },
+          {
+            "relevance": 0.9218,
+            "tag": "aliens"
+          },
+          {
+            "relevance": 0.9092,
+            "tag": "computer animation"
+          },
+          {
+            "relevance": 0.866,
+            "tag": "cute"
+          },
+          {
+            "relevance": 0.8615,
+            "tag": "alien invasion"
+          },
+          {
+            "relevance": 0.816,
+            "tag": "kids and family"
+          },
+          {
+            "relevance": 0.7953,
+            "tag": "kids"
+          },
+          {
+            "relevance": 0.7605,
+            "tag": "family"
+          },
+          {
+            "relevance": 0.7462,
+            "tag": "friendship"
+          },
+          {
+            "relevance": 0.7415,
+            "tag": "creativity"
+          },
+          {
+            "relevance": 0.707,
+            "tag": "animated"
+          }
+        ],
+        "rating": 3.3052,
+        "rating_scale": 5,
+        "rating_count": 1091,
+        "rating_source": "MovieLens",
+        "poster": null,
+        "links": {
+          "IMDb": "https://www.imdb.com/title/tt2224026/"
+        },
+        "sources": {
+          "metadata": "movielens:movies.csv:movieId=130520",
+          "ratings": "movielens:ratings.csv:movieId=130520",
+          "tags": "movielens:genome-scores.csv:movieId=130520"
+        },
+        "catalog_version": "dfc1743a6f0b",
+        "retrieval_score": 0.52,
+        "retrieval_components": {
+          "关键词匹配": 0.0,
+          "主题标签匹配": 0.24,
+          "偏好匹配": 0.24,
+          "资料覆盖": 0.04,
+          "相似影片": 0.0
+        },
+        "evidence": [
+          {
+            "id": "130520:metadata",
+            "source": "movielens:movies.csv:movieId=130520",
+            "text": "Home；年份：2015；类型：Adventure, Animation, Children, Comedy, Fantasy, Sci-Fi"
+          },
+          {
+            "id": "130520:tag:0",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "alien"
+          },
+          {
+            "id": "130520:tag:1",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "animation"
+          },
+          {
+            "id": "130520:tag:2",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "aliens"
+          },
+          {
+            "id": "130520:tag:3",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "computer animation"
+          },
+          {
+            "id": "130520:tag:4",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "cute"
+          },
+          {
+            "id": "130520:tag:5",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "alien invasion"
+          },
+          {
+            "id": "130520:tag:6",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "kids and family"
+          },
+          {
+            "id": "130520:tag:7",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "kids"
+          },
+          {
+            "id": "130520:tag:8",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "family"
+          },
+          {
+            "id": "130520:tag:9",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "friendship"
+          },
+          {
+            "id": "130520:tag:10",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "creativity"
+          },
+          {
+            "id": "130520:tag:11",
+            "source": "movielens:genome-scores.csv:movieId=130520",
+            "text": "animated"
+          }
+        ],
+        "match_score": 0.67,
+        "initial_score": 0.52,
+        "explanation": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'alien'、'animation'、'aliens'、'cute'、'kids and family'、'family'、'friendship'、'creativity'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。资料中无任何证据表明该片具有恐怖或压抑基调，且多个标签指向家庭、友情与创意，整体情感基调温暖积极。",
+        "uncertainties": [
+          "当前目录未提供剧情全文，不能据此确认所有情节细节。"
+        ]
+      },
+      {
+        "id": "1097",
+        "title": "E.T. the Extra-Terrestrial",
+        "year": 1982,
+        "genres": [
+          "Children",
+          "Drama",
+          "Sci-Fi"
+        ],
+        "description": "",
+        "tags": [
+          {
+            "relevance": 0.9945,
+            "tag": "alien"
+          },
+          {
+            "relevance": 0.9725,
+            "tag": "spielberg"
+          },
+          {
+            "relevance": 0.9643,
+            "tag": "aliens"
+          },
+          {
+            "relevance": 0.945,
+            "tag": "children"
+          },
+          {
+            "relevance": 0.9445,
+            "tag": "childhood"
+          },
+          {
+            "relevance": 0.936,
+            "tag": "space"
+          },
+          {
+            "relevance": 0.9103,
+            "tag": "classic"
+          },
+          {
+            "relevance": 0.8985,
+            "tag": "kids and family"
+          },
+          {
+            "relevance": 0.8833,
+            "tag": "touching"
+          },
+          {
+            "relevance": 0.8655,
+            "tag": "heartwarming"
+          },
+          {
+            "relevance": 0.848,
+            "tag": "scifi"
+          },
+          {
+            "relevance": 0.8478,
+            "tag": "fantasy"
+          }
+        ],
+        "rating": 3.7331,
+        "rating_scale": 5,
+        "rating_count": 34602,
+        "rating_source": "MovieLens",
+        "poster": null,
+        "links": {
+          "IMDb": "https://www.imdb.com/title/tt0083866/"
+        },
+        "sources": {
+          "metadata": "movielens:movies.csv:movieId=1097",
+          "ratings": "movielens:ratings.csv:movieId=1097",
+          "tags": "movielens:genome-scores.csv:movieId=1097"
+        },
+        "catalog_version": "dfc1743a6f0b",
+        "retrieval_score": 0.5397,
+        "retrieval_components": {
+          "关键词匹配": 0.0,
+          "主题标签匹配": 0.24,
+          "偏好匹配": 0.24,
+          "资料覆盖": 0.06,
+          "相似影片": 0.0
+        },
+        "evidence": [
+          {
+            "id": "1097:metadata",
+            "source": "movielens:movies.csv:movieId=1097",
+            "text": "E.T. the Extra-Terrestrial；年份：1982；类型：Children, Drama, Sci-Fi"
+          },
+          {
+            "id": "1097:tag:0",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "alien"
+          },
+          {
+            "id": "1097:tag:1",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "spielberg"
+          },
+          {
+            "id": "1097:tag:2",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "aliens"
+          },
+          {
+            "id": "1097:tag:3",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "children"
+          },
+          {
+            "id": "1097:tag:4",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "childhood"
+          },
+          {
+            "id": "1097:tag:5",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "space"
+          },
+          {
+            "id": "1097:tag:6",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "classic"
+          },
+          {
+            "id": "1097:tag:7",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "kids and family"
+          },
+          {
+            "id": "1097:tag:8",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "touching"
+          },
+          {
+            "id": "1097:tag:9",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "heartwarming"
+          },
+          {
+            "id": "1097:tag:10",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "scifi"
+          },
+          {
+            "id": "1097:tag:11",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "fantasy"
+          }
+        ],
+        "match_score": 0.5397,
+        "initial_score": 0.5397,
+        "explanation": "依据目录类型、主题标签与当前偏好匹配；点击详情查看来源。",
+        "uncertainties": [
+          "当前目录未提供剧情全文，不能据此确认所有情节细节。"
+        ]
+      },
+      {
+        "id": "2761",
+        "title": "Iron Giant, The",
+        "year": 1999,
+        "genres": [
+          "Adventure",
+          "Animation",
+          "Children",
+          "Drama",
+          "Sci-Fi"
+        ],
+        "description": "",
+        "tags": [
+          {
+            "relevance": 0.978,
+            "tag": "animation"
+          },
+          {
+            "relevance": 0.9315,
+            "tag": "animated"
+          },
+          {
+            "relevance": 0.931,
+            "tag": "kids and family"
+          },
+          {
+            "relevance": 0.9152,
+            "tag": "friendship"
+          },
+          {
+            "relevance": 0.9065,
+            "tag": "small town"
+          },
+          {
+            "relevance": 0.8985,
+            "tag": "robot"
+          },
+          {
+            "relevance": 0.8935,
+            "tag": "kids"
+          },
+          {
+            "relevance": 0.8895,
+            "tag": "story"
+          },
+          {
+            "relevance": 0.8762,
+            "tag": "cartoon"
+          },
+          {
+            "relevance": 0.8595,
+            "tag": "computer animation"
+          },
+          {
+            "relevance": 0.856,
+            "tag": "original"
+          },
+          {
+            "relevance": 0.8535,
+            "tag": "visually appealing"
+          }
+        ],
+        "rating": 3.8665,
+        "rating_scale": 5,
+        "rating_count": 9855,
+        "rating_source": "MovieLens",
+        "poster": null,
+        "links": {
+          "IMDb": "https://www.imdb.com/title/tt0129167/"
+        },
+        "sources": {
+          "metadata": "movielens:movies.csv:movieId=2761",
+          "ratings": "movielens:ratings.csv:movieId=2761",
+          "tags": "movielens:genome-scores.csv:movieId=2761"
+        },
+        "catalog_version": "dfc1743a6f0b",
+        "retrieval_score": 0.5325,
+        "retrieval_components": {
+          "关键词匹配": 0.0,
+          "主题标签匹配": 0.24,
+          "偏好匹配": 0.24,
+          "资料覆盖": 0.053,
+          "相似影片": 0.0
+        },
+        "evidence": [
+          {
+            "id": "2761:metadata",
+            "source": "movielens:movies.csv:movieId=2761",
+            "text": "Iron Giant, The；年份：1999；类型：Adventure, Animation, Children, Drama, Sci-Fi"
+          },
+          {
+            "id": "2761:tag:0",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "animation"
+          },
+          {
+            "id": "2761:tag:1",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "animated"
+          },
+          {
+            "id": "2761:tag:2",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "kids and family"
+          },
+          {
+            "id": "2761:tag:3",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "friendship"
+          },
+          {
+            "id": "2761:tag:4",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "small town"
+          },
+          {
+            "id": "2761:tag:5",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "robot"
+          },
+          {
+            "id": "2761:tag:6",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "kids"
+          },
+          {
+            "id": "2761:tag:7",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "story"
+          },
+          {
+            "id": "2761:tag:8",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "cartoon"
+          },
+          {
+            "id": "2761:tag:9",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "computer animation"
+          },
+          {
+            "id": "2761:tag:10",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "original"
+          },
+          {
+            "id": "2761:tag:11",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "visually appealing"
+          }
+        ],
+        "match_score": 0.5325,
+        "initial_score": 0.5325,
+        "explanation": "依据目录类型、主题标签与当前偏好匹配；点击详情查看来源。",
+        "uncertainties": [
+          "当前目录未提供剧情全文，不能据此确认所有情节细节。"
+        ]
+      }
+    ],
+    "initial_ranking": [
+      "1097",
+      "2761",
+      "92420",
+      "57504",
+      "130520",
+      "171765",
+      "49815",
+      "107410",
+      "113071",
+      "2571",
+      "260",
+      "480",
+      "589",
+      "1196",
+      "1210",
+      "1270",
+      "780",
+      "32",
+      "1580",
+      "79132",
+      "1240",
+      "541",
+      "1682",
+      "7361"
+    ],
+    "final_ranking": [
+      "57504",
+      "130520",
+      "1097",
+      "2761",
+      "92420",
+      "171765",
+      "49815",
+      "107410",
+      "113071",
+      "2571",
+      "260",
+      "480",
+      "1196",
+      "589",
+      "1210",
+      "1270",
+      "780",
+      "32",
+      "1580",
+      "1240",
+      "79132",
+      "541",
+      "1682",
+      "7361"
+    ],
+    "reports": [
+      {
+        "member": "需求匹配",
+        "candidate": "1097",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1097:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "2761",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "2761:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "92420",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "92420:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "57504",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "57504:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "130520",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "130520:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "171765",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "171765:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "49815",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "49815:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "107410",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "107410:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "113071",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "113071:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "2571",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "2571:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "260",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "260:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "480",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "480:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "589",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "589:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1196",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1196:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1210",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1210:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1270",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1270:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "780",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "780:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "32",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "32:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1580",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1580:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "79132",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "79132:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1240",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1240:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "541",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "541:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1682",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1682:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "7361",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "7361:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "57504",
+        "decision": "promote",
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'coming of age'、'time travel'、'drama'、'friendship'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。",
+        "citations": [
+          {
+            "source_id": "57504:metadata",
+            "quote": "Girl Who Leapt Through Time, The (Toki o kakeru shôjo)；年份：2006；类型：Animation, Comedy, Drama, Romance, Sci-Fi"
+          },
+          {
+            "source_id": "57504:tag:3",
+            "quote": "time travel"
+          },
+          {
+            "source_id": "57504:tag:2",
+            "quote": "coming of age"
+          },
+          {
+            "source_id": "57504:tag:5",
+            "quote": "drama"
+          },
+          {
+            "source_id": "57504:tag:8",
+            "quote": "friendship"
+          }
+        ],
+        "kind": "model",
+        "valid": true
+      },
+      {
+        "member": "资料核查",
+        "candidate": "92420",
+        "decision": "uncertain",
+        "reason": "候选电影Chronicle的类型包含Sci-Fi，符合偏好；但其类型也包含Thriller，且标签中未体现温暖主题，资料中无明确证据表明该片为温暖基调。虽然有'friendship'等标签，但缺乏足够信息确认其情感基调是否温暖。同时，资料未排除恐怖元素，无法确认是否完全符合不包含恐怖的要求。因此，基于现有资料，无法确定其是否满足用户对温暖科幻电影的需求。",
+        "citations": [
+          {
+            "source_id": "92420:metadata",
+            "quote": "Chronicle；年份：2012；类型：Action, Sci-Fi, Thriller"
+          },
+          {
+            "source_id": "92420:tag:0",
+            "quote": "handycam"
+          },
+          {
+            "source_id": "92420:tag:1",
+            "quote": "superhero"
+          },
+          {
+            "source_id": "92420:tag:2",
+            "quote": "super hero"
+          },
+          {
+            "source_id": "92420:tag:3",
+            "quote": "superheroes"
+          },
+          {
+            "source_id": "92420:tag:4",
+            "quote": "bullying"
+          },
+          {
+            "source_id": "92420:tag:5",
+            "quote": "coming of age"
+          },
+          {
+            "source_id": "92420:tag:6",
+            "quote": "teenager"
+          },
+          {
+            "source_id": "92420:tag:7",
+            "quote": "original"
+          },
+          {
+            "source_id": "92420:tag:8",
+            "quote": "storytelling"
+          },
+          {
+            "source_id": "92420:tag:9",
+            "quote": "fake documentary"
+          },
+          {
+            "source_id": "92420:tag:10",
+            "quote": "adolescence"
+          },
+          {
+            "source_id": "92420:tag:11",
+            "quote": "friendship"
+          }
+        ],
+        "kind": "model",
+        "valid": true
+      },
+      {
+        "member": "候选比较",
+        "candidate": "130520",
+        "decision": "promote",
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'alien'、'animation'、'aliens'、'cute'、'kids and family'、'family'、'friendship'、'creativity'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。资料中无任何证据表明该片具有恐怖或压抑基调，且多个标签指向家庭、友情与创意，整体情感基调温暖积极。",
+        "citations": [
+          {
+            "source_id": "130520:metadata",
+            "quote": "Home；年份：2015；类型：Adventure, Animation, Children, Comedy, Fantasy, Sci-Fi"
+          },
+          {
+            "source_id": "130520:tag:0",
+            "quote": "alien"
+          },
+          {
+            "source_id": "130520:tag:1",
+            "quote": "animation"
+          },
+          {
+            "source_id": "130520:tag:2",
+            "quote": "aliens"
+          },
+          {
+            "source_id": "130520:tag:4",
+            "quote": "cute"
+          },
+          {
+            "source_id": "130520:tag:6",
+            "quote": "kids and family"
+          },
+          {
+            "source_id": "130520:tag:8",
+            "quote": "family"
+          },
+          {
+            "source_id": "130520:tag:9",
+            "quote": "friendship"
+          },
+          {
+            "source_id": "130520:tag:10",
+            "quote": "creativity"
+          }
+        ],
+        "kind": "model",
+        "valid": true
+      }
+    ],
+    "changes": [
+      {
+        "candidate_id": "57504",
+        "before": 0.5231,
+        "after": 0.6731,
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'coming of age'、'time travel'、'drama'、'friendship'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。",
+        "citations": [
+          {
+            "source_id": "57504:metadata",
+            "quote": "Girl Who Leapt Through Time, The (Toki o kakeru shôjo)；年份：2006；类型：Animation, Comedy, Drama, Romance, Sci-Fi"
+          },
+          {
+            "source_id": "57504:tag:3",
+            "quote": "time travel"
+          },
+          {
+            "source_id": "57504:tag:2",
+            "quote": "coming of age"
+          },
+          {
+            "source_id": "57504:tag:5",
+            "quote": "drama"
+          },
+          {
+            "source_id": "57504:tag:8",
+            "quote": "friendship"
+          }
+        ]
+      },
+      {
+        "candidate_id": "130520",
+        "before": 0.52,
+        "after": 0.67,
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'alien'、'animation'、'aliens'、'cute'、'kids and family'、'family'、'friendship'、'creativity'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。资料中无任何证据表明该片具有恐怖或压抑基调，且多个标签指向家庭、友情与创意，整体情感基调温暖积极。",
+        "citations": [
+          {
+            "source_id": "130520:metadata",
+            "quote": "Home；年份：2015；类型：Adventure, Animation, Children, Comedy, Fantasy, Sci-Fi"
+          },
+          {
+            "source_id": "130520:tag:0",
+            "quote": "alien"
+          },
+          {
+            "source_id": "130520:tag:1",
+            "quote": "animation"
+          },
+          {
+            "source_id": "130520:tag:2",
+            "quote": "aliens"
+          },
+          {
+            "source_id": "130520:tag:4",
+            "quote": "cute"
+          },
+          {
+            "source_id": "130520:tag:6",
+            "quote": "kids and family"
+          },
+          {
+            "source_id": "130520:tag:8",
+            "quote": "family"
+          },
+          {
+            "source_id": "130520:tag:9",
+            "quote": "friendship"
+          },
+          {
+            "source_id": "130520:tag:10",
+            "quote": "creativity"
+          }
+        ]
+      }
+    ],
+    "allocation": [
+      {
+        "member": 0,
+        "candidate_id": "57504",
+        "predicted_value": 0.59
+      },
+      {
+        "member": 1,
+        "candidate_id": "92420",
+        "predicted_value": 0.589621
+      },
+      {
+        "member": 2,
+        "candidate_id": "130520",
+        "predicted_value": 0.498455
+      }
+    ],
+    "usage": {
+      "calls": 3,
+      "tokens": 6484,
+      "estimated_cny": 0.00190275,
+      "reserved_cny": 0.00667275,
+      "price_basis": "configured estimates, not provider invoice"
+    },
+    "summary": "找到4部符合硬条件的影片，完成3次模型核查。"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "time": 1793289916.7237592,
+      "stage": "planning",
+      "message": "正在整理需求与偏好",
+      "detail": {
+        "constraints": {
+          "preferred_genres": [
+            "sci-fi"
+          ],
+          "excluded_genres": [
+            "horror"
+          ],
+          "required_genres": [],
+          "excluded_movie_ids": []
+        }
+      }
+    },
+    {
+      "seq": 2,
+      "time": 1793289916.789736,
+      "stage": "retrieval",
+      "message": "候选检索完成",
+      "detail": {
+        "count": 24,
+        "catalog_version": "dfc1743a6f0b",
+        "channels": [
+          "关键词",
+          "主题标签",
+          "用户偏好"
+        ]
+      }
+    },
+    {
+      "seq": 3,
+      "time": 1793289916.790551,
+      "stage": "initial",
+      "message": "候选资料与初始判断已准备",
+      "detail": {
+        "reports": [
+          {
+            "member": "需求匹配",
+            "candidate": "1097",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1097:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "2761",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "2761:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "92420",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "92420:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "57504",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "57504:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "130520",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "130520:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "171765",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "171765:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "49815",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "49815:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "107410",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "107410:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "113071",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "113071:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "2571",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "2571:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "260",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "260:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "480",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "480:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "589",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "589:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1196",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1196:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1210",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1210:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1270",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1270:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "780",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "780:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "32",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "32:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1580",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1580:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "79132",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "79132:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1240",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1240:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "541",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "541:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1682",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1682:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "7361",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "7361:metadata"
+            ],
+            "kind": "deterministic"
+          }
+        ],
+        "initial_ranking": [
+          "1097",
+          "2761",
+          "92420",
+          "57504",
+          "130520",
+          "171765",
+          "49815",
+          "107410",
+          "113071",
+          "2571",
+          "260",
+          "480",
+          "589",
+          "1196",
+          "1210",
+          "1270",
+          "780",
+          "32",
+          "1580",
+          "79132",
+          "1240",
+          "541",
+          "1682",
+          "7361"
+        ]
+      }
+    },
+    {
+      "seq": 4,
+      "time": 1793289916.791327,
+      "stage": "allocation",
+      "message": "核查任务已分配",
+      "detail": {
+        "method": "game",
+        "selected": [
+          {
+            "member": 0,
+            "candidate_id": "57504",
+            "predicted_value": 0.59
+          },
+          {
+            "member": 1,
+            "candidate_id": "92420",
+            "predicted_value": 0.589621
+          },
+          {
+            "member": 2,
+            "candidate_id": "130520",
+            "predicted_value": 0.498455
+          }
+        ],
+        "negotiation": [
+          {
+            "member": 0,
+            "before": [
+              -1,
+              -1,
+              -1
+            ],
+            "after": [
+              3,
+              -1,
+              -1
+            ],
+            "potential_gain": 0.57
+          },
+          {
+            "member": 1,
+            "before": [
+              3,
+              -1,
+              -1
+            ],
+            "after": [
+              3,
+              2,
+              -1
+            ],
+            "potential_gain": 0.569621
+          },
+          {
+            "member": 2,
+            "before": [
+              3,
+              2,
+              -1
+            ],
+            "after": [
+              3,
+              2,
+              4
+            ],
+            "potential_gain": 0.47845499999999985
+          }
+        ],
+        "potential": 1.6180759999999998,
+        "max_unilateral_gain": 0.0,
+        "estimator": "catalog_heuristic_v1"
+      }
+    },
+    {
+      "seq": 5,
+      "time": 1793289916.7929332,
+      "stage": "request",
+      "message": "发起核查",
+      "detail": {
+        "slot": "review-0",
+        "model": "qwen-flash-2025-07-28"
+      }
+    },
+    {
+      "seq": 6,
+      "time": 1793289918.5488791,
+      "stage": "response",
+      "message": "核查响应已保存",
+      "detail": {
+        "slot": "review-0",
+        "tokens": 1830,
+        "estimated_cny": 0.0004959,
+        "valid_json": true
+      }
+    },
+    {
+      "seq": 7,
+      "time": 1793289918.550508,
+      "stage": "review",
+      "message": "证据核查完成",
+      "detail": {
+        "member": "需求匹配",
+        "candidate": "57504",
+        "decision": "promote",
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'coming of age'、'time travel'、'drama'、'friendship'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。",
+        "citations": [
+          {
+            "source_id": "57504:metadata",
+            "quote": "Girl Who Leapt Through Time, The (Toki o kakeru shôjo)；年份：2006；类型：Animation, Comedy, Drama, Romance, Sci-Fi"
+          },
+          {
+            "source_id": "57504:tag:3",
+            "quote": "time travel"
+          },
+          {
+            "source_id": "57504:tag:2",
+            "quote": "coming of age"
+          },
+          {
+            "source_id": "57504:tag:5",
+            "quote": "drama"
+          },
+          {
+            "source_id": "57504:tag:8",
+            "quote": "friendship"
+          }
+        ],
+        "kind": "model",
+        "valid": true
+      }
+    },
+    {
+      "seq": 8,
+      "time": 1793289918.5522509,
+      "stage": "update",
+      "message": "局部排序分数已更新",
+      "detail": {
+        "candidate_id": "57504",
+        "before": 0.5231,
+        "after": 0.6731,
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'coming of age'、'time travel'、'drama'、'friendship'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。",
+        "citations": [
+          {
+            "source_id": "57504:metadata",
+            "quote": "Girl Who Leapt Through Time, The (Toki o kakeru shôjo)；年份：2006；类型：Animation, Comedy, Drama, Romance, Sci-Fi"
+          },
+          {
+            "source_id": "57504:tag:3",
+            "quote": "time travel"
+          },
+          {
+            "source_id": "57504:tag:2",
+            "quote": "coming of age"
+          },
+          {
+            "source_id": "57504:tag:5",
+            "quote": "drama"
+          },
+          {
+            "source_id": "57504:tag:8",
+            "quote": "friendship"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 9,
+      "time": 1793289918.556942,
+      "stage": "request",
+      "message": "发起核查",
+      "detail": {
+        "slot": "review-1",
+        "model": "qwen-flash-2025-07-28"
+      }
+    },
+    {
+      "seq": 10,
+      "time": 1793289921.078361,
+      "stage": "response",
+      "message": "核查响应已保存",
+      "detail": {
+        "slot": "review-1",
+        "tokens": 2109,
+        "estimated_cny": 0.00066195,
+        "valid_json": true
+      }
+    },
+    {
+      "seq": 11,
+      "time": 1793289921.081156,
+      "stage": "review",
+      "message": "证据核查完成",
+      "detail": {
+        "member": "资料核查",
+        "candidate": "92420",
+        "decision": "uncertain",
+        "reason": "候选电影Chronicle的类型包含Sci-Fi，符合偏好；但其类型也包含Thriller，且标签中未体现温暖主题，资料中无明确证据表明该片为温暖基调。虽然有'friendship'等标签，但缺乏足够信息确认其情感基调是否温暖。同时，资料未排除恐怖元素，无法确认是否完全符合不包含恐怖的要求。因此，基于现有资料，无法确定其是否满足用户对温暖科幻电影的需求。",
+        "citations": [
+          {
+            "source_id": "92420:metadata",
+            "quote": "Chronicle；年份：2012；类型：Action, Sci-Fi, Thriller"
+          },
+          {
+            "source_id": "92420:tag:0",
+            "quote": "handycam"
+          },
+          {
+            "source_id": "92420:tag:1",
+            "quote": "superhero"
+          },
+          {
+            "source_id": "92420:tag:2",
+            "quote": "super hero"
+          },
+          {
+            "source_id": "92420:tag:3",
+            "quote": "superheroes"
+          },
+          {
+            "source_id": "92420:tag:4",
+            "quote": "bullying"
+          },
+          {
+            "source_id": "92420:tag:5",
+            "quote": "coming of age"
+          },
+          {
+            "source_id": "92420:tag:6",
+            "quote": "teenager"
+          },
+          {
+            "source_id": "92420:tag:7",
+            "quote": "original"
+          },
+          {
+            "source_id": "92420:tag:8",
+            "quote": "storytelling"
+          },
+          {
+            "source_id": "92420:tag:9",
+            "quote": "fake documentary"
+          },
+          {
+            "source_id": "92420:tag:10",
+            "quote": "adolescence"
+          },
+          {
+            "source_id": "92420:tag:11",
+            "quote": "friendship"
+          }
+        ],
+        "kind": "model",
+        "valid": true
+      }
+    },
+    {
+      "seq": 12,
+      "time": 1793289921.0874739,
+      "stage": "request",
+      "message": "发起核查",
+      "detail": {
+        "slot": "review-2",
+        "model": "qwen-flash-2025-07-28"
+      }
+    },
+    {
+      "seq": 13,
+      "time": 1793289924.271002,
+      "stage": "response",
+      "message": "核查响应已保存",
+      "detail": {
+        "slot": "review-2",
+        "tokens": 2545,
+        "estimated_cny": 0.0007449,
+        "valid_json": true
+      }
+    },
+    {
+      "seq": 14,
+      "time": 1793289924.2724931,
+      "stage": "review",
+      "message": "证据核查完成",
+      "detail": {
+        "member": "候选比较",
+        "candidate": "130520",
+        "decision": "promote",
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'alien'、'animation'、'aliens'、'cute'、'kids and family'、'family'、'friendship'、'creativity'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。资料中无任何证据表明该片具有恐怖或压抑基调，且多个标签指向家庭、友情与创意，整体情感基调温暖积极。",
+        "citations": [
+          {
+            "source_id": "130520:metadata",
+            "quote": "Home；年份：2015；类型：Adventure, Animation, Children, Comedy, Fantasy, Sci-Fi"
+          },
+          {
+            "source_id": "130520:tag:0",
+            "quote": "alien"
+          },
+          {
+            "source_id": "130520:tag:1",
+            "quote": "animation"
+          },
+          {
+            "source_id": "130520:tag:2",
+            "quote": "aliens"
+          },
+          {
+            "source_id": "130520:tag:4",
+            "quote": "cute"
+          },
+          {
+            "source_id": "130520:tag:6",
+            "quote": "kids and family"
+          },
+          {
+            "source_id": "130520:tag:8",
+            "quote": "family"
+          },
+          {
+            "source_id": "130520:tag:9",
+            "quote": "friendship"
+          },
+          {
+            "source_id": "130520:tag:10",
+            "quote": "creativity"
+          }
+        ],
+        "kind": "model",
+        "valid": true
+      }
+    },
+    {
+      "seq": 15,
+      "time": 1793289924.274504,
+      "stage": "update",
+      "message": "局部排序分数已更新",
+      "detail": {
+        "candidate_id": "130520",
+        "before": 0.52,
+        "after": 0.67,
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'alien'、'animation'、'aliens'、'cute'、'kids and family'、'family'、'friendship'、'creativity'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。资料中无任何证据表明该片具有恐怖或压抑基调，且多个标签指向家庭、友情与创意，整体情感基调温暖积极。",
+        "citations": [
+          {
+            "source_id": "130520:metadata",
+            "quote": "Home；年份：2015；类型：Adventure, Animation, Children, Comedy, Fantasy, Sci-Fi"
+          },
+          {
+            "source_id": "130520:tag:0",
+            "quote": "alien"
+          },
+          {
+            "source_id": "130520:tag:1",
+            "quote": "animation"
+          },
+          {
+            "source_id": "130520:tag:2",
+            "quote": "aliens"
+          },
+          {
+            "source_id": "130520:tag:4",
+            "quote": "cute"
+          },
+          {
+            "source_id": "130520:tag:6",
+            "quote": "kids and family"
+          },
+          {
+            "source_id": "130520:tag:8",
+            "quote": "family"
+          },
+          {
+            "source_id": "130520:tag:9",
+            "quote": "friendship"
+          },
+          {
+            "source_id": "130520:tag:10",
+            "quote": "creativity"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 16,
+      "time": 1793289924.279528,
+      "stage": "complete",
+      "message": "推荐已完成",
+      "detail": {
+        "usage": {
+          "calls": 3,
+          "tokens": 6484,
+          "estimated_cny": 0.00190275,
+          "reserved_cny": 0.00667275,
+          "price_basis": "configured estimates, not provider invoice"
+        }
+      }
+    }
+  ],
+  "receipts": {
+    "review-0": {
+      "hash": "c06aee2fcf4b4dee170c1df319d7a57283bb2d4ab5ea5c9a2432b702d6b310b1",
+      "status": "complete",
+      "reserved": 0.0020946,
+      "model": "qwen-flash-2025-07-28",
+      "response": {
+        "decision": "promote",
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'coming of age'、'time travel'、'drama'、'friendship'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。",
+        "source_ids": [
+          "57504:metadata",
+          "57504:tag:3",
+          "57504:tag:2",
+          "57504:tag:5",
+          "57504:tag:8"
+        ]
+      },
+      "tokens": 1830,
+      "cost": 0.0004959,
+      "raw": "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"content\":\"{\\n  \\\"decision\\\": \\\"promote\\\",\\n  \\\"reason\\\": \\\"该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'coming of age'、'time travel'、'drama'、'friendship'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。\\\",\\n  \\\"source_ids\\\": [\\n    \\\"57504:metadata\\\",\\n    \\\"57504:tag:3\\\",\\n    \\\"57504:tag:2\\\",\\n    \\\"57504:tag:5\\\",\\n    \\\"57504:tag:8\\\"\\n  ]\\n}\",\"role\":\"assistant\"}}],\"created\":1793289916,\"id\":\"chatcmpl-dd6a5692-bd4f-9828-898e-9193ba7f773f\",\"model\":\"qwen-flash-2025-07-28\",\"object\":\"chat.completion\",\"usage\":{\"completion_tokens\":164,\"prompt_tokens\":1666,\"total_tokens\":1830}}"
+    },
+    "review-1": {
+      "hash": "12e88dc9d54b180afcb0e7128ea619b4f266bf887df6ca04802338333f8c6130",
+      "status": "complete",
+      "reserved": 0.00218805,
+      "model": "qwen-flash-2025-07-28",
+      "response": {
+        "decision": "uncertain",
+        "reason": "候选电影Chronicle的类型包含Sci-Fi，符合偏好；但其类型也包含Thriller，且标签中未体现温暖主题，资料中无明确证据表明该片为温暖基调。虽然有'friendship'等标签，但缺乏足够信息确认其情感基调是否温暖。同时，资料未排除恐怖元素，无法确认是否完全符合不包含恐怖的要求。因此，基于现有资料，无法确定其是否满足用户对温暖科幻电影的需求。",
+        "source_ids": [
+          "92420:metadata",
+          "92420:tag:0",
+          "92420:tag:1",
+          "92420:tag:2",
+          "92420:tag:3",
+          "92420:tag:4",
+          "92420:tag:5",
+          "92420:tag:6",
+          "92420:tag:7",
+          "92420:tag:8",
+          "92420:tag:9",
+          "92420:tag:10",
+          "92420:tag:11"
+        ]
+      },
+      "tokens": 2109,
+      "cost": 0.00066195,
+      "raw": "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"content\":\"{\\\"decision\\\": \\\"uncertain\\\", \\\"reason\\\": \\\"候选电影Chronicle的类型包含Sci-Fi，符合偏好；但其类型也包含Thriller，且标签中未体现温暖主题，资料中无明确证据表明该片为温暖基调。虽然有'friendship'等标签，但缺乏足够信息确认其情感基调是否温暖。同时，资料未排除恐怖元素，无法确认是否完全符合不包含恐怖的要求。因此，基于现有资料，无法确定其是否满足用户对温暖科幻电影的需求。\\\", \\\"source_ids\\\": [\\\"92420:metadata\\\", \\\"92420:tag:0\\\", \\\"92420:tag:1\\\", \\\"92420:tag:2\\\", \\\"92420:tag:3\\\", \\\"92420:tag:4\\\", \\\"92420:tag:5\\\", \\\"92420:tag:6\\\", \\\"92420:tag:7\\\", \\\"92420:tag:8\\\", \\\"92420:tag:9\\\", \\\"92420:tag:10\\\", \\\"92420:tag:11\\\"]}\",\"role\":\"assistant\"}}],\"created\":1793289918,\"id\":\"chatcmpl-52944033-22a1-99cc-af19-29e5b71a165f\",\"model\":\"qwen-flash-2025-07-28\",\"object\":\"chat.completion\",\"usage\":{\"completion_tokens\":256,\"prompt_tokens\":1853,\"total_tokens\":2109}}"
+    },
+    "review-2": {
+      "hash": "901f89f3456ac8f9b2641f8e378ca61844dac29735d347f13cfce1b1fd644906",
+      "status": "complete",
+      "reserved": 0.0023901,
+      "model": "qwen-flash-2025-07-28",
+      "response": {
+        "decision": "promote",
+        "reason": "该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'alien'、'animation'、'aliens'、'cute'、'kids and family'、'family'、'friendship'、'creativity'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。资料中无任何证据表明该片具有恐怖或压抑基调，且多个标签指向家庭、友情与创意，整体情感基调温暖积极。",
+        "source_ids": [
+          "130520:metadata",
+          "130520:tag:0",
+          "130520:tag:1",
+          "130520:tag:2",
+          "130520:tag:4",
+          "130520:tag:6",
+          "130520:tag:8",
+          "130520:tag:9",
+          "130520:tag:10"
+        ]
+      },
+      "tokens": 2545,
+      "cost": 0.0007449,
+      "raw": "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"content\":\"{\\n  \\\"decision\\\": \\\"promote\\\",\\n  \\\"reason\\\": \\\"该电影属于科幻（Sci-Fi）类型，且未包含恐怖（horror）元素。其标签中包含'alien'、'animation'、'aliens'、'cute'、'kids and family'、'family'、'friendship'、'creativity'等温暖主题，符合用户对温暖科幻电影的需求。同时，电影的 genres 中明确包含 'Sci-Fi'，排除了 'Horror' 类型，满足所有约束条件。资料中无任何证据表明该片具有恐怖或压抑基调，且多个标签指向家庭、友情与创意，整体情感基调温暖积极。\\\",\\n  \\\"source_ids\\\": [\\n    \\\"130520:metadata\\\",\\n    \\\"130520:tag:0\\\",\\n    \\\"130520:tag:1\\\",\\n    \\\"130520:tag:2\\\",\\n    \\\"130520:tag:4\\\",\\n    \\\"130520:tag:6\\\",\\n    \\\"130520:tag:8\\\",\\n    \\\"130520:tag:9\\\",\\n    \\\"130520:tag:10\\\"\\n  ]\\n}\",\"role\":\"assistant\"}}],\"created\":1793289922,\"id\":\"chatcmpl-fcf95b95-4600-9cba-bc96-64a6f2fa8e9e\",\"model\":\"qwen-flash-2025-07-28\",\"object\":\"chat.completion\",\"usage\":{\"completion_tokens\":269,\"prompt_tokens\":2276,\"total_tokens\":2545}}"
+    }
+  }
+}

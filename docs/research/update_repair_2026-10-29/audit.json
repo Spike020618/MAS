@@ -1,0 +1,21 @@
+{
+  "completed_cases": 399,
+  "missing_indices": [
+    399
+  ],
+  "sealed": false,
+  "game_review": {
+    "reviews": 715,
+    "valid": 693,
+    "accepted": 0,
+    "null_patch": 705,
+    "valid_support": 357,
+    "valid_refute": 284,
+    "valid_unclear": 52
+  },
+  "http400": {
+    "Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment": 457
+  },
+  "labels_read": false,
+  "requests_sent": 0
+}

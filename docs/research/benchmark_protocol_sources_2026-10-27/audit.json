@@ -1,0 +1,33 @@
+{
+  "benchmark_performance_reproduced": false,
+  "benchmark_test_data_read": false,
+  "current_protocol": {
+    "dev_cases": 167,
+    "metrics": "multi-target Hit/Recall/NDCG@5",
+    "pool": "100 frozen retrieved candidates",
+    "reserved_cases_metadata_only": 60,
+    "source": "ReDial raw train",
+    "target": "future-mentioned AND questionnaire suggested+liked, mapped to MovieLens IDs, excluding visible mentions",
+    "train_cases": 4677
+  },
+  "known_scope_integration_status": {
+    "live_commits": 0,
+    "live_selected_actions": 10,
+    "new_code_source_channels_enforced": true,
+    "reason": "all first integration responses violated citation count or exact source-ID contract; no semantic effect claimed"
+  },
+  "native_reference": {
+    "cutoffs": [
+      1,
+      10,
+      50
+    ],
+    "framework": "UniCRS",
+    "ranking_universe": "all dataset kg item_ids before top50",
+    "target_unit": "one processed rec item per sample"
+  },
+  "new_model_calls_for_benchmark_audit": 0,
+  "parity_description": "120 rankings x 6 targets including missing x 3 cutoffs x 3 metrics; against pinned author functions",
+  "protocol_metric_parity_checks": 6480,
+  "public_source_files_hash_verified": 8
+}

@@ -1,0 +1,1169 @@
+{
+  "status": "complete",
+  "error": null,
+  "result": {
+    "schema": "mas.engine.result.v1",
+    "engine": {
+      "id": "catalog-evidence-v1",
+      "contract": "mas.engine.result.v1",
+      "methods": {
+        "single": "单 Agent 核查",
+        "independent": "独立核查后汇总",
+        "fixed": "固定顺序交流",
+        "greedy": "按预计收益选择",
+        "central": "中央优化分配",
+        "game": "博弈协商分配"
+      },
+      "supports": [
+        "events",
+        "citations",
+        "local_updates",
+        "cancel",
+        "receipt_resume"
+      ],
+      "value_estimator": "目录特征启发式，尚未加载研究贡献模型",
+      "scope": "影视系统应用适配器；不是已验证的研究效果复现"
+    },
+    "method": "game",
+    "provider": "qwen_flash",
+    "movies": [
+      {
+        "id": "1097",
+        "title": "E.T. the Extra-Terrestrial",
+        "year": 1982,
+        "genres": [
+          "Children",
+          "Drama",
+          "Sci-Fi"
+        ],
+        "description": "",
+        "tags": [
+          {
+            "relevance": 0.9945,
+            "tag": "alien"
+          },
+          {
+            "relevance": 0.9725,
+            "tag": "spielberg"
+          },
+          {
+            "relevance": 0.9643,
+            "tag": "aliens"
+          },
+          {
+            "relevance": 0.945,
+            "tag": "children"
+          },
+          {
+            "relevance": 0.9445,
+            "tag": "childhood"
+          },
+          {
+            "relevance": 0.936,
+            "tag": "space"
+          },
+          {
+            "relevance": 0.9103,
+            "tag": "classic"
+          },
+          {
+            "relevance": 0.8985,
+            "tag": "kids and family"
+          },
+          {
+            "relevance": 0.8833,
+            "tag": "touching"
+          },
+          {
+            "relevance": 0.8655,
+            "tag": "heartwarming"
+          },
+          {
+            "relevance": 0.848,
+            "tag": "scifi"
+          },
+          {
+            "relevance": 0.8478,
+            "tag": "fantasy"
+          }
+        ],
+        "rating": 3.7331,
+        "rating_scale": 5,
+        "rating_count": 34602,
+        "rating_source": "MovieLens",
+        "poster": null,
+        "links": {
+          "IMDb": "https://www.imdb.com/title/tt0083866/"
+        },
+        "sources": {
+          "metadata": "movielens:movies.csv:movieId=1097",
+          "ratings": "movielens:ratings.csv:movieId=1097",
+          "tags": "movielens:genome-scores.csv:movieId=1097"
+        },
+        "catalog_version": "dfc1743a6f0b",
+        "retrieval_score": 0.5397,
+        "retrieval_components": {
+          "关键词匹配": 0.0,
+          "主题标签匹配": 0.24,
+          "偏好匹配": 0.24,
+          "资料覆盖": 0.06
+        },
+        "evidence": [
+          {
+            "id": "1097:metadata",
+            "source": "movielens:movies.csv:movieId=1097",
+            "text": "E.T. the Extra-Terrestrial；年份：1982；类型：Children, Drama, Sci-Fi"
+          },
+          {
+            "id": "1097:tags",
+            "source": "movielens:genome-scores.csv:movieId=1097",
+            "text": "alien；spielberg；aliens；children；childhood；space；classic；kids and family；touching；heartwarming；scifi；fantasy"
+          }
+        ],
+        "match_score": 0.5397,
+        "initial_score": 0.5397,
+        "explanation": "依据目录类型、主题标签与当前偏好匹配；点击详情查看来源。",
+        "uncertainties": [
+          "当前目录未提供剧情全文，不能据此确认所有情节细节。"
+        ]
+      },
+      {
+        "id": "2761",
+        "title": "Iron Giant, The",
+        "year": 1999,
+        "genres": [
+          "Adventure",
+          "Animation",
+          "Children",
+          "Drama",
+          "Sci-Fi"
+        ],
+        "description": "",
+        "tags": [
+          {
+            "relevance": 0.978,
+            "tag": "animation"
+          },
+          {
+            "relevance": 0.9315,
+            "tag": "animated"
+          },
+          {
+            "relevance": 0.931,
+            "tag": "kids and family"
+          },
+          {
+            "relevance": 0.9152,
+            "tag": "friendship"
+          },
+          {
+            "relevance": 0.9065,
+            "tag": "small town"
+          },
+          {
+            "relevance": 0.8985,
+            "tag": "robot"
+          },
+          {
+            "relevance": 0.8935,
+            "tag": "kids"
+          },
+          {
+            "relevance": 0.8895,
+            "tag": "story"
+          },
+          {
+            "relevance": 0.8762,
+            "tag": "cartoon"
+          },
+          {
+            "relevance": 0.8595,
+            "tag": "computer animation"
+          },
+          {
+            "relevance": 0.856,
+            "tag": "original"
+          },
+          {
+            "relevance": 0.8535,
+            "tag": "visually appealing"
+          }
+        ],
+        "rating": 3.8665,
+        "rating_scale": 5,
+        "rating_count": 9855,
+        "rating_source": "MovieLens",
+        "poster": null,
+        "links": {
+          "IMDb": "https://www.imdb.com/title/tt0129167/"
+        },
+        "sources": {
+          "metadata": "movielens:movies.csv:movieId=2761",
+          "ratings": "movielens:ratings.csv:movieId=2761",
+          "tags": "movielens:genome-scores.csv:movieId=2761"
+        },
+        "catalog_version": "dfc1743a6f0b",
+        "retrieval_score": 0.5325,
+        "retrieval_components": {
+          "关键词匹配": 0.0,
+          "主题标签匹配": 0.24,
+          "偏好匹配": 0.24,
+          "资料覆盖": 0.053
+        },
+        "evidence": [
+          {
+            "id": "2761:metadata",
+            "source": "movielens:movies.csv:movieId=2761",
+            "text": "Iron Giant, The；年份：1999；类型：Adventure, Animation, Children, Drama, Sci-Fi"
+          },
+          {
+            "id": "2761:tags",
+            "source": "movielens:genome-scores.csv:movieId=2761",
+            "text": "animation；animated；kids and family；friendship；small town；robot；kids；story；cartoon；computer animation；original；visually appealing"
+          }
+        ],
+        "match_score": 0.5325,
+        "initial_score": 0.5325,
+        "explanation": "依据目录类型、主题标签与当前偏好匹配；点击详情查看来源。",
+        "uncertainties": [
+          "当前目录未提供剧情全文，不能据此确认所有情节细节。"
+        ]
+      },
+      {
+        "id": "92420",
+        "title": "Chronicle",
+        "year": 2012,
+        "genres": [
+          "Action",
+          "Sci-Fi",
+          "Thriller"
+        ],
+        "description": "",
+        "tags": [
+          {
+            "relevance": 0.9865,
+            "tag": "handycam"
+          },
+          {
+            "relevance": 0.9825,
+            "tag": "superhero"
+          },
+          {
+            "relevance": 0.9723,
+            "tag": "super hero"
+          },
+          {
+            "relevance": 0.9712,
+            "tag": "superheroes"
+          },
+          {
+            "relevance": 0.9427,
+            "tag": "bullying"
+          },
+          {
+            "relevance": 0.9238,
+            "tag": "coming of age"
+          },
+          {
+            "relevance": 0.8995,
+            "tag": "teenager"
+          },
+          {
+            "relevance": 0.8942,
+            "tag": "original"
+          },
+          {
+            "relevance": 0.8762,
+            "tag": "storytelling"
+          },
+          {
+            "relevance": 0.8702,
+            "tag": "fake documentary"
+          },
+          {
+            "relevance": 0.8357,
+            "tag": "adolescence"
+          },
+          {
+            "relevance": 0.826,
+            "tag": "friendship"
+          }
+        ],
+        "rating": 3.5843,
+        "rating_scale": 5,
+        "rating_count": 2652,
+        "rating_source": "MovieLens",
+        "poster": null,
+        "links": {
+          "IMDb": "https://www.imdb.com/title/tt1706593/"
+        },
+        "sources": {
+          "metadata": "movielens:movies.csv:movieId=92420",
+          "ratings": "movielens:ratings.csv:movieId=92420",
+          "tags": "movielens:genome-scores.csv:movieId=92420"
+        },
+        "catalog_version": "dfc1743a6f0b",
+        "retrieval_score": 0.525,
+        "retrieval_components": {
+          "关键词匹配": 0.0,
+          "主题标签匹配": 0.24,
+          "偏好匹配": 0.24,
+          "资料覆盖": 0.045
+        },
+        "evidence": [
+          {
+            "id": "92420:metadata",
+            "source": "movielens:movies.csv:movieId=92420",
+            "text": "Chronicle；年份：2012；类型：Action, Sci-Fi, Thriller"
+          },
+          {
+            "id": "92420:tags",
+            "source": "movielens:genome-scores.csv:movieId=92420",
+            "text": "handycam；superhero；super hero；superheroes；bullying；coming of age；teenager；original；storytelling；fake documentary；adolescence；friendship"
+          }
+        ],
+        "match_score": 0.525,
+        "initial_score": 0.525,
+        "explanation": "依据目录类型、主题标签与当前偏好匹配；点击详情查看来源。",
+        "uncertainties": [
+          "当前目录未提供剧情全文，不能据此确认所有情节细节。"
+        ]
+      },
+      {
+        "id": "57504",
+        "title": "Girl Who Leapt Through Time, The (Toki o kakeru shôjo)",
+        "year": 2006,
+        "genres": [
+          "Animation",
+          "Comedy",
+          "Drama",
+          "Romance",
+          "Sci-Fi"
+        ],
+        "description": "",
+        "tags": [
+          {
+            "relevance": 0.9735,
+            "tag": "anime"
+          },
+          {
+            "relevance": 0.9618,
+            "tag": "japan"
+          },
+          {
+            "relevance": 0.9378,
+            "tag": "coming of age"
+          },
+          {
+            "relevance": 0.9325,
+            "tag": "time travel"
+          },
+          {
+            "relevance": 0.9272,
+            "tag": "original"
+          },
+          {
+            "relevance": 0.9027,
+            "tag": "drama"
+          },
+          {
+            "relevance": 0.8682,
+            "tag": "japanese"
+          },
+          {
+            "relevance": 0.8607,
+            "tag": "school"
+          },
+          {
+            "relevance": 0.8602,
+            "tag": "friendship"
+          },
+          {
+            "relevance": 0.8487,
+            "tag": "animation"
+          },
+          {
+            "relevance": 0.8268,
+            "tag": "storytelling"
+          },
+          {
+            "relevance": 0.8037,
+            "tag": "melancholic"
+          }
+        ],
+        "rating": 3.9351,
+        "rating_scale": 5,
+        "rating_count": 1896,
+        "rating_source": "MovieLens",
+        "poster": null,
+        "links": {
+          "IMDb": "https://www.imdb.com/title/tt0808506/"
+        },
+        "sources": {
+          "metadata": "movielens:movies.csv:movieId=57504",
+          "ratings": "movielens:ratings.csv:movieId=57504",
+          "tags": "movielens:genome-scores.csv:movieId=57504"
+        },
+        "catalog_version": "dfc1743a6f0b",
+        "retrieval_score": 0.5231,
+        "retrieval_components": {
+          "关键词匹配": 0.0,
+          "主题标签匹配": 0.24,
+          "偏好匹配": 0.24,
+          "资料覆盖": 0.043
+        },
+        "evidence": [
+          {
+            "id": "57504:metadata",
+            "source": "movielens:movies.csv:movieId=57504",
+            "text": "Girl Who Leapt Through Time, The (Toki o kakeru shôjo)；年份：2006；类型：Animation, Comedy, Drama, Romance, Sci-Fi"
+          },
+          {
+            "id": "57504:tags",
+            "source": "movielens:genome-scores.csv:movieId=57504",
+            "text": "anime；japan；coming of age；time travel；original；drama；japanese；school；friendship；animation；storytelling；melancholic"
+          }
+        ],
+        "match_score": 0.5231,
+        "initial_score": 0.5231,
+        "explanation": "依据目录类型、主题标签与当前偏好匹配；点击详情查看来源。",
+        "uncertainties": [
+          "当前目录未提供剧情全文，不能据此确认所有情节细节。"
+        ]
+      }
+    ],
+    "initial_ranking": [
+      "1097",
+      "2761",
+      "92420",
+      "57504",
+      "130520",
+      "171765",
+      "49815",
+      "107410",
+      "113071",
+      "2571",
+      "260",
+      "480",
+      "589",
+      "1196",
+      "1210",
+      "1270",
+      "780",
+      "32",
+      "1580",
+      "79132",
+      "1240",
+      "541",
+      "1214",
+      "1682"
+    ],
+    "final_ranking": [
+      "1097",
+      "2761",
+      "92420",
+      "57504",
+      "130520",
+      "171765",
+      "49815",
+      "107410",
+      "113071",
+      "2571",
+      "260",
+      "480",
+      "1196",
+      "589",
+      "1210",
+      "1270",
+      "780",
+      "32",
+      "1580",
+      "1240",
+      "79132",
+      "541",
+      "1214",
+      "1682"
+    ],
+    "reports": [
+      {
+        "member": "需求匹配",
+        "candidate": "1097",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1097:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "2761",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "2761:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "92420",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "92420:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "57504",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "57504:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "130520",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "130520:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "171765",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "171765:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "49815",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "49815:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "107410",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "107410:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "113071",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "113071:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "2571",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "2571:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "260",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "260:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "480",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "480:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "589",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "589:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1196",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1196:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1210",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1210:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1270",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1270:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "780",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "780:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "32",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "32:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1580",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1580:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "79132",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "79132:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1240",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1240:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "541",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "541:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1214",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1214:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "1682",
+        "decision": "匹配",
+        "basis": "目录类型与用户偏好",
+        "sources": [
+          "1682:metadata"
+        ],
+        "kind": "deterministic"
+      },
+      {
+        "member": "需求匹配",
+        "candidate": "57504",
+        "decision": "invalid",
+        "reason": "该电影属于科幻（Sci-Fi）类型，且包含动画、喜剧、剧情和浪漫元素，符合用户对温暖科幻电影的需求。标签中'coming of age'（成长）、'friendship'（友谊）、'storytelling'（叙事）等关键词体现温暖情感基调，未出现恐怖或紧张元素。尽管有'melancholic'（忧郁）标签，但整体风格与用户偏好一致，无排除性内容。资料覆盖充分，无矛盾信息。",
+        "citations": [
+          {
+            "source_id": "57504:metadata",
+            "quote": "Animation, Comedy, Drama, Romance, Sci-Fi"
+          },
+          {
+            "source_id": "57504:tags",
+            "quote": "coming of age；friendship；storytelling；melancholic"
+          }
+        ],
+        "kind": "model",
+        "valid": false
+      }
+    ],
+    "changes": [],
+    "allocation": [
+      {
+        "member": 0,
+        "candidate_id": "57504",
+        "predicted_value": 0.59
+      }
+    ],
+    "usage": {
+      "calls": 1,
+      "tokens": 1391,
+      "estimated_cny": 0.00045029999999999994,
+      "reserved_cny": 0.0019269,
+      "price_basis": "configured estimates, not provider invoice"
+    },
+    "summary": "找到4部符合硬条件的影片，完成1次模型核查。"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "time": 1793289616.197716,
+      "stage": "planning",
+      "message": "正在整理需求与偏好",
+      "detail": {
+        "constraints": {
+          "preferred_genres": [
+            "sci-fi"
+          ],
+          "excluded_genres": [],
+          "required_genres": [],
+          "excluded_movie_ids": []
+        }
+      }
+    },
+    {
+      "seq": 2,
+      "time": 1793289616.2525172,
+      "stage": "retrieval",
+      "message": "候选检索完成",
+      "detail": {
+        "count": 24,
+        "catalog_version": "dfc1743a6f0b",
+        "channels": [
+          "关键词",
+          "主题标签",
+          "用户偏好"
+        ]
+      }
+    },
+    {
+      "seq": 3,
+      "time": 1793289616.253301,
+      "stage": "initial",
+      "message": "候选资料与初始判断已准备",
+      "detail": {
+        "reports": [
+          {
+            "member": "需求匹配",
+            "candidate": "1097",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1097:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "2761",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "2761:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "92420",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "92420:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "57504",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "57504:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "130520",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "130520:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "171765",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "171765:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "49815",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "49815:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "107410",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "107410:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "113071",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "113071:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "2571",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "2571:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "260",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "260:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "480",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "480:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "589",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "589:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1196",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1196:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1210",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1210:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1270",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1270:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "780",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "780:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "32",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "32:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1580",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1580:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "79132",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "79132:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1240",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1240:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "541",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "541:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1214",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1214:metadata"
+            ],
+            "kind": "deterministic"
+          },
+          {
+            "member": "需求匹配",
+            "candidate": "1682",
+            "decision": "匹配",
+            "basis": "目录类型与用户偏好",
+            "sources": [
+              "1682:metadata"
+            ],
+            "kind": "deterministic"
+          }
+        ],
+        "initial_ranking": [
+          "1097",
+          "2761",
+          "92420",
+          "57504",
+          "130520",
+          "171765",
+          "49815",
+          "107410",
+          "113071",
+          "2571",
+          "260",
+          "480",
+          "589",
+          "1196",
+          "1210",
+          "1270",
+          "780",
+          "32",
+          "1580",
+          "79132",
+          "1240",
+          "541",
+          "1214",
+          "1682"
+        ]
+      }
+    },
+    {
+      "seq": 4,
+      "time": 1793289616.253995,
+      "stage": "allocation",
+      "message": "核查任务已分配",
+      "detail": {
+        "method": "game",
+        "selected": [
+          {
+            "member": 0,
+            "candidate_id": "57504",
+            "predicted_value": 0.59
+          }
+        ],
+        "negotiation": [
+          {
+            "member": 0,
+            "before": [
+              -1,
+              -1,
+              -1
+            ],
+            "after": [
+              3,
+              -1,
+              -1
+            ],
+            "potential_gain": 0.57
+          }
+        ],
+        "potential": 0.57,
+        "max_unilateral_gain": 0.0,
+        "estimator": "catalog_heuristic_v1"
+      }
+    },
+    {
+      "seq": 5,
+      "time": 1793289616.2557518,
+      "stage": "request",
+      "message": "发起核查",
+      "detail": {
+        "slot": "review-0",
+        "model": "qwen-flash-2025-07-28"
+      }
+    },
+    {
+      "seq": 6,
+      "time": 1793289617.80429,
+      "stage": "response",
+      "message": "核查响应已保存",
+      "detail": {
+        "slot": "review-0",
+        "tokens": 1391,
+        "estimated_cny": 0.00045029999999999994,
+        "valid_json": true
+      }
+    },
+    {
+      "seq": 7,
+      "time": 1793289617.8049972,
+      "stage": "review",
+      "message": "证据核查完成",
+      "detail": {
+        "member": "需求匹配",
+        "candidate": "57504",
+        "decision": "invalid",
+        "reason": "该电影属于科幻（Sci-Fi）类型，且包含动画、喜剧、剧情和浪漫元素，符合用户对温暖科幻电影的需求。标签中'coming of age'（成长）、'friendship'（友谊）、'storytelling'（叙事）等关键词体现温暖情感基调，未出现恐怖或紧张元素。尽管有'melancholic'（忧郁）标签，但整体风格与用户偏好一致，无排除性内容。资料覆盖充分，无矛盾信息。",
+        "citations": [
+          {
+            "source_id": "57504:metadata",
+            "quote": "Animation, Comedy, Drama, Romance, Sci-Fi"
+          },
+          {
+            "source_id": "57504:tags",
+            "quote": "coming of age；friendship；storytelling；melancholic"
+          }
+        ],
+        "kind": "model",
+        "valid": false
+      }
+    },
+    {
+      "seq": 8,
+      "time": 1793289617.806885,
+      "stage": "complete",
+      "message": "推荐已完成",
+      "detail": {
+        "usage": {
+          "calls": 1,
+          "tokens": 1391,
+          "estimated_cny": 0.00045029999999999994,
+          "reserved_cny": 0.0019269,
+          "price_basis": "configured estimates, not provider invoice"
+        }
+      }
+    }
+  ]
+}

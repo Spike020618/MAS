@@ -1,0 +1,9 @@
+{
+  "source_commit": "6497938919998b9cd7aa9c2f43effb39ad0c7088",
+  "files": {
+    "CRSLab/config/crs/kbrd/inspired.yaml": "9b1d5cbaed0ac0162b8b7438f18f4b1c6efbd086d32635ab38cd5cfdee7ea542",
+    "CRSLab/crslab/data/dataset/inspired/inspired.py": "8d193a95822543416bbcaf97b8024142685da9c769b9ed90822200ab2faf0b22",
+    "CRSLab/crslab/data/dataset/inspired/resources.py": "480e482665c853f03a33809b5db0839e76590c3e2bb6be0327c1deeda371558b",
+    "CRSLab/crslab/data/dataloader/inspired.py": "ce23e2425a7374781af826445554776fe0f695708b483e05c7d1f99cd838f11f"
+  }
+}

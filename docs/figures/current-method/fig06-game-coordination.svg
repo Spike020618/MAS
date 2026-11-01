@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 760" role="img" aria-label="证据贡献博弈与行动协调">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="#778492"/></marker></defs>
+<style>text{font-family:"PingFang SC","Microsoft YaHei",sans-serif;fill:#23384d;font-size:17px}.head{font-size:22px;font-weight:600}.small{font-size:15px}.mono{font-family:"Times New Roman","PingFang SC",serif;font-size:19px}</style>
+<style>.small{font-size:16px}.head{font-size:21px} .stage{font-size:19px;font-weight:600} text{font-size:18px}</style>
+<defs>
+<g id="agent" fill="white" stroke="currentColor" stroke-width="2"><rect x="-23" y="-17" width="46" height="34" rx="7"/><path d="M0-17v-10m-8 44v8m16-8v8m-31-32h-7m53 0h-7"/><circle cx="0" cy="-29" r="3"/><circle cx="-9" cy="-3" r="3"/><circle cx="9" cy="-3" r="3"/><path d="M-9 9h18"/></g>
+<g id="doc" fill="white" stroke="currentColor" stroke-width="1.7"><path d="M0 0h42l12 13v61H0z"/><path d="M42 0v13h12M9 25h34M9 34h34M9 43h25M9 58h34"/><path d="M8 45h33" stroke-width="7" opacity=".22"/></g>
+<g id="lock" fill="white" stroke="currentColor" stroke-width="2"><rect x="0" y="13" width="24" height="21" rx="3"/><path d="M5 13V7a7 7 0 0114 0v6"/><circle cx="12" cy="23" r="2"/></g>
+</defs>
+<rect x="20" y="20" width="410" height="440" fill="white" stroke="#3976a9" stroke-dasharray="6 4"/>
+<rect x="20" y="20" width="410" height="32" fill="#3976a9" stroke="#3976a9"/>
+<text x="30" y="43" class="stage" style="fill:white">① 成员条件行动与资料归属</text>
+<rect x="450" y="20" width="450" height="440" fill="white" stroke="#308c88" stroke-dasharray="6 4"/>
+<rect x="450" y="20" width="450" height="32" fill="#308c88" stroke="#308c88"/>
+<text x="460" y="43" class="stage" style="fill:white">② 集合价值与共享可行域</text>
+<rect x="920" y="20" width="460" height="440" fill="white" stroke="#b78039" stroke-dasharray="6 4"/>
+<rect x="920" y="20" width="460" height="32" fill="#b78039" stroke="#b78039"/>
+<text x="930" y="43" class="stage" style="fill:white">③ 单成员替换与固定状态停止</text>
+<text x="40" y="84" class="small">固定状态 sₜ · 固定主张 c · 剩余预算</text>
+<use href="#agent" transform="translate(65 137) scale(0.65)" style="color:#3976a9"/>
+<text x="48" y="178" class="small">i1</text>
+<rect x="114" y="115" width="72" height="43" fill="#f4f7fa" stroke="#3976a9"/>
+<text x="127" y="142" class="small">∅</text>
+<rect x="200" y="115" width="72" height="43" fill="#f4f7fa" stroke="#3976a9"/>
+<text x="213" y="142" class="small">{A}</text>
+<rect x="290" y="115" width="112" height="43" fill="#f4f7fa" stroke="#3976a9"/>
+<text x="303" y="142" class="small">{A,B}</text>
+<path d="M86 137L112 137" stroke="#3976a9" fill="none" stroke-width="1.7"/>
+<use href="#agent" transform="translate(65 230) scale(0.65)" style="color:#3976a9"/>
+<text x="48" y="271" class="small">i2</text>
+<rect x="114" y="208" width="72" height="43" fill="#f4f7fa" stroke="#3976a9"/>
+<text x="127" y="235" class="small">∅</text>
+<rect x="200" y="208" width="72" height="43" fill="#f4f7fa" stroke="#3976a9"/>
+<text x="213" y="235" class="small">{A}</text>
+<rect x="290" y="208" width="112" height="43" fill="#f4f7fa" stroke="#3976a9"/>
+<text x="303" y="235" class="small">{C}</text>
+<path d="M86 230L112 230" stroke="#3976a9" fill="none" stroke-width="1.7"/>
+<use href="#agent" transform="translate(65 323) scale(0.65)" style="color:#3976a9"/>
+<text x="48" y="364" class="small">i3</text>
+<rect x="114" y="301" width="72" height="43" fill="#f4f7fa" stroke="#3976a9"/>
+<text x="127" y="328" class="small">∅</text>
+<rect x="200" y="301" width="72" height="43" fill="#f4f7fa" stroke="#3976a9"/>
+<text x="213" y="328" class="small">{B}</text>
+<rect x="290" y="301" width="112" height="43" fill="#f4f7fa" stroke="#3976a9"/>
+<text x="303" y="328" class="small">{A,B}</text>
+<path d="M86 323L112 323" stroke="#3976a9" fill="none" stroke-width="1.7"/>
+<text x="41" y="411" class="small">同一来源可由不同成员核查</text>
+<text x="41" y="438" class="small" style="fill:#3976a9">成员能力不同 → 条件价值不同</text>
+<circle cx="505" cy="120" r="23" fill="white" stroke="#308c88" stroke-width="2"/>
+<text x="495" y="126" class="small" style="fill:#308c88">A</text>
+<circle cx="650" cy="120" r="23" fill="white" stroke="#308c88" stroke-width="2"/>
+<text x="640" y="126" class="small" style="fill:#308c88">B</text>
+<circle cx="800" cy="120" r="23" fill="white" stroke="#308c88" stroke-width="2"/>
+<text x="790" y="126" class="small" style="fill:#308c88">C</text>
+<text x="478" y="175" class="small">i₁:A</text>
+<text x="568" y="175" class="small">i₂:A</text>
+<path d="M508 150L505 144" stroke="#308c88" fill="none" stroke-width="1.7"/>
+<path d="M595 151L523 132" stroke="#308c88" fill="none" stroke-width="1.7"/>
+<text x="478" y="210" class="small">重复来源：按成员条件贡献取最大值</text>
+<rect x="474" y="232" width="402" height="83" fill="#f0f7f5" stroke="#308c88"/>
+<text x="487" y="260" class="small" style="fill:#308c88">同一核查者：{A,B}</text>
+<text x="487" y="290" class="small">单份贡献 + 有符号交互 − 预计成本</text>
+<text x="477" y="348" class="small">Φ(a) = V̂(来源并集, 成员归属) − Ĉ(a)</text>
+<text x="477" y="386" class="small" style="fill:#308c88">调用</text>
+<rect x="477" y="399" width="23" height="17" fill="#cce3dc" stroke="#308c88"/>
+<rect x="508" y="399" width="23" height="17" fill="#cce3dc" stroke="#308c88"/>
+<rect x="539" y="399" width="23" height="17" fill="white" stroke="#308c88"/>
+<text x="612" y="386" class="small" style="fill:#308c88">唯一资料</text>
+<rect x="612" y="399" width="23" height="17" fill="#cce3dc" stroke="#308c88"/>
+<rect x="643" y="399" width="23" height="17" fill="#cce3dc" stroke="#308c88"/>
+<rect x="674" y="399" width="23" height="17" fill="white" stroke="#308c88"/>
+<text x="757" y="386" class="small" style="fill:#308c88">费用</text>
+<rect x="757" y="399" width="23" height="17" fill="#cce3dc" stroke="#308c88"/>
+<rect x="788" y="399" width="23" height="17" fill="#cce3dc" stroke="#308c88"/>
+<rect x="819" y="399" width="23" height="17" fill="white" stroke="#308c88"/>
+<text x="478" y="447" class="small">只允许满足三类共享约束的配置</text>
+<text x="943" y="84" class="small">其他成员不变，仅替换成员 i 的行动</text>
+<use href="#agent" transform="translate(969 137) scale(0.65)" style="color:#3976a9"/>
+<rect x="1010" y="116" width="341" height="56" fill="#f5f7fa" stroke="#b78039"/>
+<text x="1024" y="149" class="small">当前 aᵢ = {A}</text>
+<use href="#agent" transform="translate(969 226) scale(0.65)" style="color:#3976a9"/>
+<rect x="1010" y="205" width="341" height="56" fill="#fff5e6" stroke="#b78039"/>
+<text x="1024" y="238" class="small">候选 aᵢ′ = {A,B}</text>
+<path d="M1180,173 L1180,201" fill="none" stroke="#778492" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="944" y="305" class="small">uᵢ(a) = Φ(a) − Φ(a₋ᵢ, ∅)</text>
+<text x="944" y="343" class="small" style="fill:#b78039">Δuᵢ = ΔΦ &gt; ε</text>
+<path d="M1180,264 L1180,280" fill="none" stroke="#778492" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="942" y="369" width="409" height="65" fill="#fff7eb" stroke="#b78039"/>
+<text x="955" y="394" class="small">接受严格改善的可行替换</text>
+<text x="955" y="420" class="small">无可行正偏离 → 当前状态停止</text>
+<rect x="20" y="490" width="1360" height="232" fill="white" stroke="#778492" stroke-dasharray="6 4"/>
+<rect x="20" y="490" width="1360" height="32" fill="#778492" stroke="#778492"/>
+<text x="30" y="513" class="stage" style="fill:white">④ 执行一项核查，随后重新规划</text>
+<use href="#agent" transform="translate(70 579) scale(0.8)" style="color:#3976a9"/>
+<text x="41" y="623" class="small">选中成员</text>
+<use href="#doc" transform="translate(145 545) scale(1)" style="color:#308c88"/>
+<text x="157" y="614" class="small" style="fill:#308c88">A</text>
+<use href="#doc" transform="translate(216 545) scale(1)" style="color:#308c88"/>
+<text x="228" y="614" class="small" style="fill:#308c88">B</text>
+<path d="M282,580 L338,580" fill="none" stroke="#778492" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="350" y="545" width="240" height="73" fill="#eff6f3" stroke="#308c88"/>
+<text x="365" y="573" class="small" style="fill:#308c88">定位引文 → findings</text>
+<text x="365" y="603" class="small">目标主张 × 来源 × 版本</text>
+<path d="M590,580 L640,580" fill="none" stroke="#778492" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="685" cy="580" r="26" fill="white" stroke="#308c88" stroke-width="2"/>
+<text x="675" y="586" class="small" style="fill:#308c88">c′</text>
+<text x="646" y="637" class="small">局部状态补丁</text>
+<path d="M719,580 L772,580" fill="none" stroke="#778492" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="785" y="545" width="240" height="73" fill="#f5f7fa" stroke="#3976a9"/>
+<text x="800" y="573" class="small" style="fill:#3976a9">sₜ → sₜ₊₁</text>
+<text x="800" y="603" class="small">预算扣减 · 价值重估</text>
+<path d="M1025,580 L1080,580" fill="none" stroke="#778492" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1100" y="569" class="small" style="fill:#b78039">继续：重新分配</text>
+<text x="1100" y="609" class="small" style="fill:#308c88">停止：共同决策</text>
+<text x="40" y="693" class="small">固定状态下的可行单边稳定 ≠ 全局最优；更新状态后重新求解</text>
+</svg>

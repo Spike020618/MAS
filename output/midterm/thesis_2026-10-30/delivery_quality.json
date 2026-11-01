@@ -1,0 +1,15 @@
+{
+  "pages": 39,
+  "body_chars_markdown": 34500,
+  "body_chars_note": "raw markdown char count including pipe-table data rows",
+  "formula_polish": "7 formulas as native OOXML math elements with numbering (1)-(7); docx verified 7 oMath elements",
+  "data_tables": "four data tables embedded as pipe-separated rows; 41 w:tbl elements in docx",
+  "content_coverage": "P1 two rounds, HotpotQA 458 multi-hop, stage-2 estimator gate, stage-3 frozen matrix, n=200 power verdict, full-context anchor, heterogeneity panel; (十七之三) carries the layered conclusions",
+  "final_verdicts_in_thesis": "readout contract +12.5pp; multi-hop coordination vs independent +3~4.6pp CI-excluding-zero; estimator washed out at n=200; division/bargaining/heterogeneity-as-coordination all null; scarcity price 28pp in a cheap-context domain",
+  "page_fit_check": "consolidated pages 600-2000 chars, within verified frame range",
+  "all_report_pages_visually_inspected": false,
+  "visual_inspection_pending": "LibreOffice unavailable; quantitative frame check passed; recommend WPS spot-check",
+  "csv_state": "results_template.csv 214 rows, zero pending, zero duplicate keys, all sealed with result hashes",
+  "source_template_unchanged": true,
+  "paid_model_calls_for_report": 0
+}

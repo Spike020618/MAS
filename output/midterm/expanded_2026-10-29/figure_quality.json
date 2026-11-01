@@ -1,0 +1,65 @@
+{
+  "errors": [],
+  "records": [
+    {
+      "id": "fig01_research",
+      "width": 1200,
+      "height": 580,
+      "overflow": []
+    },
+    {
+      "id": "fig02_architecture",
+      "width": 1200,
+      "height": 700,
+      "overflow": []
+    },
+    {
+      "id": "fig03_game",
+      "width": 1200,
+      "height": 650,
+      "overflow": []
+    },
+    {
+      "id": "fig04_flow",
+      "width": 1200,
+      "height": 660,
+      "overflow": []
+    },
+    {
+      "id": "fig05_update",
+      "width": 1200,
+      "height": 660,
+      "overflow": []
+    },
+    {
+      "id": "fig06_experiments",
+      "width": 1200,
+      "height": 710,
+      "overflow": []
+    },
+    {
+      "id": "fig07_system",
+      "width": 1200,
+      "height": 730,
+      "overflow": []
+    },
+    {
+      "id": "fig09_training",
+      "width": 1200,
+      "height": 650,
+      "overflow": []
+    },
+    {
+      "id": "fig10_pipeline",
+      "width": 1200,
+      "height": 590,
+      "overflow": []
+    },
+    {
+      "id": "fig11_trace",
+      "width": 1200,
+      "height": 570,
+      "overflow": []
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "name": "证据状态与受限修订",
+      "evidence_required": [
+        "E1",
+        "E4"
+      ],
+      "current_support": "evidence-set-v2 implemented with deterministic/fixture regression; new task-effect results pending user execution",
+      "claim_if_supported": "改善目标修正与正确内容保留，限于所测证据环境",
+      "claim_if_not_supported": "可追溯接口，未证明可靠性增益"
+    },
+    {
+      "id": "C2",
+      "name": "状态相关核查贡献估计",
+      "evidence_required": [
+        "E0",
+        "E2",
+        "E4"
+      ],
+      "current_support": "evidence-set-v2 implemented with deterministic/fixture regression; new task-effect results pending user execution",
+      "claim_if_supported": "执行前选择优于简单参照，状态或联合部分有可复现作用",
+      "claim_if_not_supported": "未识别可利用的行动价值或估计选择不足"
+    },
+    {
+      "id": "C3",
+      "name": "预算下博弈共识形成",
+      "evidence_required": [
+        "E3",
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "current_support": "evidence-set-v2 implemented with deterministic/fixture regression; new task-effect results pending user execution",
+      "claim_if_supported": "在明确任务和资源约束下产生超出强对照的质量成本增量",
+      "claim_if_not_supported": "将实测收益归因到有效组件，不声称博弈独有优势"
+    }
+  ],
+  "historical_evidence_policy": "legacy450/ranker3010 may support background only, never fill new-method effects"
+}

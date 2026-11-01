@@ -1,0 +1,4718 @@
+{
+  "model_api_calls": 0,
+  "scope": "label-free execution-side audit of the interrupted main batch; no label reads, no seal fabrication, no semantic certification",
+  "root": "/Users/spike/code/MAS/experiments/results/consensus_mechanism_paper_v2/main",
+  "cases": 399,
+  "label_read": false,
+  "classes": {
+    "('qa', 'patch_not_accepted')": 6,
+    "patch_not_accepted": 6,
+    "('qa', 'refute_bridge_no_patch')": 222,
+    "refute_bridge_no_patch": 284,
+    "('qa', 'support_no_patch')": 75,
+    "support_no_patch": 357,
+    "('qa', 'unclear_no_patch')": 52,
+    "unclear_no_patch": 52,
+    "('qa', 'invalid_contract')": 7,
+    "invalid_contract": 12,
+    "('qa', 'same_value_patch')": 4,
+    "same_value_patch": 4,
+    "('rec', 'support_no_patch')": 282,
+    "('rec', 'refute_bridge_no_patch')": 62,
+    "('rec', 'invalid_contract')": 5
+  },
+  "bridge_settings": {
+    "min_shared": 2,
+    "min_jaccard": 0.2
+  },
+  "patch_events": [
+    {
+      "class": "patch_not_accepted",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "refute",
+      "patch": {
+        "operation": "set_answer",
+        "value": "yes"
+      },
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 10,
+        "jaccard": 0.7143,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned action targets claim:0, which states it is not possible to visit both the New York Public Library and Six Flags Great Escape in the same day. However, evidence span 'span:daece956f2428e55a03d' cites 'Lists of references to the New York Public Library in popular culture,' which indirectly supports that the New York Public Library is a known and accessible location. While this span does",
+      "slot": "0_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:fb2c044000126b62c2eb",
+      "kind": "qa"
+    },
+    {
+      "class": "patch_not_accepted",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "support",
+      "patch": {
+        "operation": "set_answer",
+        "value": "yes"
+      },
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 7,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The span 'span:4ef5c65ef8286bad7de4' explicitly lists the Fibonacci sequence starting with 0, 1, 1, 2, 3, 5, 8, 13, ..., which includes five distinct single-digit numbers: 0, 1, 2, 3, and 5. The subsequent span 'span:b1ac588248a4bdf989a6' confirms the recursive definition that generates these numbers. Together, they provide sufficient evidence to support the claim that there are five different sin",
+      "slot": "124_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:6254c356eba1826a7cc0",
+      "kind": "qa"
+    },
+    {
+      "class": "same_value_patch",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "refute",
+      "patch": {
+        "operation": "set_answer",
+        "value": "no"
+      },
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 3,
+        "jaccard": 0.75,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned material defines an improvised weapon as an object not originally designed as a weapon but capable of being used for that purpose. The evidence spans indicate that such weapons are commonly used in violent contexts like street fights, muggings, and riots when conventional weapons are unavailable. Music, though not designed as a weapon, can be used to influence behavior, cause distress",
+      "slot": "167_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:10b83286334bfee4ad69",
+      "kind": "qa"
+    },
+    {
+      "class": "patch_not_accepted",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "refute",
+      "patch": {
+        "operation": "set_answer",
+        "value": "yes"
+      },
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 3,
+        "jaccard": 0.75,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned material defines a ranged weapon as one that engages targets at distances greater than hand-to-hand combat, typically by launching projectiles. In contrast, a melee weapon is intended for hand-to-hand combat. The evidence also defines an improvised weapon as an object not designed as a weapon but capable of being used as one. Music, while not a physical projectile or tool, can be used",
+      "slot": "167_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:10b83286334bfee4ad69",
+      "kind": "qa"
+    },
+    {
+      "class": "same_value_patch",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "refute",
+      "patch": {
+        "operation": "set_answer",
+        "value": "no"
+      },
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 4,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned evidence spans confirm that the Carnation Revolution was a military coup in Lisbon on 25 April 1974 that overthrew the Estado Novo regime and led to the withdrawal of Portugal from its African colonies. The revolution is described as having involved a popular campaign of civil resistance, but no mention is made of significant casualties or violence. The claim that it was the 'deadlies",
+      "slot": "181_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:2fe64724db0e4ca81f61",
+      "kind": "qa"
+    },
+    {
+      "class": "patch_not_accepted",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "support",
+      "patch": {
+        "operation": "set_answer",
+        "value": "yes"
+      },
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 6,
+        "jaccard": 0.75,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned action cites span:eab8060a468c1c901332, which contains the text '(If You're Wondering If I Want You To) I Want You To'. This is a song title and does not provide information about olives or salt intake. However, the permitted report explicitly states that 'Olives are a healthy snack for someone reducing salt intake' with decision 'yes' and span_ids including span:3e35a9e0c5fde80c056b,",
+      "slot": "37_game_review0",
+      "decision_reference": true,
+      "task_id": "release:qa:75d5afe87e358ffad6fe",
+      "kind": "qa"
+    },
+    {
+      "class": "patch_not_accepted",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "support",
+      "patch": {
+        "operation": "set_answer",
+        "value": "yes"
+      },
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 7,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The source 'Wonderful Tonight: George Harrison, Eric Clapton, and Me' (span:02bf74dae25f685c5673) directly references the personal relationships between Eric Clapton and members of The Beatles, particularly George Harrison. It implies a close connection and shared experiences, including romantic entanglements—specifically, Clapton's relationship with Pattie Boyd, who was married to George Harrison",
+      "slot": "55_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:8bd0842a5b3757f3f0e0",
+      "kind": "qa"
+    },
+    {
+      "class": "patch_not_accepted",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "support",
+      "patch": {
+        "operation": "set_answer",
+        "value": "yes"
+      },
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 7,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The source 'Wonderful Tonight: George Harrison, Eric Clapton, and Me' directly references the personal relationships between Eric Clapton and George Harrison, a member of the Beatles. This book is a memoir by Pattie Boyd, who was married to George Harrison and had a relationship with Eric Clapton, indicating shared romantic interests between Clapton and Harrison. The existence of this source in th",
+      "slot": "55_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:8bd0842a5b3757f3f0e0",
+      "kind": "qa"
+    },
+    {
+      "class": "same_value_patch",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "refute",
+      "patch": {
+        "operation": "set_answer",
+        "value": "no"
+      },
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 5,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned evidence confirms that the Toronto Star is a Canadian broadsheet daily newspaper with high circulation, including a Sunday edition. The claim 'Someone in Boston would not receive the Toronto Star' is refuted because the Toronto Star's distribution is not limited to Canada; it is possible for individuals in Boston to receive the paper through international subscriptions or availability",
+      "slot": "66_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:94dfa1922f47b71a213b",
+      "kind": "qa"
+    },
+    {
+      "class": "same_value_patch",
+      "valid": false,
+      "accepted": null,
+      "error": "assigned new evidence not used",
+      "verdict": "refute",
+      "patch": {
+        "operation": "set_answer",
+        "value": "no"
+      },
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 5,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned action targets claim:1, which states 'Someone in Boston would not receive the Toronto Star.' The evidence spans indicate that the Toronto Star is a Canadian broadsheet daily newspaper with high circulation, including a Sunday edition. It is owned by Toronto Star Newspapers Ltd., a division of Star Media Group, a subsidiary of Torstar Corporation. The newspaper's printing facility is l",
+      "slot": "66_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:94dfa1922f47b71a213b",
+      "kind": "qa"
+    }
+  ],
+  "sample_30_for_semantic_pass": [
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 10,
+        "jaccard": 0.7143,
+        "bridge": true
+      },
+      "rationale_excerpt": "The source 'v3:bae501dd1a711499f3daa09d' indicates that the New York Public Library system includes branches in Manhattan, the Bronx, and Staten Island, which implies multiple locations across New York. The presence of the New York Public Library Main Branch in Manhattan (as referenced in span:2ab9c7b609d134df95a4) and the Six Flags Great Escape Lodge & Indoor Waterpark in upstate New York (implie",
+      "slot": "0_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:fb2c044000126b62c2eb",
+      "kind": "qa"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 3,
+        "jaccard": 0.75,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned material includes evidence that 'Journey to Same-Sex Parenthood' by Eric Rosswood focuses on adoption, foster care, assisted reproduction, surrogacy, and co-parenting advice for LGBT couples. This demonstrates that individuals who are incapable of biological reproduction can still become parents through alternative means, supporting the claim that those incapable of reproduction are n",
+      "slot": "100_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:24277da012562632975c",
+      "kind": "qa"
+    },
+    {
+      "class": "unclear_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "unclear",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 4,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned source ID 'v3:124469d91e2fd4cc5cb4881d' corresponds to 'List of awards and nominations received by Matt Damon', which contains no information about Matt Damon's fear of parachuting. The other evidence spans do not address fear of parachuting either. Since none of the provided spans support or refute the claim about parachuting fear, and no relevant information is available in the assi",
+      "slot": "101_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:ffa272e19803c85cb4bf",
+      "kind": "qa"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 5,
+        "jaccard": 0.1667,
+        "bridge": true
+      },
+      "rationale_excerpt": "The seeker explicitly stated they had not seen 'Yes Man (film)' and expressed interest in romance films, but did not state they liked it. The claim incorrectly asserts that the seeker 'specifically mentioned liking' both 'Yes Man (film)' and 'Blended (film)', which is unsupported by the evidence. The seeker only mentioned having liked 'Blended (film)' and expressed interest in romance films, while",
+      "slot": "208_game_review0",
+      "decision_reference": false,
+      "task_id": "release:rec:16178:4",
+      "kind": "rec"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 9,
+        "jaccard": 0.225,
+        "bridge": true
+      },
+      "rationale_excerpt": "The seeker explicitly states a preference for romantic comedies featuring Tom Hanks, citing Sleepless in Seattle and You've Got Mail as favorites. The span 'span:0e75f9ea094b59d8d250' confirms the seeker's love for 'You've Got Mail' with Tom Hanks. 'span:6b44d0b1fe82a1f56d37' shows the seeker's appreciation for romantic comedies like 'When Harry Met Sally...'. 'span:a9ee460e7de60b749526' indicates",
+      "slot": "200_game_review0",
+      "decision_reference": false,
+      "task_id": "release:rec:17561:3",
+      "kind": "rec"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 10,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned evidence spans indicate that the Port of Baltimore handles bulk cargo such as cement, petroleum, and aggregate, and has facilities for loading bulk cargo directly into trucks and containers. However, there is no information about ginger production or the port's capacity to handle ginger specifically. The claim that the port could not handle the entire world's cargo production of ginge",
+      "slot": "1_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:6493958775c18bcbcaa7",
+      "kind": "qa"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 3,
+        "jaccard": 0.75,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned material confirms that 'Journey to Same-Sex Parenthood' by Eric Rosswood provides advice on adoption, foster care, assisted reproduction, surrogacy, and co-parenting for LGBT couples. This directly supports the claim that individuals incapable of biological reproduction can still become parents through non-biological means, demonstrating that being incapable of reproduction does not n",
+      "slot": "100_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:24277da012562632975c",
+      "kind": "qa"
+    },
+    {
+      "class": "unclear_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "unclear",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 4,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned source ID 'v3:124469d91e2fd4cc5cb4881d' corresponds to 'List of awards and nominations received by Matt Damon', which contains no information about Matt Damon's fear of parachuting. The other evidence spans provided do not address fear of parachuting either. Although the span 'span:a3093684299722ffa46a' is cited in the review, it refers to an awards list and does not contain any relev",
+      "slot": "101_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:ffa272e19803c85cb4bf",
+      "kind": "qa"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 4,
+        "jaccard": 0.1739,
+        "bridge": true
+      },
+      "rationale_excerpt": "The claim asserts that the user is seeking a romance film similar to 'Yes Man (film)' and 'Blended (film)', but the evidence shows the user explicitly stated they had not seen 'Yes Man (film)' and only mentioned liking 'Blended (film)'. The source spans confirm this distinction: span:c6c31651d69f219b7b6f states 'I don't think I've seen the Yes Man (film)', which directly contradicts the implicatio",
+      "slot": "208_game_review1",
+      "decision_reference": false,
+      "task_id": "release:rec:16178:4",
+      "kind": "rec"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 9,
+        "jaccard": 0.225,
+        "bridge": true
+      },
+      "rationale_excerpt": "The seeker explicitly expresses a preference for romantic comedies featuring Tom Hanks, citing Sleepless in Seattle and You've Got Mail as favorites. The span 'span:0e75f9ea094b59d8d250' confirms the seeker's love for 'You've Got Mail' with Tom Hanks. 'span:6b44d0b1fe82a1f56d37' shows the seeker's appreciation for romantic comedies like 'When Harry Met Sally...'. 'span:a9ee460e7de60b749526' indica",
+      "slot": "200_game_review1",
+      "decision_reference": false,
+      "task_id": "release:rec:17561:3",
+      "kind": "rec"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 10,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned evidence spans indicate that the Port of Baltimore handles bulk cargo such as cement, petroleum, and aggregate, and has facilities for loading bulk cargo directly into trucks and containers. However, there is no information about ginger production or the port's capacity to handle ginger specifically. The claim that the port could handle the entire world's cargo production of ginger is",
+      "slot": "1_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:6493958775c18bcbcaa7",
+      "kind": "qa"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 6,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned evidence spans confirm that Zoroastrian exegesis is centered on the Avesta, with interpretations such as the Zend and other religious legal texts like Vendidad and Neyrangistan. These sources emphasize that Zoroastrian religious interpretation does not involve the Quran, which is central to Islam. The absence of Avestan words in these texts further underscores their distinct theologic",
+      "slot": "104_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:e36fd3baeb35963cca95",
+      "kind": "qa"
+    },
+    {
+      "class": "unclear_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "unclear",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 8,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned source (v3:2348c87fcc8da7d4bf10039c) contains information about a film titled 'Wall Street' released in December 1929, but it does not mention robotics companies or their stock performance during the Wall Street Crash of 1929. The evidence spans provided do not contain any information about robotics companies or their stocks. While the crash is well-documented in other sources, none o",
+      "slot": "105_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:2662795b34c72e481d24",
+      "kind": "qa"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 8,
+        "jaccard": 0.2286,
+        "bridge": true
+      },
+      "rationale_excerpt": "The claim states that 'O Brother, Where Art Thou?' is recommended as a movie that aligns with the seeker's preference for love stories. However, the evidence shows that the recommender suggested the movie in response to the seeker's mention of liking comedies (not love stories). The seeker said, 'I like love stories,' but the recommender responded with a comedy film, indicating a mismatch. Further",
+      "slot": "217_game_review0",
+      "decision_reference": false,
+      "task_id": "release:rec:12037:4",
+      "kind": "rec"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 12,
+        "jaccard": 0.3243,
+        "bridge": true
+      },
+      "rationale_excerpt": "The claim states that the user has seen and liked Mission: Impossible – Ghost Protocol, which is a high-action film similar to Die Hard (film series) and Mission: Impossible (film). The evidence spans confirm this: span:7d4f8d95502b303a62bb and span:eb4889beef61b0c33c7a identify Tom Cruise and J.J. Abrams as associated with Mission: Impossible – Ghost Protocol, supporting its status as part of the",
+      "slot": "203_game_review0",
+      "decision_reference": false,
+      "task_id": "release:rec:6550:6",
+      "kind": "rec"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 5,
+        "jaccard": 0.8333,
+        "bridge": true
+      },
+      "rationale_excerpt": "The claim 'You cannot drown in a Swan Lake performance' is refuted by the evidence. The span 'span:c18ca2a757df44054a5c' confirms that 'Swan Lake is a ballet by Russian composer Pyotr Ilyich Tchaikovsky,' which implies a performance involving dancers, music, and stage elements. The span 'span:0e3f95bfbaf4d0048469' adds context that the ballet was composed between 1875-1876, reinforcing its existen",
+      "slot": "10_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:3fef3e534c155b9cd237",
+      "kind": "qa"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 6,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned evidence spans confirm that Zoroastrian exegesis is centered on the Avesta, with interpretations such as the Zend and other religious legal texts like Vendidad and Neyrangistan. These sources emphasize that Zoroastrian religious interpretation does not involve the Quran, which is central to Islam. The absence of Avestan words in these texts further underscores their distinct theologic",
+      "slot": "104_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:e36fd3baeb35963cca95",
+      "kind": "qa"
+    },
+    {
+      "class": "unclear_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "unclear",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 6,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned evidence does not address the relationship between the 'Wednesday name origin' and access to communion. While there are references to 'Wednesday Night Hoops' (a sports event) and 'Communion' as a film and a worship album, none of these materials establish any connection between followers of the 'Wednesday name origin' and the denial or allowance of communion. The term 'Wednesday name ",
+      "slot": "109_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:5a76e43f185d7139637a",
+      "kind": "qa"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 5,
+        "jaccard": 0.1351,
+        "bridge": true
+      },
+      "rationale_excerpt": "The claim asserts that the recommender suggests movies with romantic elements based on the seeker's preference for love stories. However, the evidence shows that the seeker stated 'I like love stories,' but the recommender responded with 'Maybe O Brother, Where Art Thou?' and 'Divine Secrets of the Ya-Ya Sisterhood'—both of which are comedies, not romantic films. The DBpedia neighbors for 'O Broth",
+      "slot": "217_game_review1",
+      "decision_reference": false,
+      "task_id": "release:rec:12037:4",
+      "kind": "rec"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 12,
+        "jaccard": 0.3243,
+        "bridge": true
+      },
+      "rationale_excerpt": "The claim states that the user has seen and liked Mission: Impossible – Ghost Protocol, which is a high-action film similar to Die Hard (film series) and Mission: Impossible (film). The evidence spans confirm this: span:7d4f8d95502b303a62bb and span:eb4889beef61b0c33c7a identify Tom Cruise and J.J. Abrams as associated with Mission: Impossible – Ghost Protocol, supporting its status as part of the",
+      "slot": "203_game_review1",
+      "decision_reference": false,
+      "task_id": "release:rec:6550:6",
+      "kind": "rec"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 5,
+        "jaccard": 0.8333,
+        "bridge": true
+      },
+      "rationale_excerpt": "The claim 'You cannot drown in a Swan Lake performance' is refuted by the evidence. The span 'span:c18ca2a757df44054a5c' confirms that 'Swan Lake is a ballet by Russian composer Pyotr Ilyich Tchaikovsky,' establishing it as a live theatrical performance. The span 'span:0e3f95bfbaf4d0048469' provides contextual detail about the composition period (1875–1876), reinforcing its existence as a real per",
+      "slot": "10_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:3fef3e534c155b9cd237",
+      "kind": "qa"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 4,
+        "jaccard": 0.8,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned material states that killer sudoku, a variant of sudoku, can be easier for some solvers depending on mental arithmetic skills, but the hardest ones can take hours to crack. This implies that solving sudoku requires cognitive abilities beyond those of an infant, such as logical reasoning and numerical understanding. The claim 'An infant cannot solve a sudoku puzzle' is supported by thi",
+      "slot": "106_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:32886c6c0ce99e4d43ea",
+      "kind": "qa"
+    },
+    {
+      "class": "unclear_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "unclear",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 6,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned evidence does not address the relationship between 'Wednesday name origin' and access to communion. While sources mention 'Wednesday Night Hoops' (a sports event), 'Communion' as a film, and 'Songs for Communion' (a worship album), none establish any connection between followers of the 'Wednesday name origin' and the denial or allowance of communion. The term 'Wednesday name origin' i",
+      "slot": "109_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:5a76e43f185d7139637a",
+      "kind": "qa"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 8,
+        "jaccard": 0.1039,
+        "bridge": true
+      },
+      "rationale_excerpt": "The evidence from the knowledge graph (span:146e89bc4debd38d5aba and span:d212f7075e20254ace11) only lists DBpedia neighbors for Movie 8405 (Jumanji (2017 sequel))—specifically, Jake Kasdan, Ted Field, and Chris McKenna—but provides no information about genre, director, or actor relationships. The claim asserts that the recommender suggests comedy films similar to Napoleon Dynamite and Horrible Bo",
+      "slot": "220_game_review0",
+      "decision_reference": false,
+      "task_id": "release:rec:3787:13",
+      "kind": "rec"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 6,
+        "jaccard": 0.1622,
+        "bridge": true
+      },
+      "rationale_excerpt": "The seeker explicitly requests animated comedies, and their positive response to 'Despicable Me' and 'It's Kind of a Funny Story' confirms interest in comedy films, particularly animated ones. The cited spans directly support this claim.",
+      "slot": "204_game_review0",
+      "decision_reference": false,
+      "task_id": "release:rec:16762:6",
+      "kind": "rec"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:1",
+      "bridge": {
+        "shared": 5,
+        "jaccard": 1.0,
+        "bridge": true
+      },
+      "rationale_excerpt": "The provided evidence states that kaffir lime is a citrus fruit native to tropical Asia, but it does not mention any use of kaffir lime in a White Russian cocktail. The standard ingredients for a White Russian are vodka, coffee liqueur (such as Kahlúa or Tia Maria), and cream (or milk as an alternative). There is no indication in the assigned material that kaffir lime is a suitable or traditional ",
+      "slot": "103_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:e4ecaf6d334281cd48c7",
+      "kind": "qa"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 4,
+        "jaccard": 0.8,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned material indicates that killer sudoku, a variant of sudoku, requires mental arithmetic skills and can be challenging even for experienced solvers, with the hardest puzzles taking hours to solve. This implies that solving sudoku demands cognitive abilities such as logical reasoning and numerical understanding, which are beyond the developmental capabilities of an infant. Therefore, the",
+      "slot": "106_game_review1",
+      "decision_reference": false,
+      "task_id": "release:qa:32886c6c0ce99e4d43ea",
+      "kind": "qa"
+    },
+    {
+      "class": "unclear_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "unclear",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 6,
+        "jaccard": 0.75,
+        "bridge": true
+      },
+      "rationale_excerpt": "The assigned source (v3:e506243adbb54a91fca91349) and evidence spans provided do not contain any information about Christopher Columbus or his funding sources. The content of the evidence spans pertains to various historical empires and rulers in Africa, such as the Lunda Empire, Wolof Empire, and Elam, which are unrelated to Columbus or the Portuguese Empire. Since no relevant information is avai",
+      "slot": "111_game_review0",
+      "decision_reference": false,
+      "task_id": "release:qa:b30b1694e7fd91322b6a",
+      "kind": "qa"
+    },
+    {
+      "class": "refute_bridge_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "refute",
+      "patch": null,
+      "target_id": "claim:2",
+      "bridge": {
+        "shared": 6,
+        "jaccard": 0.0759,
+        "bridge": true
+      },
+      "rationale_excerpt": "The claim asserts that the recommender suggests movies similar to Napoleon Dynamite and Horrible Bosses, indicating a preference for comedy films with quirky characters and humor. However, the assigned evidence shows that Movie 8405 (Jumanji (2017 sequel)) has a training-neighbor weighted score of 0 and a training next-recommender mention count of 236, which indicates predictive analogy rather tha",
+      "slot": "220_game_review1",
+      "decision_reference": false,
+      "task_id": "release:rec:3787:13",
+      "kind": "rec"
+    },
+    {
+      "class": "support_no_patch",
+      "valid": true,
+      "accepted": false,
+      "error": null,
+      "verdict": "support",
+      "patch": null,
+      "target_id": "claim:0",
+      "bridge": {
+        "shared": 6,
+        "jaccard": 0.1622,
+        "bridge": true
+      },
+      "rationale_excerpt": "The seeker explicitly asks for animated comedies, and their positive responses to 'Despicable Me' and 'It's Kind of a Funny Story' confirm interest in comedy films, particularly animated ones. The cited spans directly support this claim.",
+      "slot": "204_game_review1",
+      "decision_reference": false,
+      "task_id": "release:rec:16762:6",
+      "kind": "rec"
+    }
+  ],
+  "crosscheck_with_prior_audit": {
+    "prior": {
+      "reviews": 715,
+      "valid": 693,
+      "accepted": 0,
+      "null_patch": 705,
+      "valid_support": 357,
+      "valid_refute": 284,
+      "valid_unclear": 52
+    },
+    "mine": {
+      "reviews": 715,
+      "valid": 693,
+      "accepted": 0,
+      "null_patch": 705,
+      "patch_events": 10
+    },
+    "matches": {
+      "reviews": true,
+      "valid": true,
+      "accepted": true,
+      "null_patch": true
+    }
+  },
+  "per_case": [
+    {
+      "case": "case_0.json",
+      "task_id": "release:qa:fb2c044000126b62c2eb",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "patch_not_accepted",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_1.json",
+      "task_id": "release:qa:6493958775c18bcbcaa7",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_10.json",
+      "task_id": "release:qa:3fef3e534c155b9cd237",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_100.json",
+      "task_id": "release:qa:24277da012562632975c",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_101.json",
+      "task_id": "release:qa:ffa272e19803c85cb4bf",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_102.json",
+      "task_id": "release:qa:835e978560b7d8e2a257",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "invalid_contract",
+        "invalid_contract"
+      ]
+    },
+    {
+      "case": "case_103.json",
+      "task_id": "release:qa:e4ecaf6d334281cd48c7",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_104.json",
+      "task_id": "release:qa:e36fd3baeb35963cca95",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_105.json",
+      "task_id": "release:qa:2662795b34c72e481d24",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "invalid_contract",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_106.json",
+      "task_id": "release:qa:32886c6c0ce99e4d43ea",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_107.json",
+      "task_id": "release:qa:f9bfc4f4881846737dc4",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_108.json",
+      "task_id": "release:qa:e8c42cff3ac539190b6c",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_109.json",
+      "task_id": "release:qa:5a76e43f185d7139637a",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_11.json",
+      "task_id": "release:qa:eb5d48eaa716533af295",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_110.json",
+      "task_id": "release:qa:a52ee4756c5646f76c06",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_111.json",
+      "task_id": "release:qa:b30b1694e7fd91322b6a",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_112.json",
+      "task_id": "release:qa:9e3dca043f01dd701ba9",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_113.json",
+      "task_id": "release:qa:8bf07721f124b89b96d1",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_114.json",
+      "task_id": "release:qa:5494bd034fe75f2687c2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_115.json",
+      "task_id": "release:qa:6fa33ef36ba9b4cf2178",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_116.json",
+      "task_id": "release:qa:fdf30aa20e1d3f3f76a5",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_117.json",
+      "task_id": "release:qa:ccd449afcb844930095a",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_118.json",
+      "task_id": "release:qa:20287f4a7c88c5ab5dfe",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_119.json",
+      "task_id": "release:qa:f8405174e89d891b461e",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_12.json",
+      "task_id": "release:qa:1e96f55f483e1e040ebb",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_120.json",
+      "task_id": "release:qa:d1a138ecfa13ee277ab4",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_121.json",
+      "task_id": "release:qa:6268a4c17702398b091e",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_122.json",
+      "task_id": "release:qa:6760a6c275b094fe8ae9",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_123.json",
+      "task_id": "release:qa:3c801eb06a5185fa097b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_124.json",
+      "task_id": "release:qa:6254c356eba1826a7cc0",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "patch_not_accepted",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_125.json",
+      "task_id": "release:qa:579420d3f4a381ba10f6",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_126.json",
+      "task_id": "release:qa:a13f77c47dfb3e2254a6",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_127.json",
+      "task_id": "release:qa:7b7faaab5b0ebe86c2d4",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_128.json",
+      "task_id": "release:qa:67d0f066e50df02f006b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_129.json",
+      "task_id": "release:qa:64efb44a01b6f4fd97cc",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_13.json",
+      "task_id": "release:qa:ee52a5232a8c3bb13cc4",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_130.json",
+      "task_id": "release:qa:af744c7337c0e502b326",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_131.json",
+      "task_id": "release:qa:c11c4b7db6cbe906a923",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_132.json",
+      "task_id": "release:qa:0a0259cb52b97155c169",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_133.json",
+      "task_id": "release:qa:6daa6b34eb7c90a4978c",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_134.json",
+      "task_id": "release:qa:1f21168791621d1aa386",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_135.json",
+      "task_id": "release:qa:51fe75635991e5a7fe12",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_136.json",
+      "task_id": "release:qa:577dc7d321b43faa3a17",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_137.json",
+      "task_id": "release:qa:4b2ae6b6b6b88707ed88",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_138.json",
+      "task_id": "release:qa:7593403a64c95bce1d5f",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_139.json",
+      "task_id": "release:qa:ecaf24f535cec5bbd37d",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_14.json",
+      "task_id": "release:qa:1f0ca88f3a9bbcc1d7a0",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_140.json",
+      "task_id": "release:qa:7aae94534417ec6787ef",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_141.json",
+      "task_id": "release:qa:4888a59ff88395329a03",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_142.json",
+      "task_id": "release:qa:221319be235a364097d2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_143.json",
+      "task_id": "release:qa:573bcd3151f139795c09",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_144.json",
+      "task_id": "release:qa:d0c51880f66827e2fd66",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_145.json",
+      "task_id": "release:qa:8514577552459151ef4d",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_146.json",
+      "task_id": "release:qa:977c0ffb9c27b442a0bb",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_147.json",
+      "task_id": "release:qa:f6cf71a30a67d7e8b8d6",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_148.json",
+      "task_id": "release:qa:b79a16e2dfc77efa04f2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_149.json",
+      "task_id": "release:qa:fde534f973789ae5486e",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_15.json",
+      "task_id": "release:qa:1524d4e66aead7697278",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_150.json",
+      "task_id": "release:qa:71b03e1ab691255c3280",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_151.json",
+      "task_id": "release:qa:7877c644f5f961670805",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_152.json",
+      "task_id": "release:qa:98c95f9b08834aeb8e88",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_153.json",
+      "task_id": "release:qa:27d077bde6728a6934ea",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_154.json",
+      "task_id": "release:qa:140cd895b5d9b97c741d",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_155.json",
+      "task_id": "release:qa:39877cfa8d3f4a8546f1",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_156.json",
+      "task_id": "release:qa:c5c24c8e746ae4dae4c3",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_157.json",
+      "task_id": "release:qa:fd3286892e0ee533838a",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_158.json",
+      "task_id": "release:qa:35a543a1644e49d921cf",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_159.json",
+      "task_id": "release:qa:3c1f3e0e62bb2d9a3a7c",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_16.json",
+      "task_id": "release:qa:6de03c355801dc7e101f",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_160.json",
+      "task_id": "release:qa:3f7b2461150b534874b0",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_161.json",
+      "task_id": "release:qa:b187a39d67f6d45d2d05",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_162.json",
+      "task_id": "release:qa:7f9673a262dfd5cc9132",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_163.json",
+      "task_id": "release:qa:3659f94a4c4095e84665",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_164.json",
+      "task_id": "release:qa:de516e07bf2dd12fd7bc",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_165.json",
+      "task_id": "release:qa:eee67f6d07003fc5798d",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_166.json",
+      "task_id": "release:qa:c2f2f7f0e5dd242d0c48",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_167.json",
+      "task_id": "release:qa:10b83286334bfee4ad69",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "same_value_patch",
+        "patch_not_accepted"
+      ]
+    },
+    {
+      "case": "case_168.json",
+      "task_id": "release:qa:14da89a58fca45b586fb",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_169.json",
+      "task_id": "release:qa:9a114ce75c2859505174",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_17.json",
+      "task_id": "release:qa:da9568adc5863f8dcda2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_170.json",
+      "task_id": "release:qa:e584397a3163734e7468",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_171.json",
+      "task_id": "release:qa:42bdb30b3cc135143bbc",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_172.json",
+      "task_id": "release:qa:ff457df1287e05729812",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_173.json",
+      "task_id": "release:qa:495cb36445e0358e960b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_174.json",
+      "task_id": "release:qa:372e26f1e3f11846bea0",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_175.json",
+      "task_id": "release:qa:4f802258689c224665cb",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_176.json",
+      "task_id": "release:qa:f9acb3da747676f36faf",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_177.json",
+      "task_id": "release:qa:ee18be33a6e089e3a2ae",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_178.json",
+      "task_id": "release:qa:b173adc36f9e28f752b2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_179.json",
+      "task_id": "release:qa:0dbc0c716ce9c7b055cc",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_18.json",
+      "task_id": "release:qa:eb3e63185d860d15f026",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_180.json",
+      "task_id": "release:qa:3cfd6b7e1a8981379710",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_181.json",
+      "task_id": "release:qa:2fe64724db0e4ca81f61",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "same_value_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_182.json",
+      "task_id": "release:qa:34c95fb710fb156c6aee",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_183.json",
+      "task_id": "release:qa:e32a4dc059483418b318",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_184.json",
+      "task_id": "release:qa:9fd6e38891dccf8ab5d3",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_185.json",
+      "task_id": "release:qa:5a7ed8e6de88d57dea93",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_186.json",
+      "task_id": "release:qa:593a06835ec01c23093f",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_187.json",
+      "task_id": "release:qa:891de45394329545fe11",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_188.json",
+      "task_id": "release:qa:7adf8127893067701a70",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_189.json",
+      "task_id": "release:qa:3d20c8efd96389ed5e05",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_19.json",
+      "task_id": "release:qa:be1b2bb26243a9e5d068",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_190.json",
+      "task_id": "release:qa:0a1d20faea74172054e0",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_191.json",
+      "task_id": "release:qa:49cc24d576a91592b98b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_192.json",
+      "task_id": "release:qa:44152ecbd86680edc147",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_193.json",
+      "task_id": "release:qa:a09aecb1ce6a5dfca3ba",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_194.json",
+      "task_id": "release:qa:5ff5e5f7d9ea2f8096cf",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_195.json",
+      "task_id": "release:qa:054a2b490fef6cab5d94",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_196.json",
+      "task_id": "release:qa:130fb60a6a86457cb6ea",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_197.json",
+      "task_id": "release:qa:45c9c8c9ba11c2f2e823",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_198.json",
+      "task_id": "release:qa:4e56cb387c3899cee42c",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_199.json",
+      "task_id": "release:qa:b78e51c1185214b41a25",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_2.json",
+      "task_id": "release:qa:7eab1c4ae348696ccbac",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_20.json",
+      "task_id": "release:qa:4630c3cd1f451016fbac",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_200.json",
+      "task_id": "release:rec:17561:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_201.json",
+      "task_id": "release:rec:11282:5",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_202.json",
+      "task_id": "release:rec:12780:3",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_203.json",
+      "task_id": "release:rec:6550:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_204.json",
+      "task_id": "release:rec:16762:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_205.json",
+      "task_id": "release:rec:7902:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_206.json",
+      "task_id": "release:rec:9120:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_207.json",
+      "task_id": "release:rec:4168:5",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_208.json",
+      "task_id": "release:rec:16178:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_209.json",
+      "task_id": "release:rec:17643:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_21.json",
+      "task_id": "release:qa:4844082807382960069d",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_210.json",
+      "task_id": "release:rec:11174:4",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_211.json",
+      "task_id": "release:rec:9751:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_212.json",
+      "task_id": "release:rec:3821:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_213.json",
+      "task_id": "release:rec:1968:10",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_214.json",
+      "task_id": "release:rec:5156:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_215.json",
+      "task_id": "release:rec:16754:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_216.json",
+      "task_id": "release:rec:7172:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_217.json",
+      "task_id": "release:rec:12037:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_218.json",
+      "task_id": "release:rec:13391:12",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_219.json",
+      "task_id": "release:rec:11843:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_22.json",
+      "task_id": "release:qa:9fb5db35d76f02775584",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_220.json",
+      "task_id": "release:rec:3787:13",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_221.json",
+      "task_id": "release:rec:14181:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_222.json",
+      "task_id": "release:rec:13544:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_223.json",
+      "task_id": "release:rec:3015:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_224.json",
+      "task_id": "release:rec:15977:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_225.json",
+      "task_id": "release:rec:5461:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_226.json",
+      "task_id": "release:rec:1923:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_227.json",
+      "task_id": "release:rec:17079:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_228.json",
+      "task_id": "release:rec:19282:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_229.json",
+      "task_id": "release:rec:7962:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_23.json",
+      "task_id": "release:qa:3c141411b060b3677e98",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_230.json",
+      "task_id": "release:rec:3323:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_231.json",
+      "task_id": "release:rec:17187:10",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_232.json",
+      "task_id": "release:rec:11389:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_233.json",
+      "task_id": "release:rec:6643:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_234.json",
+      "task_id": "release:rec:10092:6",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_235.json",
+      "task_id": "release:rec:10927:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_236.json",
+      "task_id": "release:rec:12912:13",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_237.json",
+      "task_id": "release:rec:9925:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_238.json",
+      "task_id": "release:rec:15005:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_239.json",
+      "task_id": "release:rec:7355:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_24.json",
+      "task_id": "release:qa:e4b84837ede6597d5d88",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_240.json",
+      "task_id": "release:rec:19670:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_241.json",
+      "task_id": "release:rec:6039:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_242.json",
+      "task_id": "release:rec:13754:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_243.json",
+      "task_id": "release:rec:3995:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_244.json",
+      "task_id": "release:rec:16714:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_245.json",
+      "task_id": "release:rec:9573:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_246.json",
+      "task_id": "release:rec:9821:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_247.json",
+      "task_id": "release:rec:19629:14",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_248.json",
+      "task_id": "release:rec:13013:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_249.json",
+      "task_id": "release:rec:17792:3",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_25.json",
+      "task_id": "release:qa:12556cb8e7a3a3f8dec7",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_250.json",
+      "task_id": "release:rec:14263:13",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_251.json",
+      "task_id": "release:rec:11425:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_252.json",
+      "task_id": "release:rec:18708:10",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_253.json",
+      "task_id": "release:rec:10234:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_254.json",
+      "task_id": "release:rec:18406:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_255.json",
+      "task_id": "release:rec:7869:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_256.json",
+      "task_id": "release:rec:15824:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_257.json",
+      "task_id": "release:rec:17150:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_258.json",
+      "task_id": "release:rec:2445:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_259.json",
+      "task_id": "release:rec:14132:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_26.json",
+      "task_id": "release:qa:e9b19bc7d518d7b11ec7",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_260.json",
+      "task_id": "release:rec:6430:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_261.json",
+      "task_id": "release:rec:12619:17",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_262.json",
+      "task_id": "release:rec:3456:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_263.json",
+      "task_id": "release:rec:7662:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_264.json",
+      "task_id": "release:rec:18506:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_265.json",
+      "task_id": "release:rec:17224:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_266.json",
+      "task_id": "release:rec:10430:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_267.json",
+      "task_id": "release:rec:14087:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_268.json",
+      "task_id": "release:rec:15384:12",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_269.json",
+      "task_id": "release:rec:475:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_27.json",
+      "task_id": "release:qa:f97288d0e81a18e5c4ee",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_270.json",
+      "task_id": "release:rec:9689:4",
+      "kind": "rec",
+      "reviews": 1,
+      "classes": [
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_271.json",
+      "task_id": "release:rec:13114:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_272.json",
+      "task_id": "release:rec:17552:4",
+      "kind": "rec",
+      "reviews": 1,
+      "classes": [
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_273.json",
+      "task_id": "release:rec:11546:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_274.json",
+      "task_id": "release:rec:1241:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_275.json",
+      "task_id": "release:rec:6648:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_276.json",
+      "task_id": "release:rec:18460:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_277.json",
+      "task_id": "release:rec:3957:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_278.json",
+      "task_id": "release:rec:6124:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_279.json",
+      "task_id": "release:rec:11001:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_28.json",
+      "task_id": "release:qa:ec5d5e32d94ab6e84d43",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_280.json",
+      "task_id": "release:rec:7053:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_281.json",
+      "task_id": "release:rec:6390:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_282.json",
+      "task_id": "release:rec:6231:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "invalid_contract"
+      ]
+    },
+    {
+      "case": "case_283.json",
+      "task_id": "release:rec:7777:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_284.json",
+      "task_id": "release:rec:4941:11",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_285.json",
+      "task_id": "release:rec:5759:10",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_286.json",
+      "task_id": "release:rec:15259:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_287.json",
+      "task_id": "release:rec:7481:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_288.json",
+      "task_id": "release:rec:5178:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_289.json",
+      "task_id": "release:rec:7889:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_29.json",
+      "task_id": "release:qa:1b8f8cb4420dab15d758",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_290.json",
+      "task_id": "release:rec:17776:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_291.json",
+      "task_id": "release:rec:18278:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_292.json",
+      "task_id": "release:rec:6214:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_293.json",
+      "task_id": "release:rec:14763:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_294.json",
+      "task_id": "release:rec:2026:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_295.json",
+      "task_id": "release:rec:14045:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_296.json",
+      "task_id": "release:rec:3733:4",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_297.json",
+      "task_id": "release:rec:13359:10",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_298.json",
+      "task_id": "release:rec:18107:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_299.json",
+      "task_id": "release:rec:5507:2",
+      "kind": "rec",
+      "reviews": 1,
+      "classes": [
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_3.json",
+      "task_id": "release:qa:c02a70336d3ed793de53",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_30.json",
+      "task_id": "release:qa:e9786fb07ec36be17af1",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_300.json",
+      "task_id": "release:rec:11637:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_301.json",
+      "task_id": "release:rec:9906:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_302.json",
+      "task_id": "release:rec:15788:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_303.json",
+      "task_id": "release:rec:11880:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_304.json",
+      "task_id": "release:rec:11988:3",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_305.json",
+      "task_id": "release:rec:5458:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "invalid_contract",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_306.json",
+      "task_id": "release:rec:14351:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_307.json",
+      "task_id": "release:rec:15167:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_308.json",
+      "task_id": "release:rec:19016:4",
+      "kind": "rec",
+      "reviews": 1,
+      "classes": [
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_309.json",
+      "task_id": "release:rec:3944:2",
+      "kind": "rec",
+      "reviews": 1,
+      "classes": [
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_31.json",
+      "task_id": "release:qa:35b172ac98428e5060b2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_310.json",
+      "task_id": "release:rec:5908:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_311.json",
+      "task_id": "release:rec:2409:1",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_312.json",
+      "task_id": "release:rec:5100:3",
+      "kind": "rec",
+      "reviews": 1,
+      "classes": [
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_313.json",
+      "task_id": "release:rec:10323:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_314.json",
+      "task_id": "release:rec:18478:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_315.json",
+      "task_id": "release:rec:16902:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_316.json",
+      "task_id": "release:rec:7358:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_317.json",
+      "task_id": "release:rec:2022:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_318.json",
+      "task_id": "release:rec:13966:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_319.json",
+      "task_id": "release:rec:18604:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_32.json",
+      "task_id": "release:qa:45fe9a6f11884a3795df",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_320.json",
+      "task_id": "release:rec:18953:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_321.json",
+      "task_id": "release:rec:19164:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_322.json",
+      "task_id": "release:rec:8753:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_323.json",
+      "task_id": "release:rec:9895:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_324.json",
+      "task_id": "release:rec:12581:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_325.json",
+      "task_id": "release:rec:6404:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_326.json",
+      "task_id": "release:rec:19270:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_327.json",
+      "task_id": "release:rec:8802:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_328.json",
+      "task_id": "release:rec:15357:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_329.json",
+      "task_id": "release:rec:10220:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_33.json",
+      "task_id": "release:qa:871df24f31f49000d78b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_330.json",
+      "task_id": "release:rec:10533:4",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_331.json",
+      "task_id": "release:rec:2295:4",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_332.json",
+      "task_id": "release:rec:15130:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_333.json",
+      "task_id": "release:rec:4744:1",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_334.json",
+      "task_id": "release:rec:19140:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_335.json",
+      "task_id": "release:rec:14698:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_336.json",
+      "task_id": "release:rec:14398:9",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_337.json",
+      "task_id": "release:rec:15670:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_338.json",
+      "task_id": "release:rec:9454:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_339.json",
+      "task_id": "release:rec:10010:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_34.json",
+      "task_id": "release:qa:cda58156dc2c43645f9b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_340.json",
+      "task_id": "release:rec:2737:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_341.json",
+      "task_id": "release:rec:12777:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_342.json",
+      "task_id": "release:rec:15120:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_343.json",
+      "task_id": "release:rec:19308:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_344.json",
+      "task_id": "release:rec:11298:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_345.json",
+      "task_id": "release:rec:3646:1",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_346.json",
+      "task_id": "release:rec:13107:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_347.json",
+      "task_id": "release:rec:921:9",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_348.json",
+      "task_id": "release:rec:10093:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_349.json",
+      "task_id": "release:rec:13569:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_35.json",
+      "task_id": "release:qa:7ed84d1fba887c22da24",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_350.json",
+      "task_id": "release:rec:1089:10",
+      "kind": "rec",
+      "reviews": 1,
+      "classes": [
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_351.json",
+      "task_id": "release:rec:14347:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_352.json",
+      "task_id": "release:rec:7875:6",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_353.json",
+      "task_id": "release:rec:13558:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_354.json",
+      "task_id": "release:rec:9018:10",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_355.json",
+      "task_id": "release:rec:11099:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_356.json",
+      "task_id": "release:rec:14831:2",
+      "kind": "rec",
+      "reviews": 1,
+      "classes": [
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_357.json",
+      "task_id": "release:rec:2405:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_358.json",
+      "task_id": "release:rec:10013:11",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_359.json",
+      "task_id": "release:rec:8282:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_36.json",
+      "task_id": "release:qa:93a807ab8302db2bace0",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_360.json",
+      "task_id": "release:rec:19229:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_361.json",
+      "task_id": "release:rec:14949:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_362.json",
+      "task_id": "release:rec:13616:10",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_363.json",
+      "task_id": "release:rec:12375:11",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_364.json",
+      "task_id": "release:rec:3138:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_365.json",
+      "task_id": "release:rec:7202:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_366.json",
+      "task_id": "release:rec:6601:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_367.json",
+      "task_id": "release:rec:10676:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_368.json",
+      "task_id": "release:rec:6909:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_369.json",
+      "task_id": "release:rec:10372:12",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_37.json",
+      "task_id": "release:qa:75d5afe87e358ffad6fe",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "patch_not_accepted",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_370.json",
+      "task_id": "release:rec:2395:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_371.json",
+      "task_id": "release:rec:2029:10",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_372.json",
+      "task_id": "release:rec:17852:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_373.json",
+      "task_id": "release:rec:16972:2",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_374.json",
+      "task_id": "release:rec:8179:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_375.json",
+      "task_id": "release:rec:10347:12",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_376.json",
+      "task_id": "release:rec:6204:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_377.json",
+      "task_id": "release:rec:9590:1",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_378.json",
+      "task_id": "release:rec:3440:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_379.json",
+      "task_id": "release:rec:9772:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_38.json",
+      "task_id": "release:qa:a4b4e2c4856a3e155617",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_380.json",
+      "task_id": "release:rec:13560:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_381.json",
+      "task_id": "release:rec:17904:5",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_382.json",
+      "task_id": "release:rec:2471:1",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_383.json",
+      "task_id": "release:rec:14823:4",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_384.json",
+      "task_id": "release:rec:16253:3",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_385.json",
+      "task_id": "release:rec:17693:4",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_386.json",
+      "task_id": "release:rec:10874:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_387.json",
+      "task_id": "release:rec:6063:5",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_388.json",
+      "task_id": "release:rec:5564:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_389.json",
+      "task_id": "release:rec:19615:4",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_39.json",
+      "task_id": "release:qa:192e8d120227e3adc29d",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_390.json",
+      "task_id": "release:rec:12408:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_391.json",
+      "task_id": "release:rec:13721:8",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_392.json",
+      "task_id": "release:rec:9451:7",
+      "kind": "rec",
+      "reviews": 2,
+      "classes": [
+        "invalid_contract",
+        "invalid_contract"
+      ]
+    },
+    {
+      "case": "case_393.json",
+      "task_id": "release:rec:6406:2",
+      "kind": "rec",
+      "reviews": 1,
+      "classes": [
+        "invalid_contract"
+      ]
+    },
+    {
+      "case": "case_394.json",
+      "task_id": "release:rec:8886:2",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_395.json",
+      "task_id": "release:rec:19688:9",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_396.json",
+      "task_id": "release:rec:11603:8",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_397.json",
+      "task_id": "release:rec:9020:8",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_398.json",
+      "task_id": "release:rec:3969:5",
+      "kind": "rec",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_4.json",
+      "task_id": "release:qa:086ca3f17514b92679ae",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_40.json",
+      "task_id": "release:qa:99920137c1f9e46af420",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_41.json",
+      "task_id": "release:qa:55c8dbf081d444a2c058",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_42.json",
+      "task_id": "release:qa:45bc751c573f4ce74fbb",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_43.json",
+      "task_id": "release:qa:cd0a9cdd554a7c7fa368",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_44.json",
+      "task_id": "release:qa:e6d0e7deead88356bbd2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_45.json",
+      "task_id": "release:qa:290311beb8659d2699c5",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_46.json",
+      "task_id": "release:qa:d506284c22573bab85b3",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_47.json",
+      "task_id": "release:qa:f6eaa306769c68019c11",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "invalid_contract"
+      ]
+    },
+    {
+      "case": "case_48.json",
+      "task_id": "release:qa:7ae81ce58f63f4632794",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_49.json",
+      "task_id": "release:qa:4e6ab8691ff26686be2d",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_5.json",
+      "task_id": "release:qa:9b5249e314f785a34749",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_50.json",
+      "task_id": "release:qa:410585fdf1662246b920",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "unclear_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_51.json",
+      "task_id": "release:qa:5e76d6ce27d322b9a53a",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_52.json",
+      "task_id": "release:qa:f66f2787ffc98b45b76e",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_53.json",
+      "task_id": "release:qa:749c748962d63411b6e0",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_54.json",
+      "task_id": "release:qa:98f4b292403c5d92c4dc",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_55.json",
+      "task_id": "release:qa:8bd0842a5b3757f3f0e0",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "patch_not_accepted",
+        "patch_not_accepted"
+      ]
+    },
+    {
+      "case": "case_56.json",
+      "task_id": "release:qa:aaf11e9e47f9a9e38eb2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_57.json",
+      "task_id": "release:qa:2e7e17ab9dbf059322f7",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_58.json",
+      "task_id": "release:qa:4daad94a18a8550a3000",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_59.json",
+      "task_id": "release:qa:f16f1bef934f19b568b2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_6.json",
+      "task_id": "release:qa:15c1843d2e79da78e717",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_60.json",
+      "task_id": "release:qa:8508b81f3e002ea9eb33",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_61.json",
+      "task_id": "release:qa:d454e76bd74f12787b22",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_62.json",
+      "task_id": "release:qa:a59e21160e115f8ae435",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_63.json",
+      "task_id": "release:qa:3732e512c2763ae7affd",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_64.json",
+      "task_id": "release:qa:d82e5684bf102a1e182c",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "unclear_no_patch"
+      ]
+    },
+    {
+      "case": "case_65.json",
+      "task_id": "release:qa:d917725da423544eca7b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_66.json",
+      "task_id": "release:qa:94dfa1922f47b71a213b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "same_value_patch",
+        "same_value_patch"
+      ]
+    },
+    {
+      "case": "case_67.json",
+      "task_id": "release:qa:2b5d632ce884eaa27740",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "invalid_contract",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_68.json",
+      "task_id": "release:qa:7dec073f94dadd70a940",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "invalid_contract",
+        "invalid_contract"
+      ]
+    },
+    {
+      "case": "case_69.json",
+      "task_id": "release:qa:531f32f116075a8743cb",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_7.json",
+      "task_id": "release:qa:48bbd1567bd6bb68ec3c",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_70.json",
+      "task_id": "release:qa:0b6bfa5f9282256a0c74",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_71.json",
+      "task_id": "release:qa:4713a6b4d0d5db3c4495",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_72.json",
+      "task_id": "release:qa:3c270e3702fc7403b026",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_73.json",
+      "task_id": "release:qa:f6a5e69a02ba6e52ba4c",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_74.json",
+      "task_id": "release:qa:f7e359aa5262f34b3fcc",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_75.json",
+      "task_id": "release:qa:8888454c6307fdb077c6",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_76.json",
+      "task_id": "release:qa:8383ec1b7881a009963a",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_77.json",
+      "task_id": "release:qa:bcb1baf75fb89a73a702",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_78.json",
+      "task_id": "release:qa:93122e20f464486f1098",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_79.json",
+      "task_id": "release:qa:afb68010abacc2bae1de",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_8.json",
+      "task_id": "release:qa:d2a9ec826307384a06ee",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_80.json",
+      "task_id": "release:qa:16b89a754c59f2f87e9a",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_81.json",
+      "task_id": "release:qa:a2613af1019057ed2885",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_82.json",
+      "task_id": "release:qa:4a1e8300c5dc71fc1ba8",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_83.json",
+      "task_id": "release:qa:d709f3014d53be3bddda",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_84.json",
+      "task_id": "release:qa:a0a5b82832186a674ef1",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_85.json",
+      "task_id": "release:qa:ecf8311da2a3ef364d9f",
+      "kind": "qa",
+      "reviews": 0,
+      "classes": []
+    },
+    {
+      "case": "case_86.json",
+      "task_id": "release:qa:d4379850fde69fbe236b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_87.json",
+      "task_id": "release:qa:b569ad5f83d45ac7f4e1",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_88.json",
+      "task_id": "release:qa:b48a84b57d888b5d573a",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_89.json",
+      "task_id": "release:qa:87553625dfa61ddc55cf",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_9.json",
+      "task_id": "release:qa:63aad64acd6b789e4613",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_90.json",
+      "task_id": "release:qa:0fb8cba3bada6760132b",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_91.json",
+      "task_id": "release:qa:7653461a4e16787f8ead",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_92.json",
+      "task_id": "release:qa:ee97eb87b656190755b0",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_93.json",
+      "task_id": "release:qa:cee5e957a5c04b1f389c",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_94.json",
+      "task_id": "release:qa:486fc545411cba3ecfd4",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_95.json",
+      "task_id": "release:qa:efe44afdf54069124386",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_96.json",
+      "task_id": "release:qa:6fcea95cbcf586bc8741",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_97.json",
+      "task_id": "release:qa:ac9d2f1784956463de4f",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "support_no_patch",
+        "support_no_patch"
+      ]
+    },
+    {
+      "case": "case_98.json",
+      "task_id": "release:qa:52516eaf11ee836ec945",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    },
+    {
+      "case": "case_99.json",
+      "task_id": "release:qa:9601160420a5dcd452a2",
+      "kind": "qa",
+      "reviews": 2,
+      "classes": [
+        "refute_bridge_no_patch",
+        "refute_bridge_no_patch"
+      ]
+    }
+  ]
+}

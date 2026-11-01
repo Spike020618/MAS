@@ -1,0 +1,146 @@
+{
+  "version": "approved-mainline-20261028-v1",
+  "status": "mainline_approved_implementation_incomplete",
+  "approved_by": "user: 可以的，敲定主线吧",
+  "recorded_at": "2026-10-28T13:13:29.685826+08:00",
+  "topic": "预算约束下基于证据贡献博弈的多智能体共识机制研究",
+  "plan": "docs/research/主线定稿_系统补全与论文实验总计划_2026-10-28.md",
+  "plan_sha256": "fea8de55f8219d682eb1e78d50c12aba47e3b59eead345db09c485bd99a2fe7e",
+  "evidence_policy": "Expected contributions may be designed under effectiveness hypotheses; measured claims must come from sealed real experiments. Do not fabricate positive results.",
+  "core_methods": [
+    "M1_same_information_single_agent",
+    "M2_independent_multi_agent",
+    "M3_fixed_cooperation",
+    "M4_central_contribution_allocation",
+    "M5_evidence_contribution_game"
+  ],
+  "reusable_evidence": [
+    {
+      "id": "legacy_qa",
+      "role": "exploratory_joint_configuration",
+      "path": "experiments/results/mechanism/frozen/formal_v10",
+      "allowed_claim": "旧450题合同/资源/模型路由联合收益；不归给新博弈"
+    },
+    {
+      "id": "legacy_interface",
+      "role": "interface_and_parse_audit",
+      "path": "docs/research/报告接口收益复核_2026-10-24.md",
+      "allowed_claim": "AEIC可检查接口，不预设优于普通结构"
+    },
+    {
+      "id": "legacy_context",
+      "role": "exploratory_negative",
+      "path": "docs/research/AEIC争议审阅三臂结果_2026-10-22.md",
+      "allowed_claim": "AEI上下文负结果及边界"
+    },
+    {
+      "id": "native_ranker",
+      "role": "strong_baseline",
+      "path": "experiments/results/native_calibrated_transfer_v1/strong_baseline_comparison.json",
+      "allowed_claim": "监督排序26.78%对强RRF24.25%，不是博弈收益"
+    },
+    {
+      "id": "native_heterogeneous64",
+      "role": "development_comparison",
+      "path": "experiments/results/native_heterogeneous_new64_v1/sealed_independent_analysis.json",
+      "allowed_claim": "旧64/83目标，博弈/中央/count持平"
+    },
+    {
+      "id": "native_live64",
+      "role": "real_call_diagnostic",
+      "path": "experiments/results/native_review_diagnostic_live_v1/summary.json",
+      "allowed_claim": "新64/76目标，真实192回执，主博弈19/固定Flash20"
+    },
+    {
+      "id": "quality_game",
+      "role": "algorithm_and_property_tests",
+      "path": "experiments/paired_deliberation/native_quality_review_game.py",
+      "allowed_claim": "有限估计效用势博弈实现，不代表任务效果"
+    },
+    {
+      "id": "inspired",
+      "role": "external_baseline_preparation",
+      "path": "experiments/results/native_inspired_strong_v1",
+      "allowed_claim": "外部数据强基线，统一机制迁移未完成"
+    }
+  ],
+  "implementation": {
+    "P0": {
+      "status": "e1_prototype_implemented",
+      "acceptance": "native adapters, manifest and global budget"
+    },
+    "P1": {
+      "status": "e1_prototype_implemented",
+      "acceptance": "executable AEIC claim/evidence/patch state"
+    },
+    "P2": {
+      "status": "partial_multisource_not_semantic_doubts",
+      "acceptance": "multiple decision-relevant proposals and real source operations"
+    },
+    "P3": {
+      "status": "planned",
+      "acceptance": "train-only action contribution/risk calibration"
+    },
+    "P4": {
+      "status": "planned",
+      "acceptance": "shared-source game and same-objective central comparator"
+    },
+    "P5": {
+      "status": "planned",
+      "acceptance": "scoped update and task readout"
+    },
+    "P6": {
+      "status": "planned",
+      "acceptance": "online runner, process lock and restart state"
+    },
+    "P7": {
+      "status": "planned",
+      "acceptance": "real evaluation, paired analysis and paper exports"
+    }
+  },
+  "next_action": "Implement claim-specific doubts, evidence-use/reversal controls and strong independent acquisition before training action contribution.",
+  "paid_generation_started_by_this_planning_turn": false,
+  "implementation_started_at": "2026-10-28T13:40:46.818804+08:00",
+  "e1_result": "experiments/results/unified_e1_v4/summary.json",
+  "current_protocol_v3": {
+    "status": "implemented_offline_validated_user_run_pending",
+    "design": "docs/research/证据贡献博弈v3_统一修订方案与实验执行_2026-10-28.md",
+    "run_script": "scripts/run_protocol_v3_pipeline.sh",
+    "stress_script": "scripts/run_protocol_v3_stress.sh",
+    "prepared_root": "experiments/results/protocol_v3_frozen",
+    "counts": {
+      "fit": 93,
+      "calibration": 30,
+      "diagnostic": 37
+    },
+    "tests_passed": 34,
+    "model_api_calls_by_agent": 0,
+    "effect": "unverified; no game benefit asserted",
+    "data_scope": "development task/group-heldout; public background shared; no document isolation or untouched benchmark claim"
+  },
+  "method_paper_plan_20261029": {
+    "topic": "预算约束下基于证据贡献博弈的多智能体共识机制研究",
+    "status": "forward_method_draft_and_plan_ready_effects_pending",
+    "root": "docs/research/主线推进与论文预写_2026-10-29",
+    "experiment_ids": [
+      "E0",
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+    ],
+    "result_rows_are_metric_slots": 154,
+    "observed_values_populated": 0,
+    "current_experiment_unchanged": true,
+    "implementation_gaps": [
+      "joint_action_production_interface",
+      "matched_format_value_training",
+      "state_replanning",
+      "same_selector_strong_single_agent",
+      "independent_semantic_gold_evaluation",
+      "formal_validation_and_ablations"
+    ]
+  }
+}

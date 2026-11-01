@@ -1,0 +1,91 @@
+{
+  "version": "paired-deliberation.preflight-v2",
+  "status": "offline_specification_only",
+  "primary_question": "Does evidence-grounded interaction improve external decisions beyond equal-compute noninteractive and ordinary-review controls?",
+  "e1_information_baselines": [
+    "single_agent_one_pass",
+    "single_agent_serial_review_equal_budget",
+    "same_agent_independent_samples_shared_aggregator",
+    "multi_role_independent_reports_shared_aggregator",
+    "centralized_agent_all_evidence_and_tool_outputs"
+  ],
+  "e2_primary_arms": [
+    "independent_frozen_reports",
+    "self_review_frozen_reports",
+    "peer_review_frozen_reports",
+    "evidence_update_frozen_reports"
+  ],
+  "e2_secondary_arms": [
+    "peer_review_sequential_order_rotated",
+    "evidence_update_sequential_order_rotated"
+  ],
+  "e3_ablations": [
+    "fixed_dispute_routing_vs_all_or_random",
+    "peer_conclusion_without_evidence_vs_evidence_content",
+    "syntactic_reference_check_vs_semantic_support_check",
+    "gated_update_vs_unconstrained_regeneration",
+    "preserve_unresolved_vs_forced_binary_decision"
+  ],
+  "required_budget_dimensions": [
+    "initial_generation_prompt_tokens",
+    "initial_generation_completion_tokens",
+    "review_prompt_tokens",
+    "review_completion_tokens",
+    "aggregation_prompt_tokens",
+    "aggregation_completion_tokens",
+    "tool_calls",
+    "tool_tokens_or_bytes",
+    "retries",
+    "wall_time",
+    "actual_cost_when_available"
+  ],
+  "required_process_labels": [
+    "claim_supported_by_source",
+    "correct_claim_preserved",
+    "incorrect_claim_corrected",
+    "correct_claim_incorrectly_changed",
+    "new_unsupported_claim_added",
+    "update_changed_final_decision"
+  ],
+  "process_evaluation_layers": [
+    {
+      "name": "deterministic_contract",
+      "claim_scope": "source, candidate, target, state-transition and decision-impact checks only",
+      "semantic_truth_claim": false
+    },
+    {
+      "name": "programmatic_controlled_corruptions",
+      "claim_scope": "known catalog fact mutations with generated labels",
+      "semantic_truth_claim": "bounded to generated fact types"
+    },
+    {
+      "name": "blinded_model_proxy_panel",
+      "claim_scope": "two independent judges and a third judge on disagreement",
+      "semantic_truth_claim": "proxy only; never human gold"
+    }
+  ],
+  "human_annotation": {
+    "required_to_start_development": false,
+    "status": "optional_future_validation",
+    "absence_must_be_reported_as_limitation": true
+  },
+  "published_result_policy": {
+    "direct_numeric_comparison_requires": [
+      "same_dataset_and_version",
+      "same_split_and_evaluation_unit",
+      "same_candidate_pool_and_input_visibility",
+      "same_metric_definition",
+      "comparable_model_and_budget_or_explicit_normalization"
+    ],
+    "otherwise": "Use as literature context only; implement a structural baseline or faithful reproduction and report original and reproduced values separately.",
+    "never": "Treat a published number from a different setup as a head-to-head experimental result."
+  },
+  "stage_gates": {
+    "p0_p1": "literature inheritance table, data/label audit, and candidate headroom accepted",
+    "p2": "adapters, complete ledger, frozen and sequential semantics, replay, and isolation tests accepted",
+    "p3": "E1 and E2 engineering/development results include deterministic, controlled-corruption and blinded proxy attribution",
+    "p4": "only after E2 has credible external and process-level incremental evidence",
+    "p5": "preregistered independent test with power, clustering, multiplicity, and cost rules frozen"
+  },
+  "paid_or_reserved_test_authorized": false
+}

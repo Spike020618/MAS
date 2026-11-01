@@ -1,0 +1,93 @@
+"""Reconstruct project prose in the retained school Word package and page frames."""
+import sys,json,hashlib,re,html
+from pathlib import Path
+from copy import deepcopy
+from zipfile import ZipFile,ZIP_DEFLATED
+from io import BytesIO
+from lxml import etree as E
+from docx import Document
+from docx.shared import Cm
+sys.path.insert(0,str(Path(__file__).resolve().parent.parent))
+import build_report_v3 as template
+from content import PAGES
+ROOT=Path(__file__).resolve().parents[3];OUT=ROOT/'output/midterm/thesis_2026-10-30';OUT.mkdir(parents=True,exist_ok=True)
+SOURCE=ROOT/'output/midterm/中期报告_学校Word模板重写稿.docx';FINAL=OUT/'中期报告_按学校模板重构.docx'
+W='{http://schemas.openxmlformats.org/wordprocessingml/2006/main}';NS=template.NS
+with ZipFile(SOURCE)as z:parts={n:z.read(n)for n in z.namelist()}
+x=E.fromstring(parts['word/document.xml']);body=x.find(W+'body');original=list(body);section=deepcopy(original[-1]);cover=[deepcopy(e)for e in original[:25]]
+for p in cover:
+ txt=template.text_of(p)
+ if '报告日期待填写'in txt:template.replace_value(p,'2026 年 10 月 30 日')
+ if '硕士研究生学位论文中期报告'in txt:
+  pp=p.find(W+'pPr')
+  if pp is None:pp=E.Element(W+'pPr');p.insert(0,pp)
+  for st in pp.findall(W+'pStyle'):pp.remove(st)
+  pp.insert(0,template.el('pStyle',{'val':'Title'}))
+for e in list(body):body.remove(e)
+for e in cover:body.append(e)
+rels=E.fromstring(parts['word/_rels/document.xml.rels']);ct=E.fromstring(parts['[Content_Types].xml']);styles=E.fromstring(parts['word/styles.xml'])
+style=E.Element(W+'style');style.set(W+'type','paragraph');style.set(W+'styleId','Title');style.append(template.el('name',{'val':'Title'}));styles.append(style)
+source_tables=E.fromstring(parts['word/document.xml']).findall('w:body/w:tbl',NS);imageparts={};figures=[];markdown=[]
+
+def para(s,role='body'):
+ return template.paragraph(s,role)
+
+def picture(name):
+ path=OUT/'figures'/f'{name}.png';number=int(name[3:5]);doc=Document();p=doc.add_paragraph();p.add_run().add_picture(str(path),width=Cm(15.1));node=deepcopy(p._p)
+ pp=node.find(W+'pPr')
+ if pp is None:pp=E.Element(W+'pPr');node.insert(0,pp)
+ pp.append(template.el('jc',{'val':'center'}));pp.append(template.el('spacing',{'before':'100','after':'0','line':'240','lineRule':'auto'}));pp.append(template.el('keepNext'))
+ for el in node.iter():
+  if E.QName(el).localname=='blip':el.set('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed',f'rIdReportFigure{number}')
+  if E.QName(el).localname in ('docPr','cNvPr'):
+   el.set('id',str(1000+number));el.set('name',name)
+   if E.QName(el).localname=='docPr':el.set('descr',titles[name])
+ r=E.Element('{http://schemas.openxmlformats.org/package/2006/relationships}Relationship');r.set('Id',f'rIdReportFigure{number}');r.set('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image');r.set('Target',f'media/report_{name}.png');rels.append(r);imageparts[f'word/media/report_{name}.png']=path.read_bytes();figures.append(name)
+ return node
+
+manifest=json.loads((OUT/'figures_manifest.json').read_text());titles={f['id']:f['title']for f in manifest};titles['fig08_workspace']='影视检索与证据工作台界面'
+for i,page in enumerate(PAGES):
+ nodes=[]
+ if page['title']:nodes.append(para(page['title'],'heading'))
+ for text in page['paragraphs']:nodes.append(para(text,'ref'if page['section'].startswith('六、')else'body'))
+ if page['figure']:
+  name=page['figure'];nodes.append(picture(name));nodes.append(para(f'图{int(name[3:5])}  {titles[name]}','caption'))
+ for text in page['equations']:nodes.append(template.native_math(text.replace('Yₑբ','Yₑf').replace('Yբ','Yf')))
+ for text in page['after']:nodes.append(para(text,'heading'if re.match(r'^[四五六]、',text)else'body'))
+ frame=template.frame(nodes,first=i==0);rows=frame.findall(W+'tr')
+ if i==0:
+  oldrows=source_tables[1].findall(W+'tr')
+  for j in range(6):frame.replace(rows[j],deepcopy(oldrows[j]))
+  rows=frame.findall(W+'tr')
+  # Report date belongs to this document; admission and schedule fields stay blank.
+  cells=rows[3].findall(W+'tc')
+  if len(cells)>3:template.replace_value(cells[3].find(W+'p'),'2026-10-29')
+ c=rows[-1].find(W+'tc');c.insert(1 if c.find(W+'tcPr')is not None else 0,para(page['section'],'section'))
+ if i>0:body.append(template.page_break())
+ body.append(frame)
+ markdown+=['# '+page['section'],'## '+page['title']if page['title']else'',*page['paragraphs']]
+ if page['figure']:markdown+=['![图'+str(int(page['figure'][3:5]))+' '+titles[page['figure']]+'](figures/'+page['figure']+'.png)']
+ markdown+=list(page['equations'])+list(page['after'])+['']
+# Preserve the actual school assessment form without filling another person's comments.
+body.append(template.page_break());mentor=deepcopy(template.tables[5]);rows=mentor.findall(W+'tr')
+for index in (1,4):
+ cell=rows[index].find(W+'tc');template.clear_content(cell,{'tcPr'});cell.append(para('（由导师填写）'if index==1 else '（由学院组织考核后填写）'))
+for i,row in enumerate(rows):
+ pr=row.find(W+'trPr')
+ if pr is None:pr=E.Element(W+'trPr');row.insert(0,pr)
+ for h in pr.findall(W+'trHeight'):pr.remove(h)
+ pr.append(template.el('trHeight',{'val':[650,4400,1000,650,4000][i],'hRule':'atLeast'}))
+body.append(mentor);body.append(section)
+if not any(n.get('Extension')=='png'for n in ct):
+ n=E.SubElement(ct,'{http://schemas.openxmlformats.org/package/2006/content-types}Default');n.set('Extension','png');n.set('ContentType','image/png')
+edits={'word/document.xml':E.tostring(x,xml_declaration=True,encoding='UTF-8',standalone=True),'word/_rels/document.xml.rels':E.tostring(rels,xml_declaration=True,encoding='UTF-8',standalone=True),'word/styles.xml':E.tostring(styles,xml_declaration=True,encoding='UTF-8',standalone=True),'[Content_Types].xml':E.tostring(ct,xml_declaration=True,encoding='UTF-8',standalone=True)}
+with ZipFile(FINAL,'w',ZIP_DEFLATED)as z:
+ for name,blob in parts.items():z.writestr(name,edits.get(name,blob))
+ for name,blob in imageparts.items():z.writestr(name,blob)
+with ZipFile(FINAL)as z:
+ preserved=[n for n in parts if n not in edits];assert all(z.read(n)==parts[n]for n in preserved)
+ root=E.fromstring(z.read('word/document.xml'));assert E.tostring(root.find('w:body/w:sectPr',NS))==E.tostring(section)
+(OUT/'中期报告_正文.md').write_text('\n\n'.join(s for s in markdown if s))
+(OUT/'content.json').write_text(json.dumps(PAGES,ensure_ascii=False,indent=2))
+(OUT/'template_verification.json').write_text(json.dumps({'reference':'/Users/spike/Downloads/LwMidReport.docx','reference_sha256':hashlib.sha256(Path('/Users/spike/Downloads/LwMidReport.docx').read_bytes()).hexdigest(),'working_reference':str(SOURCE),'working_reference_sha256':hashlib.sha256(SOURCE.read_bytes()).hexdigest(),'preserved_parts':preserved,'edited_parts':list(edits),'new_parts':list(imageparts),'section_geometry_unchanged':True,'content_pages':len(PAGES),'figures':figures},ensure_ascii=False,indent=2))
+print(FINAL)
